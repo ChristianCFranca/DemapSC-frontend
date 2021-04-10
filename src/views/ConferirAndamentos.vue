@@ -153,18 +153,20 @@
                                             <v-divider class="my-4"></v-divider>
                                         </div>
                                         <v-row no-gutters justify="center">
-                                            <v-col cols="2" align="center">
+                                            <v-col cols="12" xs="12" sm="6" md="4" align="center">
                                                 <h2>Chave de Identificação:</h2>
-                                                <v-text-field
-                                                    class="mt-4"
-                                                    rows="1"
-                                                    required
-                                                    shaped
-                                                    outlined
-                                                    clearable
-                                                    prepend-inner-icon="mdi-key"
-                                                    type="password"
-                                                ></v-text-field>
+                                                <v-col cols="12" sm="12" align="center">
+                                                    <v-text-field
+                                                        class="mt-4"
+                                                        rows="1"
+                                                        required
+                                                        shaped
+                                                        outlined
+                                                        clearable
+                                                        prepend-inner-icon="mdi-key"
+                                                        type="password"
+                                                    ></v-text-field>
+                                                </v-col>
                                                 <v-btn
                                                 dark
                                                 color="blue darken-1"
