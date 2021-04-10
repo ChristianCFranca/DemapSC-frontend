@@ -40,31 +40,31 @@
                                         Solicitação realizada
                                     </v-stepper-step>
 
-                                    <v-divider class="d-none d-sm-block"></v-divider>
+                                    <v-divider></v-divider>
 
                                     <v-stepper-step step="2" :complete="item.statusStep > 2" color="orange">
                                         {{ getMessage(2, item) }}
                                     </v-stepper-step>
 
-                                    <v-divider class="d-none d-sm-block"></v-divider>
+                                    <v-divider></v-divider>
 
                                     <v-stepper-step step="3" :complete="item.statusStep > 3">
                                         {{ getMessage(3, item) }}
                                     </v-stepper-step>
 
-                                    <v-divider class="d-none d-sm-block"></v-divider>
+                                    <v-divider></v-divider>
 
                                     <v-stepper-step step="4" :complete="item.statusStep > 4">
                                         {{ getMessage(4, item) }}
                                     </v-stepper-step>
 
-                                    <v-divider class="d-none d-sm-block"></v-divider>
+                                    <v-divider></v-divider>
 
                                     <v-stepper-step step="5" :complete="item.statusStep > 5">
                                         {{ getMessage(5, item) }}
                                     </v-stepper-step>
 
-                                    <v-divider class="d-none d-sm-block"></v-divider>
+                                    <v-divider></v-divider>
 
                                     <v-stepper-step step="6" :complete="item.statusStep === 6">
                                         Solicitação finalizada
