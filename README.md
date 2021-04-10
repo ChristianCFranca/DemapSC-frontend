@@ -1,24 +1,29 @@
-# front-end
+# DemapSM-frontend
+Implementação do front-end do Sistema de Solicitação de Materiais não oficial do Departamento de Infraestrutura e Gestão Patrimonial do Banco Central do Brasil. O sistema é construído utilizando o framework [Vue.js](https://vuejs.org/) e a biblioteca de componentes [Vuetify](https://vuetifyjs.com/en/).
 
-## Project setup
+![Vue.js + vuetify](https://i.morioh.com/2019/11/01/47e709b4198f.jpg)
+
+O serviço já está disponível utilizando a plataforma [Heroku](https://dashboard.heroku.com/) na URL https://demapsm.herokuapp.com/. 
+
+## Instalação e Execução
+
+Caso deseje rodar este projeto localmente:
+
+1 - Setup do projeto:
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+2.1 - Compilação e hot-reloads para desenvolvimento:
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+3.1 - Compila para produção
 ```
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+4 - Acessar endereço fornecido pelo serviço (geralmente http://localhost:8080/).
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+5 - Tudo pronto!
