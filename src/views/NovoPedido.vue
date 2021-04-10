@@ -244,8 +244,10 @@ export default {
             remDisable: true,
             nonEmptyRules: [v => !!v || "Campo obrigatório."],
             emailRules: [v => !!v || 'Campo obrigatório.', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido.'],
-            apiURL: "//localhost:8000/crud/pedidos/",
-            apiMateriaisURL: "//localhost:8000/crud/materiais/"
+            // apiURL: "'//localhost:8000/crud/pedidos/'",
+            apiURL: "'//demapsm-backend.herokuapp.com/crud/pedidos/'",
+            // apiMateriaisURL: "'//localhost:8000/crud/materiais/'",
+            apiMateriaisURL: "//demapsm-backend.herokuapp.com/crud/materiais/"
         }
     },
     methods: {

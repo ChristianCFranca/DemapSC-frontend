@@ -264,7 +264,8 @@ export default {
                 {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando obtenção do(s) item(s)."}
             ],
-            apiURL: '//localhost:8000/crud/pedidos/'
+            // apiURL: '//localhost:8000/crud/pedidos/',
+            apiURL: '//demapsm-backend.herokuapp.com/crud/pedidos/'
         };
     },
     methods: {
