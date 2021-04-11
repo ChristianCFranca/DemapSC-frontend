@@ -281,7 +281,6 @@ export default {
         sendData() {
             if (this.valid){
                 this.error = false
-
                 this.pedido.quantidade = this.pedido.items.length;
                 this.pedido.dataPedido = new Date().toLocaleDateString();
                 this.pedido.statusStep = 2;
@@ -292,16 +291,15 @@ export default {
                 .then(response => {
                     this.resetForm(); 
                     this.success = true;
+                    this.loading = false;
                     return response
                     })
                 .catch(error => {
                     console.log(error); 
                     this.error = true;
+                    this.loading = false;
                     return error
                     });
-
-                this.loading = false;
-                
             } else {
                 console.log("Something is wrong here...")
                 this.success = false
