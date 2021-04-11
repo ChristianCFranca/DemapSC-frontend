@@ -37,37 +37,37 @@
                             <v-stepper alt-labels class="my-4" :value="item.statusStep">
                                 <v-stepper-header>
                                     <v-stepper-step step="1" :complete="item.statusStep > 1" color="success">
-                                        Solicitação realizada
+                                        <h4 class="text-center font-weight-regular">Solicitação realizada</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
                                     <v-stepper-step step="2" :complete="item.statusStep > 2" color="orange">
-                                        {{ getMessage(2, item) }}
+                                        <h4 class="text-center font-weight-regular">{{ getMessage(2, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
                                     <v-stepper-step step="3" :complete="item.statusStep > 3">
-                                        {{ getMessage(3, item) }}
+                                        <h4 class="text-center font-weight-regular">{{ getMessage(3, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
                                     <v-stepper-step step="4" :complete="item.statusStep > 4">
-                                        {{ getMessage(4, item) }}
+                                        <h4 class="text-center font-weight-regular">{{ getMessage(4, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
                                     <v-stepper-step step="5" :complete="item.statusStep > 5">
-                                        {{ getMessage(5, item) }}
+                                        <h4 class="text-center font-weight-regular">{{ getMessage(5, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
                                     <v-stepper-step step="6" :complete="item.statusStep === 6">
-                                        Solicitação finalizada
+                                        <h4 class="text-center font-weight-regular">Solicitação finalizada</h4> 
                                     </v-stepper-step>
                                 </v-stepper-header>
 
@@ -81,108 +81,11 @@
                                     </v-stepper-content>
 
                                     <v-stepper-content step="2">
-                                        <div v-for="(it, idx) in item.items" :key="idx">
-                                            <v-row>
-                                                <v-col 
-                                                cols="12"
-                                                sm="4"
-                                                md="4">
-                                                    <v-list>
-                                                        <v-list-item>
-                                                            <v-list-item-content>
-                                                                <v-list-item-subtitle>
-                                                                    Item
-                                                                </v-list-item-subtitle>
-                                                                <h3>{{ it.nome }}</h3>
-                                                                <v-list-item-subtitle class="mt-6">
-                                                                    Finalidade
-                                                                </v-list-item-subtitle>
-                                                                <p class="text-justify body-1">
-                                                                    {{ it.finalidade }}
-                                                                </p>
-                                                                <v-list-item-subtitle class="mt-6">
-                                                                    Quantidade
-                                                                </v-list-item-subtitle>
-                                                                <v-list-item-title>
-                                                                    {{ it.quantidade }}
-                                                                </v-list-item-title>
-                                                            </v-list-item-content>
-                                                        </v-list-item>
-                                                    </v-list>
-                                                </v-col>
-
-                                                <v-col 
-                                                cols="12"
-                                                sm="5"
-                                                md="5">
-                                                    <v-list>
-                                                        <v-list-item>
-                                                            <v-list-item-content>
-                                                                <v-list-item-subtitle>
-                                                                    Descrição
-                                                                </v-list-item-subtitle>
-                                                                <p class="text-justify body-1">
-                                                                    {{ it.descricao }}
-                                                                </p>
-                                                            </v-list-item-content>
-                                                        </v-list-item>
-                                                    </v-list>
-                                                </v-col>
-
-                                                <v-col 
-                                                cols="12"
-                                                sm="3"
-                                                md="3">
-                                                    <v-row justify="center">
-                                                        <v-switch v-model="it.aprovadoGerencia" 
-                                                        label="Aprovado" 
-                                                        color="success"></v-switch>
-                                                    </v-row>
-
-                                                    <v-textarea
-                                                        v-model="it.motivoGerencia"
-                                                        label="Descrição do motivo"
-                                                        max-height="150"
-                                                        :counter="200"
-                                                        clearable
-                                                        outlined
-                                                        v-if="!it.aprovadoGerencia"
-                                                    ></v-textarea>
-                                                </v-col>
-                                            </v-row>
-                                            <v-divider class="my-4"></v-divider>
-                                        </div>
-                                        <v-row no-gutters justify="center">
-                                            <v-col cols="12" xs="12" sm="6" md="4" align="center">
-                                                <h2>Chave de Identificação:</h2>
-                                                <v-col cols="12" sm="12" align="center">
-                                                    <v-text-field
-                                                        class="mt-4"
-                                                        rows="1"
-                                                        required
-                                                        shaped
-                                                        outlined
-                                                        clearable
-                                                        prepend-inner-icon="mdi-key"
-                                                        type="password"
-                                                    ></v-text-field>
-                                                </v-col>
-                                                <v-btn
-                                                dark
-                                                color="blue darken-1"
-                                                class="mb-8">
-                                                    Enviar Aprovação
-                                                </v-btn>
-                                            </v-col>
-                                        </v-row>
+                                        <Step2and3 :inputItem="item" :usuario="`gerente`"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="3">
-                                        <v-card
-                                        class="mb-12"
-                                        color="grey lighten-1"
-                                        height="200px"
-                                        ></v-card>
+                                        <Step2and3 :inputItem="item" :usuario="`servidor(a)`"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="4">
@@ -222,12 +125,15 @@
                     </template>
 
                     <template v-slot:[`item.statusStep`]="{ item }">
+                        <h5 class="body-2 my-5">
                         <v-chip
                             :color="getColor(item.statusStep)"
                             dark
                         >
                             {{ item.statusStep }}/6
                         </v-chip>
+                        {{item.status}}
+                        </h5>
                     </template>
                 
                 </v-data-table>
@@ -240,8 +146,12 @@
 
 <script>
 import axios from 'axios';
+import Step2and3 from "@/components/steps/Step2and3.vue"
 
 export default {
+    components: {
+        Step2and3
+    },
     data() {
         return {
             solicitacaoMessage: "Nenhuma solicitação em andamento.",
@@ -264,7 +174,7 @@ export default {
                 {concluido: "Confirmado pelo(a) gerente", andamento: "Aguardando confirmação do(a) gerente"},
                 {concluido: "Confirmado pelo(a) servidor(a)", andamento: "Aguardando confirmação do(a) servidor(a)"},
                 {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
-                {concluido: "Item(s) obtido(s)", andamento: "Aguardando obtenção do(s) item(s)."}
+                {concluido: "Item(s) obtido(s)", andamento: "Aguardando obtenção do(s) item(s)"}
             ],
             // apiURL: '//localhost:8000/crud/pedidos/',
             apiURL: '//demapsm-backend.herokuapp.com/crud/pedidos/'
@@ -272,12 +182,12 @@ export default {
     },
     methods: {
         gerarAprovacoesGerencia(array_data) {
-            
             for (let i = 0; i < array_data.length; i++) {
-                 for (let j = 0; j < array_data[i].items.length; j++){
-                     array_data[i].items[j]['aprovadoGerencia'] = true;
-                     array_data[i].items[j]['motivoGerencia'] = null;
-                 }
+                array_data[i]['keyGerencia'] = '';
+                for (let j = 0; j < array_data[i].items.length; j++){
+                    array_data[i].items[j]['aprovadoGerencia'] = true;
+                    array_data[i].items[j]['motivoGerencia'] = null;
+                }
             }
             return array_data
         },

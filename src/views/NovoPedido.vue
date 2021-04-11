@@ -283,7 +283,7 @@ export default {
                 this.pedido.quantidade = this.pedido.items.length;
                 this.pedido.dataPedido = new Date().toLocaleDateString();
                 this.pedido.statusStep = 2;
-                this.pedido.status = "Solicitação registrada";
+                this.pedido.status = "Aguardando confirmação do(a) gerente";
 
                 this.loading = true;
                 axios.post(`${this.apiURL}`, this.pedido)
