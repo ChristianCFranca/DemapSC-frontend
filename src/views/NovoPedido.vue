@@ -252,6 +252,8 @@ export default {
     },
     methods: {
         resetForm() {
+            this.error = false;
+            this.success = false;
             this.$refs.form.reset();
         },
         addItem() {
