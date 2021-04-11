@@ -244,10 +244,10 @@ export default {
             remDisable: true,
             nonEmptyRules: [v => !!v || "Campo obrigatório."],
             emailRules: [v => !!v || 'Campo obrigatório.', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido.'],
-            // apiURL: "'//localhost:8000/crud/pedidos/'",
-            apiURL: "'//demapsm-backend.herokuapp.com/crud/pedidos/'",
-            // apiMateriaisURL: "'//localhost:8000/crud/materiais/'",
-            apiMateriaisURL: "//demapsm-backend.herokuapp.com/crud/materiais/"
+            // apiURL: "//localhost:8000/crud/pedidos/",
+            apiURL: "https://demapsm-backend.herokuapp.com/crud/pedidos/",
+            // apiMateriaisURL: "//localhost:8000/crud/materiais/",
+            apiMateriaisURL: "https://demapsm-backend.herokuapp.com/crud/materiais/"
         }
     },
     methods: {
@@ -287,12 +287,19 @@ export default {
 
                 this.loading = true;
                 axios.post(`${this.apiURL}`, this.pedido)
-                .then(response => {this.resetForm(); return response;})
-                .catch(error => {console.log(error); return error});
+                .then(response => {
+                    this.resetForm(); 
+                    this.success = true;
+                    return response
+                    })
+                .catch(error => {
+                    console.log(error); 
+                    this.error = true;
+                    return error
+                    });
 
                 this.loading = false;
-
-                this.success = true
+                
             } else {
                 console.log("Something is wrong here...")
                 this.success = false

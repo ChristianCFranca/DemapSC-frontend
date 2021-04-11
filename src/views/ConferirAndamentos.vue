@@ -177,7 +177,7 @@ export default {
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando obtenção do(s) item(s)"}
             ],
             // apiURL: '//localhost:8000/crud/pedidos/',
-            apiURL: '//demapsm-backend.herokuapp.com/crud/pedidos/'
+            apiURL: 'https://demapsm-backend.herokuapp.com/crud/pedidos/'
         };
     },
     methods: {

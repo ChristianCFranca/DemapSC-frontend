@@ -107,7 +107,7 @@ export default {
     data() {
         return {
             loadingBtn: false,
-            apiCargo: "//demapsm-backend.herokuapp.com/cargos",
+            apiCargo: "https://demapsm-backend.herokuapp.com/cargos",
             // apiCargo: "//localhost:8000/cargos",
             response: null,
         }
