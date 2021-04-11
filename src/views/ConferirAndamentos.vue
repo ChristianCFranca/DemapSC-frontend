@@ -1,5 +1,11 @@
 <template>
         <v-container>
+        <v-snackbar v-model="snackbar" :timeout="4000" top :color="snackbarColor">
+            {{ snackbarMessage }}
+            <template v-slot:action="{ attrs }">
+                <v-btn color="white" v-bind="attrs" text @click="snackbar = false">Close</v-btn>
+            </template>
+        </v-snackbar>
         <v-card class="ma-4">
             <v-card>
 
@@ -42,25 +48,25 @@
 
                                     <v-divider></v-divider>
 
-                                    <v-stepper-step step="2" :complete="item.statusStep > 2" color="orange">
+                                    <v-stepper-step step="2" :complete="item.statusStep > 2" :color="item.statusStep > 2 ? `success` : `orange`">
                                         <h4 class="text-center font-weight-regular">{{ getMessage(2, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
-                                    <v-stepper-step step="3" :complete="item.statusStep > 3">
+                                    <v-stepper-step step="3" :complete="item.statusStep > 3" :color="item.statusStep > 3 ? `success` : `orange`">
                                         <h4 class="text-center font-weight-regular">{{ getMessage(3, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
-                                    <v-stepper-step step="4" :complete="item.statusStep > 4">
+                                    <v-stepper-step step="4" :complete="item.statusStep > 4" :color="item.statusStep > 4 ? `success` : `orange`">
                                         <h4 class="text-center font-weight-regular">{{ getMessage(4, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
-                                    <v-stepper-step step="5" :complete="item.statusStep > 5">
+                                    <v-stepper-step step="5" :complete="item.statusStep > 5" :color="item.statusStep > 5 ? `success` : `orange`">
                                         <h4 class="text-center font-weight-regular">{{ getMessage(5, item) }}</h4> 
                                     </v-stepper-step>
 
@@ -81,11 +87,11 @@
                                     </v-stepper-content>
 
                                     <v-stepper-content step="2">
-                                        <Step2and3 :inputItem="item" :usuario="`gerente`"/>
+                                        <Step2 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="3">
-                                        <Step2and3 :inputItem="item" :usuario="`servidor(a)`"/>
+                                        <Step3 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="4">
@@ -146,14 +152,19 @@
 
 <script>
 import axios from 'axios';
-import Step2and3 from "@/components/steps/Step2and3.vue"
+import Step2 from "@/components/steps/Step2.vue"
+import Step3 from "@/components/steps/Step3.vue"
 
 export default {
     components: {
-        Step2and3
+        Step2,
+        Step3
     },
     data() {
         return {
+            snackbar: false,
+            snackbarMessage: '',
+            snackbarColor: '',
             solicitacaoMessage: "Nenhuma solicitação em andamento.",
             iconMessage: "mdi-emoticon-happy-outline",
             expanded: [],
@@ -181,23 +192,12 @@ export default {
         };
     },
     methods: {
-        gerarAprovacoesGerencia(array_data) {
-            for (let i = 0; i < array_data.length; i++) {
-                array_data[i]['keyGerencia'] = '';
-                for (let j = 0; j < array_data[i].items.length; j++){
-                    array_data[i].items[j]['aprovadoGerencia'] = true;
-                    array_data[i].items[j]['motivoGerencia'] = null;
-                }
-            }
-            return array_data
-        },
         logTable() {
             this.loading = true;
             axios.get(`${this.apiURL}`)
             .then(response => {
-                this.pedidos = this.gerarAprovacoesGerencia(response.data)
+                this.pedidos = response.data
                 this.loading = false;
-                this.gerarAprovacoesGerencia(response.data);
                 })
             .catch(error => {
                 if (error.response === undefined){
@@ -233,6 +233,25 @@ export default {
         },
         logData(value) {
             console.log("Logged Value: ", value)
+        },
+        snackbarReactSuccess(message) {
+            this.snackbarColor = "success";
+            this.snackbarMessage = message;
+            this.snackbar = true;
+            this.logTable();
+        },
+        snackbarReactError(message) {
+            this.snackbarColor = "error";
+            if (message) {
+                this.message = message;
+                if (message.data.detail)
+                this.message = message.data.detail;
+            } else
+                this.message = "Ocorreu um problema desconhecido"
+
+            console.log("mensagem: ", message)
+            this.snackbar = true;
+            this.logTable();
         }
     },
     mounted() {

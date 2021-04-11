@@ -233,12 +233,12 @@ export default {
                 email: null,
                 os: null,
                 items: [
-                    {nome: null, descricao: null, quantidade: null, finalidade: null}
+                    {nome: null, descricao: null, quantidade: null, finalidade: null, aprovadoGerencia: true, motivoGerencia: null, aprovadoServidor: true, motivoServidor: true}
                 ],
                 dataPedido: null,
                 quantidade: null,
                 status: null,
-                statusStep: null
+                statusStep: 2
             },
             addDisable: false,
             remDisable: true,
@@ -257,9 +257,8 @@ export default {
             this.$refs.form.reset();
         },
         addItem() {
-            console.log("Aqui está o pedido: ", this.pedido)
             this.itemsQtd += 1;
-            this.pedido.items.push({nome: null, descricao: null, quantidade: null, finalidade: null})
+            this.pedido.items.push({nome: null, descricao: null, quantidade: null, finalidade: null, aprovadoGerencia: true, motivoGerencia: null, aprovadoServidor: true, motivoServidor: true})
             this.computeDisable();
         },
         removeItem() {
@@ -281,9 +280,10 @@ export default {
         sendData() {
             if (this.valid){
                 this.error = false
+
+                // Todas as informações do processo são inseridas aqui
                 this.pedido.quantidade = this.pedido.items.length;
                 this.pedido.dataPedido = new Date().toLocaleDateString();
-                this.pedido.statusStep = 2;
                 this.pedido.status = "Aguardando confirmação do(a) gerente";
 
                 this.loading = true;

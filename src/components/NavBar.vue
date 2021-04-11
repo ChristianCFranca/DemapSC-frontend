@@ -23,7 +23,7 @@
         <template v-slot:extension>
             <v-tabs>
                 <v-spacer></v-spacer>
-                <v-tab route to="/novo-pedido">Novo Pedido de Compra</v-tab>
+                <v-tab route to="/novo-pedido">Nova Solicitação</v-tab>
                 <v-tab route to="/andamentos">Conferir Andamentos</v-tab>
                 <v-spacer></v-spacer>
             </v-tabs>
