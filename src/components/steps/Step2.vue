@@ -6,7 +6,7 @@
                 <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="dialogDelete = !dialogDelete">Cancelar</v-btn>
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm()" :loading="loadingDeleteBtn">OK</v-btn>
+                <v-btn color="blue darken-1" text @click="updateItemStep(true)" :loading="loadingDeleteBtn">OK</v-btn>
                 <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
@@ -67,7 +67,8 @@
                     <v-row justify="center">
                         <v-switch v-model="it.aprovadoGerencia"
                         label="Aprovado" 
-                        color="success"></v-switch>
+                        color="success"
+                        :disabled="!inputItem.active"></v-switch>
                     </v-row>
 
                     <v-textarea
@@ -78,6 +79,7 @@
                         clearable
                         outlined
                         v-if="!it.aprovadoGerencia"
+                        :disabled="!inputItem.active"
                     ></v-textarea>
                 </v-col>
             </v-row>
@@ -85,40 +87,50 @@
         </div>
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
-                <h2>Chave de Identificação do(a) gerente:</h2>
-                <v-col cols="12" xs="12" sm="12" md="6" align="center">
-                    <v-text-field
-                        v-model="key"
-                        class="mt-4"
-                        rows="1"
-                        required
-                        shaped
-                        outlined
-                        clearable
-                        prepend-inner-icon="mdi-key"
-                        type="password"
-                    ></v-text-field>
-                </v-col>    
-                <h2 class="font-weight-light red--text" v-if="error">{{errorMessage}}</h2>    
-                <v-col>
-                    <v-btn
-                    dark
-                    color="blue darken-1"
-                    :loading="loadingBtnSend"
-                    @click="keyCheck(`send`)">
-                        Enviar Aprovação
-                    </v-btn>
-                </v-col>
-                <v-col>
-                    <v-btn
-                    dark
-                    text
+                <div v-if="inputItem.active">
+                    <h2>Chave de Identificação do(a) gerente:</h2>
+                    <v-col cols="12" xs="12" sm="12" md="6" align="center">
+                        <v-text-field
+                            v-model="key"
+                            class="mt-4"
+                            rows="1"
+                            required
+                            shaped
+                            outlined
+                            clearable
+                            prepend-inner-icon="mdi-key"
+                            type="password"
+                        ></v-text-field>
+                    </v-col>    
+                    <h2 class="font-weight-light red--text" v-if="error">{{errorMessage}}</h2>    
+                    <v-col>
+                        <v-btn
+                        dark
+                        color="blue darken-1"
+                        :loading="loadingBtnSend"
+                        @click="keyCheck(`send`)">
+                            Enviar Aprovação
+                        </v-btn>
+                    </v-col>
+                    <v-col>
+                        <v-btn
+                        dark
+                        text
+                        color="red"
+                        :loading="loadingBtnCancel"
+                        @click="keyCheck(`cancel`)">
+                            Cancelar Solicitação
+                        </v-btn>
+                    </v-col>
+                </div>
+                <div v-else>
+                    <h3 class="font-weight-light red--text">{{inputItem.dataCancelamento}}</h3>
+                    <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) gerente</h1>
+                    <v-icon
+                    x-large
                     color="red"
-                    :loading="loadingBtnCancel"
-                    @click="keyCheck(`cancel`)">
-                        Cancelar Solicitação
-                    </v-btn>
-                </v-col>
+                    >mdi-cancel</v-icon>
+                </div>
             </v-col>
         </v-row>
     </div>
@@ -148,20 +160,33 @@ export default {
     },
     methods: {
         /* eslint-disable no-unused-vars */
-        updateItemStep(){
+        updateItemStep(cancel){
+            let message = "Solicitação atualizado com sucesso";
             // Removemos o id para que ele não seja visto no json de alteração
             let {_id, ...inputItem} = this.inputItem;
-            inputItem['statusStep'] += 1;
-            inputItem['status'] = "Aguardando confirmação do(a) servidor(a)"
-            for (let i=0; i < inputItem.items.length; i++){
-                inputItem.items[i]['aprovadoServidor'] = inputItem.items[i]['aprovadoGerencia']
-                inputItem.items[i]['motivoServidor'] = inputItem.items[i]['motivoGerencia']
+            if (cancel) {
+                inputItem['active'] = false;
+                inputItem['color'] = "red";
+                inputItem['status'] = "Solicitação cancelada pelo(a) gerente";
+                inputItem['dataCancelamento'] = new Date().toLocaleDateString();
+                message = "Solicitação cancelada com sucesso";
+                this.loadingDeleteBtn = true;
+            } else {
+                inputItem['statusStep'] += 1;
+                inputItem['status'] = "Aguardando confirmação do(a) servidor(a)"
+                for (let i=0; i < inputItem.items.length; i++){
+                    inputItem.items[i]['aprovadoServidor'] = inputItem.items[i]['aprovadoGerencia']
+                    inputItem.items[i]['motivoServidor'] = inputItem.items[i]['motivoGerencia']
+                }
             }
 
             axios.put(`${this.apiPedidos}/${this.inputItem._id}`, inputItem)
             .then(response => {
                 this.loadingBtnSend = false;
-                this.$emit('itemCRUD', 'Item atualizado com sucesso'); 
+                this.dialogDelete = false;
+                this.loadingDeleteBtn = false;
+
+                this.$emit('itemCRUD', message); 
                 return response
                 })
             .catch(error => {
@@ -171,6 +196,26 @@ export default {
                 });
         },
         /* eslint-disable no-unused-vars */
+        /*
+        deleteItemConfirm() {
+            // deleta o item
+            this.loadingDeleteBtn = true;
+            axios.delete(`${this.apiPedidos}/${this.inputItem._id}`)
+            .then(response => {
+                this.dialogDelete = false;
+                this.loadingDeleteBtn = false;
+                this.$emit('itemCRUD', 'Solicitação cancelada com sucesso');
+                return response
+                })
+            .catch(error => {
+                this.dialogDelete = false;
+                this.loadingDeleteBtn = false;
+                this.$emit('itemCRUDError', error.response)
+                console.log(error);
+                });
+            
+        }
+        */
         keyCheck(btn){
             const cargo = 0;
             if (btn === `send`) {                
@@ -181,7 +226,7 @@ export default {
                     this.response = response.data;
                     if (this.response['valid']) {
                         console.log(`Valid key for cargo ${cargo}!!`);
-                        this.updateItemStep();
+                        this.updateItemStep(false);
                     }
                     else {
                         this.loadingBtnSend = false;
@@ -223,24 +268,6 @@ export default {
         },
         logValue(value) {
             console.log(value)
-        },
-        deleteItemConfirm() {
-            // deleta o item
-            this.loadingDeleteBtn = true;
-            axios.delete(`${this.apiPedidos}/${this.inputItem._id}`)
-            .then(response => {
-                this.dialogDelete = false;
-                this.loadingDeleteBtn = false;
-                this.$emit('itemCRUD', 'Solicitação removida com sucesso');
-                return response
-                })
-            .catch(error => {
-                this.dialogDelete = false;
-                this.loadingDeleteBtn = false;
-                this.$emit('itemCRUDError', error.response)
-                console.log(error);
-                });
-            
         }
     }
 }

@@ -48,31 +48,31 @@
 
                                     <v-divider></v-divider>
 
-                                    <v-stepper-step step="2" :complete="item.statusStep > 2" :color="item.statusStep > 2 ? `success` : `orange`">
+                                    <v-stepper-step step="2" :complete="item.statusStep > 2" :color="item.statusStep > 2 ? 'success' : item.color">
                                         <h4 class="text-center font-weight-regular">{{ getMessage(2, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
-                                    <v-stepper-step step="3" :complete="item.statusStep > 3" :color="item.statusStep > 3 ? `success` : `orange`">
+                                    <v-stepper-step step="3" :complete="item.statusStep > 3" :color="item.statusStep > 3 ? 'success' : item.color">
                                         <h4 class="text-center font-weight-regular">{{ getMessage(3, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
-                                    <v-stepper-step step="4" :complete="item.statusStep > 4" :color="item.statusStep > 4 ? `success` : `orange`">
+                                    <v-stepper-step step="4" :complete="item.statusStep > 4" :color="item.statusStep > 4 ? 'success' : item.color">
                                         <h4 class="text-center font-weight-regular">{{ getMessage(4, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
-                                    <v-stepper-step step="5" :complete="item.statusStep > 5" :color="item.statusStep > 5 ? `success` : `orange`">
+                                    <v-stepper-step step="5" :complete="item.statusStep > 5" :color="item.statusStep > 5 ? 'success' : item.color">
                                         <h4 class="text-center font-weight-regular">{{ getMessage(5, item) }}</h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
 
-                                    <v-stepper-step step="6" :complete="item.statusStep === 6">
+                                    <v-stepper-step step="6" :complete="item.statusStep === 6" :color="item.color">
                                         <h4 class="text-center font-weight-regular">Solicitação finalizada</h4> 
                                     </v-stepper-step>
                                 </v-stepper-header>
@@ -121,7 +121,7 @@
                                 </v-stepper-items>
                                 
                             </v-stepper>
-                            
+
                         </td>
                     </template>
                     
@@ -133,7 +133,7 @@
                     <template v-slot:[`item.statusStep`]="{ item }">
                         <h5 class="body-2 my-5">
                         <v-chip
-                            :color="getColor(item.statusStep)"
+                            :color="item.color"
                             dark
                         >
                             {{ item.statusStep }}/6

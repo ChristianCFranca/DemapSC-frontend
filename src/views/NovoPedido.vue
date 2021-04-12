@@ -236,9 +236,12 @@ export default {
                     {nome: null, descricao: null, quantidade: null, finalidade: null, aprovadoGerencia: true, motivoGerencia: null, aprovadoServidor: true, motivoServidor: true}
                 ],
                 dataPedido: null,
+                dataCancelamento: null,
                 quantidade: null,
                 status: null,
-                statusStep: 2
+                statusStep: 2,
+                color: "orange",
+                active: true
             },
             addDisable: false,
             remDisable: true,
