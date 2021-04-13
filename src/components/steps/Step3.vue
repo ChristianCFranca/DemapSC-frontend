@@ -26,6 +26,13 @@
                                 </v-list-item-subtitle>
                                 <h3>{{ it.nome }}</h3>
                                 <v-list-item-subtitle class="mt-6">
+                                    <div>Categoria</div>
+                                </v-list-item-subtitle>
+                                <p :class="`text-justify body-1 ${(it.categoria === `Fixo`) ? `red--text`: ``}`">
+                                    <v-icon dense :color="(it.categoria === `Fixo`) ? `red`: ``">mdi-alert-octagon-outline</v-icon>
+                                    {{ it.categoria }}
+                                </p>
+                                <v-list-item-subtitle class="mt-6">
                                     Finalidade
                                 </v-list-item-subtitle>
                                 <p class="text-justify body-1">
@@ -35,7 +42,7 @@
                                     Quantidade
                                 </v-list-item-subtitle>
                                 <v-list-item-title>
-                                    {{ it.quantidade }}
+                                    {{ `${it.quantidade} ${it.unidade}`}}
                                 </v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>

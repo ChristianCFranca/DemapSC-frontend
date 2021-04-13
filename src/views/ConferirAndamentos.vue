@@ -182,7 +182,7 @@ export default {
             ],
             pedidos: [],
             messageMapping: [
-                {concluido: "Confirmado pelo(a) gerente", andamento: "Aguardando confirmação do(a) gerente"},
+                {concluido: "Confirmado pelo(a) fiscal", andamento: "Aguardando confirmação do(a) fiscal"},
                 {concluido: "Confirmado pelo(a) servidor(a)", andamento: "Aguardando confirmação do(a) servidor(a)"},
                 {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando obtenção do(s) item(s)"}

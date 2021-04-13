@@ -80,14 +80,14 @@
                             <v-row v-for="item in itemsQtd" :key="item">
                                 <v-col
                                     cols="12"
-                                    sm="6"
-                                    md="6">
+                                    sm="7"
+                                    md="7">
 
                                     <v-row class="mx-1">
                                         <v-col
                                         cols="12"
-                                        sm="8"
-                                        md="8"
+                                        sm="7"
+                                        md="7"
                                         >
 
                                             <v-combobox
@@ -98,6 +98,7 @@
                                                 :items="listaDeMateriais"
                                                 :loading="isMateriaisLoading"
                                                 @click="searchMateriais()"
+                                                @blur="checkInputName(pedido.items[item-1])"
                                                 hide-no-data
                                                 hide-selected
                                                 :counter="100"
@@ -108,59 +109,106 @@
                                             ></v-combobox>
 
                                         </v-col>
-
-
+                                        
                                         <v-col
                                         cols="12"
-                                        sm="4"
-                                        md="4">
+                                        sm="3"
+                                        md="3">
 
                                             <v-text-field
                                                 v-model="pedido.items[item-1].quantidade"
-                                                :label="'Quantidade do Item ' + item +'*'"
+                                                :label="'Quantidade Item ' + item +'*'"
                                                 hint="Insira a quantidade na medida apropriada (metros, unidades, etc)."
                                                 required
                                                 :counter="30"
-                                                :rules="nonEmptyRules"
+                                                :rules="numericRules"
                                                 clearable
                                                 filled
                                                 outlined
                                             ></v-text-field>
 
                                         </v-col>
-                                    </v-row>
 
-                                    <v-col
+                                        <v-col
                                         cols="12"
-                                        sm="12"
-                                        md="12">
+                                        sm="2"
+                                        md="2">
 
-                                        <v-text-field
-                                            v-model="pedido.items[item-1].finalidade"
-                                            :label="'Finalidade do Item ' + item +'*'"
-                                            hint="De preferência escolha um item dos disponíveis."
-                                            required
-                                            :counter="100"
-                                            :rules="nonEmptyRules"
-                                            clearable
-                                            filled
-                                            outlined
-                                        ></v-text-field>
+                                            <v-select
+                                                v-model="pedido.items[item-1].unidade"
+                                                label="Unidade"
+                                                required
+                                                :items="unidadesDeMedida"
+                                                :rules="nonEmptyRules"
+                                                clearable
+                                                filled
+                                                outlined
+                                            ></v-select>
 
-                                    </v-col>
+                                        </v-col>
+                                    </v-row>
+                                    
+                                    <v-row>
+
+                                        <v-col
+                                            cols="8"
+                                            sm="8"
+                                            md="8">
+
+                                            <v-text-field
+                                                v-model="pedido.items[item-1].finalidade"
+                                                :label="'Finalidade do Item ' + item +'*'"
+                                                hint="De preferência escolha um item dos disponíveis."
+                                                required
+                                                :counter="100"
+                                                :rules="nonEmptyRules"
+                                                clearable
+                                                filled
+                                                outlined
+                                                class="ml-4"
+                                            ></v-text-field>
+                                            
+                                        </v-col>
+
+                                        <v-col
+                                            cols="4"
+                                            sm="4"
+                                            md="4">
+
+                                            <v-radio-group v-model="pedido.items[item-1].categoria" row>
+                                                <v-radio
+                                                    :label="`Sob Demanda`"
+                                                    value="Sob Demanda"
+                                                    disabled
+                                                ></v-radio>
+                                                <v-radio
+                                                    :label="`Fixo`"
+                                                    value="Fixo"
+                                                    disabled
+                                                ></v-radio>
+                                                <v-radio
+                                                    :label="`Outro`"
+                                                    value="Outro"
+                                                    disabled
+                                                ></v-radio>
+                                            </v-radio-group>
+
+                                        </v-col>
+
+                                    </v-row>
 
                                 </v-col>
 
 
                                     <v-col
                                         cols="12"
-                                        sm="6"
-                                        md="6">
+                                        sm="5"
+                                        md="5">
 
                                         <v-textarea
                                             v-model="pedido.items[item-1].descricao"
                                             :label="'Descrição do Item ' + item"
-                                            height="155"
+                                            height="165"
                                             :counter="300"
                                             clearable
                                             filled
@@ -221,8 +269,16 @@ export default {
 
     data() {
         return {
+            unidadesDeMedida: [
+                "unid.", // Unidades
+                "km", "m", "cm", "mm", "pol.", // Comprimento
+                "km²", "m²", "cm²", "mm²", "pol.²", // Área
+                "litros", "ml", "km³", "m³", "cm³", "mm³", "pol.³", // Volume
+                "g", "kg", "ton.", // Massa
+                ],
             isMateriaisLoading: false,
             listaDeMateriais: [],
+            listaDeMateriaisObj: [],
             loading: false,
             success: false,
             error: false,
@@ -233,7 +289,7 @@ export default {
                 email: null,
                 os: null,
                 items: [
-                    {nome: null, descricao: null, quantidade: null, finalidade: null, aprovadoGerencia: true, motivoGerencia: null, aprovadoServidor: true, motivoServidor: true}
+                    {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, aprovadoFiscal: true, motivoFiscal: null, aprovadoServidor: true, motivoServidor: true}
                 ],
                 dataPedido: null,
                 dataCancelamento: null,
@@ -246,6 +302,7 @@ export default {
             addDisable: false,
             remDisable: true,
             nonEmptyRules: [v => !!v || "Campo obrigatório."],
+            numericRules: [v => !!v || "Campo obrigatório.", v => !isNaN(v) || "Valor não é um número."],
             emailRules: [v => !!v || 'Campo obrigatório.', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido.'],
             // apiURL: "//localhost:8000/crud/pedidos/",
             apiURL: "https://demapsm-backend.herokuapp.com/crud/pedidos/",
@@ -254,6 +311,9 @@ export default {
         }
     },
     methods: {
+        logValue(value) {
+            console.log("Logged value: ", value)
+        },
         resetForm() {
             this.error = false;
             this.success = false;
@@ -261,7 +321,7 @@ export default {
         },
         addItem() {
             this.itemsQtd += 1;
-            this.pedido.items.push({nome: null, descricao: null, quantidade: null, finalidade: null, aprovadoGerencia: true, motivoGerencia: null, aprovadoServidor: true, motivoServidor: true})
+            this.pedido.items.push({nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, aprovadoFiscal: true, motivoFiscal: null, aprovadoServidor: true, motivoServidor: true})
             this.computeDisable();
         },
         removeItem() {
@@ -287,7 +347,7 @@ export default {
                 // Todas as informações do processo são inseridas aqui
                 this.pedido.quantidade = this.pedido.items.length;
                 this.pedido.dataPedido = new Date().toLocaleDateString();
-                this.pedido.status = "Aguardando confirmação do(a) gerente";
+                this.pedido.status = "Aguardando confirmação do(a) fiscal";
 
                 this.loading = true;
                 axios.post(`${this.apiURL}`, this.pedido)
@@ -322,16 +382,30 @@ export default {
             fetch(this.apiMateriaisURL)
             .then(res => res.json()) // {"id": 067812854698, "descricao": "Abraçadeira 3/4" Formato U", categoria: "Fixo", "fabReferencia": "Deca", ...}
             .then(res => {
-                this.listaDeMateriais = this.getAllMateriais(res, "descricao")
+                this.listaDeMateriaisObj = res;
+                this.listaDeMateriais = this.getAllMateriais(res, "descricao");
             })
             .catch(err => {
-                console.log(err)
+                console.log(err);
             })
-            .finally(() => (this.isMateriaisLoading = false))
+            .finally(() => (this.isMateriaisLoading = false));
         },
         getAllMateriais(json, key) {
             const values = [... json.map(item => item[key])]
             return values
+        },
+        checkInputName(item) {
+            if (this.listaDeMateriais.length > 0){
+                let nome = item.nome;
+                if (this.nonEmptyRules[0](nome) === true){
+                    if (this.listaDeMateriais.includes(nome)){
+                        let idx = this.listaDeMateriais.indexOf(nome);
+                        item.categoria = this.listaDeMateriaisObj[idx].categoria
+                    } else {
+                        item.categoria = "Outro"
+                    }
+                }
+            }
         }
         
     }

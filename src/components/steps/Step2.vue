@@ -26,6 +26,13 @@
                                 </v-list-item-subtitle>
                                 <h3>{{ it.nome }}</h3>
                                 <v-list-item-subtitle class="mt-6">
+                                    <div>Categoria</div>
+                                </v-list-item-subtitle>
+                                <p :class="`text-justify body-1 ${(it.categoria === `Fixo`) ? `red--text`: ``}`">
+                                    <v-icon dense :color="(it.categoria === `Fixo`) ? `red`: ``">mdi-alert-octagon-outline</v-icon>
+                                    {{ it.categoria }}
+                                </p>
+                                <v-list-item-subtitle class="mt-6">
                                     Finalidade
                                 </v-list-item-subtitle>
                                 <p class="text-justify body-1">
@@ -35,7 +42,7 @@
                                     Quantidade
                                 </v-list-item-subtitle>
                                 <v-list-item-title>
-                                    {{ it.quantidade }}
+                                    {{ `${it.quantidade} ${it.unidade}`}}
                                 </v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
@@ -65,20 +72,20 @@
                 sm="3"
                 md="3">
                     <v-row justify="center">
-                        <v-switch v-model="it.aprovadoGerencia"
+                        <v-switch v-model="it.aprovadoFiscal"
                         label="Aprovado" 
                         color="success"
                         :disabled="!inputItem.active"></v-switch>
                     </v-row>
 
                     <v-textarea
-                        v-model="it.motivoGerencia"
+                        v-model="it.motivoFiscal"
                         label="Descrição do motivo"
                         max-height="150"
                         :counter="200"
                         clearable
                         outlined
-                        v-if="!it.aprovadoGerencia"
+                        v-if="!it.aprovadoFiscal"
                         :disabled="!inputItem.active"
                     ></v-textarea>
                 </v-col>
@@ -88,7 +95,7 @@
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active">
-                    <h2>Chave de Identificação do(a) gerente:</h2>
+                    <h2>Chave de Identificação do(a) fiscal:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
                         <v-text-field
                             v-model="key"
@@ -125,7 +132,7 @@
                 </div>
                 <div v-else>
                     <h3 class="font-weight-light red--text">{{inputItem.dataCancelamento}}</h3>
-                    <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) gerente</h1>
+                    <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) fiscal</h1>
                     <v-icon
                     x-large
                     color="red"
@@ -167,7 +174,7 @@ export default {
             if (cancel) {
                 inputItem['active'] = false;
                 inputItem['color'] = "red";
-                inputItem['status'] = "Solicitação cancelada pelo(a) gerente";
+                inputItem['status'] = "Solicitação cancelada pelo(a) fiscal";
                 inputItem['dataCancelamento'] = new Date().toLocaleDateString();
                 message = "Solicitação cancelada com sucesso";
                 this.loadingDeleteBtn = true;
@@ -175,8 +182,8 @@ export default {
                 inputItem['statusStep'] += 1;
                 inputItem['status'] = "Aguardando confirmação do(a) servidor(a)"
                 for (let i=0; i < inputItem.items.length; i++){
-                    inputItem.items[i]['aprovadoServidor'] = inputItem.items[i]['aprovadoGerencia']
-                    inputItem.items[i]['motivoServidor'] = inputItem.items[i]['motivoGerencia']
+                    inputItem.items[i]['aprovadoServidor'] = inputItem.items[i]['aprovadoFiscal']
+                    inputItem.items[i]['motivoServidor'] = inputItem.items[i]['motivoFiscal']
                 }
             }
 
