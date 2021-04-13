@@ -151,7 +151,7 @@
                                     <v-row>
 
                                         <v-col
-                                            cols="8"
+                                            cols="12"
                                             sm="8"
                                             md="8">
 
@@ -171,7 +171,7 @@
                                         </v-col>
 
                                         <v-col
-                                            cols="4"
+                                            cols="12"
                                             sm="4"
                                             md="4">
 
@@ -200,24 +200,24 @@
                                 </v-col>
 
 
-                                    <v-col
-                                        cols="12"
-                                        sm="5"
-                                        md="5">
+                                <v-col
+                                    cols="12"
+                                    sm="5"
+                                    md="5">
 
-                                        <v-textarea
-                                            v-model="pedido.items[item-1].descricao"
-                                            :label="'Descrição do Item ' + item"
-                                            height="165"
-                                            :counter="300"
-                                            clearable
-                                            filled
-                                            auto-grow
-                                            outlined
-                                        ></v-textarea>
+                                    <v-textarea
+                                        v-model="pedido.items[item-1].descricao"
+                                        :label="'Descrição do Item ' + item"
+                                        height="165"
+                                        :counter="300"
+                                        clearable
+                                        filled
+                                        auto-grow
+                                        outlined
+                                    ></v-textarea>
 
 
-                                    </v-col>
+                                </v-col>
                             </v-row>
                         
                         </v-container>
