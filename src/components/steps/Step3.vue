@@ -29,7 +29,11 @@
                                     <div>Categoria</div>
                                 </v-list-item-subtitle>
                                 <p :class="`text-justify body-1 ${(it.categoria === `Fixo`) ? `red--text`: ``}`">
-                                    <v-icon dense :color="(it.categoria === `Fixo`) ? `red`: ``"  v-if="(it.categoria === `Fixo`)">mdi-alert-octagon-outline</v-icon>
+                                    <v-icon 
+                                    dense 
+                                    :color="(it.categoria !== `Sob Demanda`) ? `red`: ``"  v-if="(it.categoria !== `Sob Demanda`)">
+                                        mdi-alert-octagon-outline
+                                    </v-icon>
                                     {{ it.categoria }}
                                 </p>
                                 <v-list-item-subtitle class="mt-6">
@@ -72,23 +76,42 @@
                 sm="3"
                 md="3">
                     <v-row justify="center">
-                        <v-switch v-model="it.aprovadoServidor"
+                        <v-switch v-model="it.aprovadoFiscal"
                         label="Aprovado" 
                         color="success"
                         :disabled="!inputItem.active"></v-switch>
                     </v-row>
 
+                    <div v-if="it.aprovadoFiscal">
+                        <h2 class="body-1 font-weight-bold">Na ausência do item no almoxarifado, a compra deverá ser realizada por:</h2>
+                        <v-col cols="12" align="center" class="d-flex justify-center">
+                            <v-radio-group v-model="it.direcionamentoDeCompra" row>
+                                <v-radio
+                                    :label="`Engemil`"
+                                    value="Engemil"
+                                ></v-radio>
+                                <v-radio
+                                    :label="`Demap`"
+                                    value="Demap"
+                                ></v-radio>
+                            </v-radio-group>
+                        </v-col>
+                        <h2 class="font-weight-light red--text mb-6 text-center" 
+                        v-if="errorDirecionamento && (it.direcionamentoDeCompra===undefined || it.direcionamentoDeCompra===null)">{{errorMessageDirecionamento}}</h2> 
+                    </div>
+
                     <v-textarea
-                        v-model="it.motivoServidor"
+                        v-model="it.motivoFiscal"
                         label="Descrição do motivo"
                         max-height="150"
                         :counter="200"
                         clearable
                         outlined
-                        v-if="!it.aprovadoServidor"
+                        v-if="!it.aprovadoFiscal"
                         :disabled="!inputItem.active"
 
                     ></v-textarea>
+
                 </v-col>
             </v-row>
             <v-divider class="my-4"></v-divider>
@@ -96,7 +119,7 @@
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active">
-                    <h2>Chave de Identificação do(a) servidor(a):</h2>
+                    <h2>Chave de Identificação do(a) fiscal:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
                         <v-text-field
                             v-model="key"
@@ -114,25 +137,12 @@
                         
                     </v-col>    
 
-                    <h3 class="body-1 font-weight-bold">Na ausência do(s) item(s) no almoxarifado, a compra deverá ser realizada por:</h3>
-                    <v-col cols="12" align="center" class="d-flex justify-center">
-                        <v-radio-group v-model="inputItem.direcionamentoDeCompra" row>
-                            <v-radio
-                                :label="`Engemil`"
-                                value="Engemil"
-                            ></v-radio>
-                            <v-radio
-                                :label="`Demap`"
-                                value="Demap"
-                            ></v-radio>
-                        </v-radio-group>
-                    </v-col>
-                    <h2 class="font-weight-light red--text mb-6" v-if="errorDirecionamento">{{errorMessageDirecionamento}}</h2> 
                     <v-col>
                         <v-btn
-                        dark
                         color="blue darken-1"
+                        class="white--text"
                         :loading="loadingBtnSend"
+                        :disabled="!inputItem.items.some(function(obj){return obj['aprovadoFiscal'] === true})"
                         @click="keyCheck(`send`)">
                             Enviar Aprovação
                         </v-btn>
@@ -150,7 +160,7 @@
                 </div>
                 <div v-else>
                     <h3 class="font-weight-light red--text">{{inputItem.dataCancelamento}}</h3>
-                    <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) servidor(a)</h1>
+                    <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) fiscal.</h1>
                     <v-icon
                     x-large
                     color="red"
@@ -194,7 +204,7 @@ export default {
             if (cancel) {
                 inputItem['active'] = false;
                 inputItem['color'] = "red";
-                inputItem['status'] = "Solicitação cancelada pelo(a) servidor(a)";
+                inputItem['status'] = "Solicitação cancelada pelo(a) fiscal";
                 inputItem['dataCancelamento'] = new Date().toLocaleDateString();
                 message = "Solicitação cancelada com sucesso";
                 this.loadingDeleteBtn = true;
@@ -202,8 +212,8 @@ export default {
                 inputItem['statusStep'] += 1;
                 inputItem['status'] = "Aguardando confirmação do(a) almoxarife"
                 for (let i=0; i < inputItem.items.length; i++){
-                    if (inputItem.items[i]['aprovadoServidor']){
-                        inputItem.items[i]['motivoServidor'] = null;
+                    if (inputItem.items[i]['aprovadoFiscal']){
+                        inputItem.items[i]['motivoFiscal'] = null;
                     }
                 }
             }
@@ -225,7 +235,7 @@ export default {
         },
         /* eslint-disable no-unused-vars */
         keyCheck(btn){
-            const cargo = 1; // servidor
+            const cargo = 1; // fiscal
             if (btn === `send`) {                
                 this.error = false;
                 this.errorDirecionamento = false;
@@ -236,7 +246,14 @@ export default {
                     this.response = response.data;
                     if (this.response['valid']) {
                         // console.log(`Valid key for cargo ${cargo}!!`);
-                        if (this.inputItem.direcionamentoDeCompra !== undefined) {
+                        let flag = true;
+                        for (let i = 0; i < this.inputItem.items.length; i++){
+                            if (this.inputItem.items[i].aprovadoFiscal)
+                                if (this.inputItem.items[i].direcionamentoDeCompra === undefined || this.inputItem.items[i].direcionamentoDeCompra === null)
+                                    flag = false
+                        }
+
+                        if (flag) {
                             this.updateItemStep(false);
                         } else {
                             this.errorMessageDirecionamento = "Campo obrigatório";

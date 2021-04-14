@@ -72,20 +72,20 @@
                 sm="3"
                 md="3">
                     <v-row justify="center">
-                        <v-switch v-model="it.aprovadoFiscal"
+                        <v-switch v-model="it.aprovadoAssistente"
                         label="Aprovado" 
                         color="success"
                         :disabled="!inputItem.active"></v-switch>
                     </v-row>
 
                     <v-textarea
-                        v-model="it.motivoFiscal"
+                        v-model="it.motivoAssistente"
                         label="Descrição do motivo"
                         max-height="150"
                         :counter="200"
                         clearable
                         outlined
-                        v-if="!it.aprovadoFiscal"
+                        v-if="!it.aprovadoAssistente"
                         :disabled="!inputItem.active"
                     ></v-textarea>
                 </v-col>
@@ -95,7 +95,7 @@
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active">
-                    <h2>Chave de Identificação do(a) fiscal:</h2>
+                    <h2>Chave de Identificação do(a) assistente de fiscalização:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
                         <v-text-field
                             v-model="key"
@@ -112,9 +112,10 @@
                     <h2 class="font-weight-light red--text" v-if="error">{{errorMessage}}</h2>    
                     <v-col>
                         <v-btn
-                        dark
                         color="blue darken-1"
+                        class="white--text"
                         :loading="loadingBtnSend"
+                        :disabled="!inputItem.items.some(function(obj){return obj['aprovadoAssistente'] === true})"
                         @click="keyCheck(`send`)">
                             Enviar Aprovação
                         </v-btn>
@@ -132,7 +133,7 @@
                 </div>
                 <div v-else>
                     <h3 class="font-weight-light red--text">{{inputItem.dataCancelamento}}</h3>
-                    <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) fiscal</h1>
+                    <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) assistente de fiscalização.</h1>
                     <v-icon
                     x-large
                     color="red"
@@ -174,16 +175,16 @@ export default {
             if (cancel) {
                 inputItem['active'] = false;
                 inputItem['color'] = "red";
-                inputItem['status'] = "Solicitação cancelada pelo(a) fiscal";
+                inputItem['status'] = "Solicitação cancelada pelo(a) assistente de fiscalização";
                 inputItem['dataCancelamento'] = new Date().toLocaleDateString();
                 message = "Solicitação cancelada com sucesso";
                 this.loadingDeleteBtn = true;
             } else {
                 inputItem['statusStep'] += 1;
-                inputItem['status'] = "Aguardando confirmação do(a) servidor(a)"
+                inputItem['status'] = "Aguardando confirmação do(a) fiscal"
                 for (let i=0; i < inputItem.items.length; i++){
-                    inputItem.items[i]['aprovadoServidor'] = inputItem.items[i]['aprovadoFiscal']
-                    inputItem.items[i]['motivoServidor'] = inputItem.items[i]['motivoFiscal']
+                    inputItem.items[i]['aprovadoFiscal'] = inputItem.items[i]['aprovadoAssistente']
+                    inputItem.items[i]['motivoFiscal'] = inputItem.items[i]['motivoAssistente']
                 }
             }
 
@@ -224,7 +225,7 @@ export default {
         }
         */
         keyCheck(btn){
-            const cargo = 0; // fiscal
+            const cargo = 0; // assistente de fiscalizacao
             if (btn === `send`) {                
                 this.error = false;
                 this.loadingBtnSend = true;

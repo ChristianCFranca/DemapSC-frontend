@@ -103,11 +103,7 @@
                                     </v-stepper-content>
 
                                     <v-stepper-content step="6">
-                                        <v-card
-                                        class="mb-12"
-                                        color="grey lighten-1"
-                                        height="200px"
-                                        ></v-card>
+                                        <Step6 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
                                     </v-stepper-content>
                                     
                                 </v-stepper-items>
@@ -148,13 +144,15 @@ import Step2 from "@/components/steps/Step2.vue"
 import Step3 from "@/components/steps/Step3.vue"
 import Step4 from "@/components/steps/Step4.vue"
 import Step5 from "@/components/steps/Step5.vue"
+import Step6 from "@/components/steps/Step6.vue"
 
 export default {
     components: {
         Step2,
         Step3,
         Step4,
-        Step5
+        Step5,
+        Step6
     },
     data() {
         return {

@@ -13,7 +13,7 @@
         </v-dialog>
 
         <div v-for="(it, idx) in inputItem.items" :key="idx">
-            <div v-if="it.aprovadoServidor">
+            <div v-if="it.aprovadoFiscal">
                 <v-row>
                     <v-col 
                     cols="12"
@@ -30,7 +30,11 @@
                                         <div>Categoria</div>
                                     </v-list-item-subtitle>
                                     <p :class="`text-justify body-1 ${(it.categoria === `Fixo`) ? `red--text`: ``}`">
-                                        <v-icon dense :color="(it.categoria === `Fixo`) ? `red`: ``"  v-if="(it.categoria === `Fixo`)">mdi-alert-octagon-outline</v-icon>
+                                        <v-icon 
+                                        dense 
+                                        :color="(it.categoria !== `Sob Demanda`) ? `red`: ``"  v-if="(it.categoria !== `Sob Demanda`)">
+                                            mdi-alert-octagon-outline
+                                        </v-icon>
                                         {{ it.categoria }}
                                     </p>
                                     <v-list-item-subtitle class="mt-6">
@@ -72,33 +76,57 @@
                     cols="12"
                     sm="3"
                     md="3">
-                        <v-row justify="center" class="mt-12" v-if="!it.almoxarifadoPossui">
+                        <v-row 
+                        justify="center" 
+                        class="mt-12" 
+                        v-if="!it.almoxarifadoPossui">
                             <v-col cols="12" justify="center" class="d-flex justify-center">
                                 <h2 class="font-weight-light"> Aguardando compra do item por</h2>
                             </v-col>
                             
-                            <v-chip large class="mb-4" color="teal" outlined>
-                                <h1 class="teal--text text--darken-2 font-weight-normal" style="font-family: unquote('Open Sans')">
-                                    {{ inputItem.direcionamentoDeCompra }}
+                            <v-chip 
+                            large 
+                            class="mb-4" 
+                            color="teal darken-2" 
+                            outlined
+                            >
+                                <h1 class="font-weight-light">
+                                    {{ it.direcionamentoDeCompra }}
                                 </h1>
                             </v-chip>
-                            <v-col cols="12" class="text-center">
-                                <v-icon large color="teal darken-2">mdi-dots-horizontal</v-icon>
+                            <v-col 
+                            cols="12" 
+                            class="text-center">
+                                <v-icon 
+                                large 
+                                color="teal darken-2"
+                                >mdi-account-cash-outline</v-icon>
                             </v-col>
                         </v-row>
 
-                        <v-row justify="center" class="mt-12" v-else>
+                        <v-row 
+                        justify="center" 
+                        class="mt-12" 
+                        v-else>
                             <v-col cols="12" justify="center" class="d-flex justify-center">
-                                <h2 class="font-weight-light"> Item liberado para busca no</h2>
+                                <h2 class="font-weight-light"> Item aguardando retirada no</h2>
                             </v-col>
                             
-                            <v-chip large class="mb-4" color="success" outlined>
-                                <h1 class="success--text text--darken-2 font-weight-normal" style="font-family: unquote('Open Sans')">
+                            <v-chip 
+                            large class="mb-4" 
+                            color="indigo darken-2" 
+                            outlined>
+                                <h1 class="font-weight-light">
                                     Almoxarifado
                                 </h1>
                             </v-chip>
-                            <v-col cols="12" class="text-center">
-                                <v-icon large color="success">mdi-check-bold</v-icon>
+                            <v-col 
+                            cols="12" 
+                            class="text-center">
+                                <v-icon 
+                                large 
+                                color="indigo darken-2"
+                                >mdi-archive-arrow-up-outline</v-icon>
                             </v-col>
                         </v-row>
                         
@@ -110,7 +138,7 @@
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active">
-                    <h2>Chave de Identificação do(a) fiscal:</h2>
+                    <h2>Chave de Identificação do(a) assistente de fiscalização:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
                         <v-text-field
                             v-model="key"
@@ -190,8 +218,9 @@ export default {
             let {_id, ...inputItem} = this.inputItem; // Removemos o id para que ele não seja visto no json de alteração
 
             inputItem['statusStep'] += 1;
-            inputItem['status'] = "Solicitação finalizada"
+            inputItem['status'] = "Solicitação finalizada";
             inputItem['color'] = "success";
+            inputItem['dataFinalizacao'] = new Date().toLocaleDateString();
             
             axios.put(`${this.apiPedidos}/${this.inputItem._id}`, inputItem)
             .then(response => {
@@ -210,7 +239,7 @@ export default {
         },
         /* eslint-disable no-unused-vars */
         keyCheck(btn){
-            const cargo = 0; // fiscal             
+            const cargo = 0; // assistente de fiscalização             
             this.error = false;
             this.loadingBtnSend = true;
 

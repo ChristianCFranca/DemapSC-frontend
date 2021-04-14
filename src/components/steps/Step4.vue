@@ -13,7 +13,7 @@
         </v-dialog> -->
 
         <div v-for="(it, idx) in inputItem.items" :key="idx">
-            <div v-if="it.aprovadoServidor">
+            <div v-if="it.aprovadoFiscal">
                 <v-row>
                     <v-col 
                     cols="12"
@@ -30,7 +30,11 @@
                                         <div>Categoria</div>
                                     </v-list-item-subtitle>
                                     <p :class="`text-justify body-1 ${(it.categoria === `Fixo`) ? `red--text`: ``}`">
-                                        <v-icon dense :color="(it.categoria === `Fixo`) ? `red`: ``"  v-if="(it.categoria === `Fixo`)">mdi-alert-octagon-outline</v-icon>
+                                        <v-icon 
+                                        dense 
+                                        :color="(it.categoria !== `Sob Demanda`) ? `red`: ``"  v-if="(it.categoria !== `Sob Demanda`)">
+                                            mdi-alert-octagon-outline
+                                        </v-icon>
                                         {{ it.categoria }}
                                     </p>
                                     <v-list-item-subtitle class="mt-6">

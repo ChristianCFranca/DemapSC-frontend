@@ -89,14 +89,14 @@
                                         sm="7"
                                         md="7"
                                         >
-
                                             <v-combobox
                                                 v-model="pedido.items[item-1].nome"
-                                                :label="'Nome do Item ' + item +'*'"
+                                                :label="(listaDeMateriais.length > 0) ? `Nome do Item ${item}*` : `Carregando... por favor aguarde`"
                                                 hint="De preferência escolha um item dos disponíveis."
                                                 :rules="nonEmptyRules"
                                                 :items="listaDeMateriais"
                                                 :loading="isMateriaisLoading"
+                                                :disabled="isMateriaisLoading"
                                                 @click="searchMateriais()"
                                                 @blur="checkInputName(pedido.items[item-1])"
                                                 hide-no-data
@@ -106,6 +106,7 @@
                                                 outlined
                                                 clearable
                                                 required
+                                                persistent-hint
                                             ></v-combobox>
 
                                         </v-col>
@@ -252,12 +253,19 @@
             text
             @click="sendData()"
             :loading="loading"
-            :disabled="loading"
+            :disabled="disableSend"
           >
             Enviar Pedido
           </v-btn>
         </v-card-actions>
-
+        <v-alert
+            dense
+            outlined
+            type="error"
+            v-if="disableSend"
+            >
+            Ocorreu um erro na busca dos materiais disponíveis. Recarregue a página e tente novamente.
+        </v-alert>
     </v-card>
 </template>
 
@@ -279,6 +287,8 @@ export default {
             listaDeMateriais: [],
             listaDeMateriaisObj: [],
             loading: false,
+            disableSend: false,
+            errorGetMateriais: false,
             success: false,
             error: false,
             valid: false,
@@ -289,14 +299,15 @@ export default {
                 os: null,
                 items: [
                     {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, 
-                    aprovadoFiscal: true, motivoFiscal: null, aprovadoServidor: true, motivoServidor: true, almoxarifadoPossui: true}
+                    aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
+                    direcionamentoDeCompra: null, almoxarifadoPossui: true}
                 ],
                 dataPedido: null,
                 dataCancelamento: null,
+                dataFinalizacao: null,
                 quantidade: null,
                 status: null,
                 statusStep: 2,
-                direcionamentoDeCompra: null,
                 color: "orange",
                 active: true
             },
@@ -311,6 +322,9 @@ export default {
             apiMateriaisURL: "https://demapsm-backend.herokuapp.com/crud/materiais/"
         }
     },
+    mounted() { // Primeira coisa a executar
+        this.searchMateriais();
+    },
     methods: {
         logValue(value) {
             console.log("Logged value: ", value)
@@ -322,8 +336,11 @@ export default {
         },
         addItem() {
             this.itemsQtd += 1;
-            this.pedido.items.push({nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, 
-            aprovadoFiscal: true, motivoFiscal: null, aprovadoServidor: true, motivoServidor: true, almoxarifadoPossui: true})
+            this.pedido.items.push(
+                {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, 
+                aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
+                direcionamentoDeCompra: null, almoxarifadoPossui: true}
+            )
             this.computeDisable();
         },
         removeItem() {
@@ -378,16 +395,18 @@ export default {
             // Items have already been requested
             if (this.isMateriaisLoading) return
 
-            this.isMateriaisLoading = true
+            this.isMateriaisLoading = true;
 
             // Lazily load input items
             fetch(this.apiMateriaisURL)
             .then(res => res.json()) // {"id": 067812854698, "descricao": "Abraçadeira 3/4" Formato U", categoria: "Fixo", "fabReferencia": "Deca", ...}
             .then(res => {
+                this.disableSend = false;
                 this.listaDeMateriaisObj = res;
                 this.listaDeMateriais = this.getAllMateriais(res, "descricao");
             })
             .catch(err => {
+                this.disableSend = true;
                 console.log(err);
             })
             .finally(() => (this.isMateriaisLoading = false));
@@ -397,17 +416,20 @@ export default {
             return values
         },
         checkInputName(item) {
-            if (this.listaDeMateriais.length > 0){
-                let nome = item.nome;
-                if (this.nonEmptyRules[0](nome) === true){
-                    if (this.listaDeMateriais.includes(nome)){
-                        let idx = this.listaDeMateriais.indexOf(nome);
-                        item.categoria = this.listaDeMateriaisObj[idx].categoria
-                    } else {
-                        item.categoria = "Outro"
+            setTimeout(() => {
+                if (this.listaDeMateriais.length > 0){
+                    let nome = item.nome;
+                    if (nome !== null){
+                        if (this.listaDeMateriais.includes(nome)){
+                            let idx = this.listaDeMateriais.indexOf(nome);
+                            item.categoria = this.listaDeMateriaisObj[idx].categoria
+                        } else {
+                            item.categoria = "Outro"
+                        }
                     }
                 }
-            }
+            }, 100);
+            
         }
         
     }
