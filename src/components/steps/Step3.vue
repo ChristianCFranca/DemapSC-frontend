@@ -29,7 +29,7 @@
                                     <div>Categoria</div>
                                 </v-list-item-subtitle>
                                 <p :class="`text-justify body-1 ${(it.categoria === `Fixo`) ? `red--text`: ``}`">
-                                    <v-icon dense :color="(it.categoria === `Fixo`) ? `red`: ``">mdi-alert-octagon-outline</v-icon>
+                                    <v-icon dense :color="(it.categoria === `Fixo`) ? `red`: ``"  v-if="(it.categoria === `Fixo`)">mdi-alert-octagon-outline</v-icon>
                                     {{ it.categoria }}
                                 </p>
                                 <v-list-item-subtitle class="mt-6">
@@ -109,8 +109,25 @@
                             prepend-inner-icon="mdi-key"
                             type="password"
                         ></v-text-field>
+
+                        <h2 class="font-weight-light red--text" v-if="error">{{errorMessage}}</h2> 
+                        
                     </v-col>    
-                    <h2 class="font-weight-light red--text" v-if="error">{{errorMessage}}</h2>    
+
+                    <h3 class="body-1 font-weight-bold">Na ausência do(s) item(s) no almoxarifado, a compra deverá ser realizada por:</h3>
+                    <v-col cols="12" align="center" class="d-flex justify-center">
+                        <v-radio-group v-model="inputItem.direcionamentoDeCompra" row>
+                            <v-radio
+                                :label="`Engemil`"
+                                value="Engemil"
+                            ></v-radio>
+                            <v-radio
+                                :label="`Demap`"
+                                value="Demap"
+                            ></v-radio>
+                        </v-radio-group>
+                    </v-col>
+                    <h2 class="font-weight-light red--text mb-6" v-if="errorDirecionamento">{{errorMessageDirecionamento}}</h2> 
                     <v-col>
                         <v-btn
                         dark
@@ -151,6 +168,8 @@ export default {
     data() {
         return {
             error: false,
+            errorDirecionamento: false,
+            errorMessageDirecionamento: "Campo obrigatório",
             errorMessage: "Chave inválida",
             key: '',
             loadingBtnSend: false,
@@ -205,43 +224,31 @@ export default {
                 });
         },
         /* eslint-disable no-unused-vars */
-        /*
-        deleteItemConfirm() {
-            // deleta o item
-            this.loadingDeleteBtn = true;
-            axios.delete(`${this.apiPedidos}/${this.inputItem._id}`)
-            .then(response => {
-                this.dialogDelete = false;
-                this.loadingDeleteBtn = false;
-                this.$emit('itemCRUD', 'Solicitação cancelada com sucesso');
-                return response
-                })
-            .catch(error => {
-                this.dialogDelete = false;
-                this.loadingDeleteBtn = false;
-                this.$emit('itemCRUDError', error.response)
-                console.log(error);
-                });
-            
-        },
-        */
         keyCheck(btn){
-            const cargo = 1;
+            const cargo = 1; // servidor
             if (btn === `send`) {                
                 this.error = false;
+                this.errorDirecionamento = false;
                 this.loadingBtnSend = true;
+
                 axios.get(`${this.apiCargo}/keycheck/?key=${this.key}&cargo=${cargo}`)
                 .then(response => {
                     this.response = response.data;
                     if (this.response['valid']) {
-                        console.log(`Valid key for cargo ${cargo}!!`);
-                        this.updateItemStep(false);
+                        // console.log(`Valid key for cargo ${cargo}!!`);
+                        if (this.inputItem.direcionamentoDeCompra !== undefined) {
+                            this.updateItemStep(false);
+                        } else {
+                            this.errorMessageDirecionamento = "Campo obrigatório";
+                            this.errorDirecionamento = true;
+                            this.loadingBtnSend = false;
+                        }
                     }
                     else {
                         this.loadingBtnSend = false;
                         this.errorMessage = "Chave inválida";
                         this.error = true;
-                        console.log(`Invalid key for cargo ${cargo}!!`);                
+                        // console.log(`Invalid key for cargo ${cargo}!!`);                
                     }
                     })
                 .catch(error => {

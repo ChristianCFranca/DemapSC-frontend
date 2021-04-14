@@ -29,7 +29,7 @@
                                     <div>Categoria</div>
                                 </v-list-item-subtitle>
                                 <p :class="`text-justify body-1 ${(it.categoria === `Fixo`) ? `red--text`: ``}`">
-                                    <v-icon dense :color="(it.categoria === `Fixo`) ? `red`: ``">mdi-alert-octagon-outline</v-icon>
+                                    <v-icon dense :color="(it.categoria === `Fixo`) ? `red`: ``" v-if="(it.categoria === `Fixo`)">mdi-alert-octagon-outline</v-icon>
                                     {{ it.categoria }}
                                 </p>
                                 <v-list-item-subtitle class="mt-6">
@@ -224,7 +224,7 @@ export default {
         }
         */
         keyCheck(btn){
-            const cargo = 0;
+            const cargo = 0; // fiscal
             if (btn === `send`) {                
                 this.error = false;
                 this.loadingBtnSend = true;

@@ -95,19 +95,11 @@
                                     </v-stepper-content>
 
                                     <v-stepper-content step="4">
-                                        <v-card
-                                        class="mb-12"
-                                        color="grey lighten-1"
-                                        height="200px"
-                                        ></v-card>
+                                        <Step4 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="5">
-                                        <v-card
-                                        class="mb-12"
-                                        color="grey lighten-1"
-                                        height="200px"
-                                        ></v-card>
+                                        <Step5 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="6">
@@ -154,11 +146,15 @@
 import axios from 'axios';
 import Step2 from "@/components/steps/Step2.vue"
 import Step3 from "@/components/steps/Step3.vue"
+import Step4 from "@/components/steps/Step4.vue"
+import Step5 from "@/components/steps/Step5.vue"
 
 export default {
     components: {
         Step2,
-        Step3
+        Step3,
+        Step4,
+        Step5
     },
     data() {
         return {
@@ -182,10 +178,10 @@ export default {
             ],
             pedidos: [],
             messageMapping: [
-                {concluido: "Confirmado pelo(a) fiscal", andamento: "Aguardando confirmação do(a) fiscal"},
-                {concluido: "Confirmado pelo(a) servidor(a)", andamento: "Aguardando confirmação do(a) servidor(a)"},
+                {concluido: "Aprovado pelo(a) fiscal", andamento: "Aguardando confirmação do(a) fiscal"},
+                {concluido: "Aprovado pelo(a) servidor(a)", andamento: "Aguardando confirmação do(a) servidor(a)"},
                 {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
-                {concluido: "Item(s) obtido(s)", andamento: "Aguardando obtenção do(s) item(s)"}
+                {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}
             ],
             // apiURL: '//localhost:8000/crud/pedidos/',
             apiURL: 'https://demapsm-backend.herokuapp.com/crud/pedidos/'

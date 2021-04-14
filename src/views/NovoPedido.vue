@@ -174,7 +174,6 @@
                                             cols="12"
                                             sm="4"
                                             md="4">
-
                                             <v-radio-group v-model="pedido.items[item-1].categoria" row>
                                                 <v-radio
                                                     :label="`Sob Demanda`"
@@ -236,7 +235,7 @@
                     </v-row>
                 </v-container>
             </v-form>
-        *indica campo obrigatório
+        * indica campo obrigatório
         </v-card-text>
 
         <v-card-actions>
@@ -289,13 +288,15 @@ export default {
                 email: null,
                 os: null,
                 items: [
-                    {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, aprovadoFiscal: true, motivoFiscal: null, aprovadoServidor: true, motivoServidor: true}
+                    {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, 
+                    aprovadoFiscal: true, motivoFiscal: null, aprovadoServidor: true, motivoServidor: true, almoxarifadoPossui: true}
                 ],
                 dataPedido: null,
                 dataCancelamento: null,
                 quantidade: null,
                 status: null,
                 statusStep: 2,
+                direcionamentoDeCompra: null,
                 color: "orange",
                 active: true
             },
@@ -321,7 +322,8 @@ export default {
         },
         addItem() {
             this.itemsQtd += 1;
-            this.pedido.items.push({nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, aprovadoFiscal: true, motivoFiscal: null, aprovadoServidor: true, motivoServidor: true})
+            this.pedido.items.push({nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, 
+            aprovadoFiscal: true, motivoFiscal: null, aprovadoServidor: true, motivoServidor: true, almoxarifadoPossui: true})
             this.computeDisable();
         },
         removeItem() {
@@ -341,7 +343,7 @@ export default {
                 this.remDisable = false
         },
         sendData() {
-            if (this.valid){
+            if (this.valid && this.pedido.items[0].categoria !== null){
                 this.error = false
 
                 // Todas as informações do processo são inseridas aqui
