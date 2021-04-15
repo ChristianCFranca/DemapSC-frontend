@@ -96,10 +96,7 @@ export default {
             csv_filename: 'data.csv',
             loading: false,
             solicitacaoMessage: "Nenhum dado disponível.",
-            // apiURL: "//localhost:8000/collect_data/",
-            apiURL: "https://demapsm-backend.herokuapp.com/collect_data/",
-            // apiCargo: "//localhost:8000/cargos",
-            apiCargo: "https://demapsm-backend.herokuapp.com/cargos"
+            apiURL: (process.env.BACKEND_URL === undefined) ? '//localhost:8000' : process.env.BACKEND_URL
         }
     },
     methods: {
@@ -114,7 +111,7 @@ export default {
         getPedidosAsCSV() {
             axios({
                 method: 'get',
-                url: this.apiURL,
+                url: `${this.apiURL}/collect_data/`,
                 responseType: 'arraybuffer',
             })
             .then(response => {
@@ -134,7 +131,7 @@ export default {
             this.error = false;
             this.loading = true;   
 
-            axios.get(`${this.apiCargo}/keycheck_both/?key=${this.key}`)
+            axios.get(`${this.apiURL}/cargos/keycheck_both/?key=${this.key}`)
             .then(response => {
                 this.response = response.data;
                 if (this.response['valid']) {
