@@ -78,28 +78,21 @@
                                 </v-stepper-header>
 
                                 <v-stepper-items>
-                                    <v-stepper-content step="1">
-                                        <v-card
-                                        class="mb-12"
-                                        color="grey lighten-1"
-                                        height="200px"
-                                        ></v-card>
-                                    </v-stepper-content>
 
                                     <v-stepper-content step="2">
-                                        <Step2 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
+                                        <Step2 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item" :apiURL="apiURL"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="3">
-                                        <Step3 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
+                                        <Step3 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item" :apiURL="apiURL"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="4">
-                                        <Step4 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
+                                        <Step4 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item" :apiURL="apiURL"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="5">
-                                        <Step5 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
+                                        <Step5 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item" :apiURL="apiURL"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="6">
@@ -192,14 +185,13 @@ export default {
                 {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}
             ],
-            // apiURL: '//localhost:8000/crud/pedidos/',
-            apiURL: 'https://demapsm-backend.herokuapp.com/crud/pedidos/'
+            apiURL: (process.env.DATABASE_URL === undefined) ? '//localhost:8000' : process.env.DATABASE_URL
         };
     },
     methods: {
         logTable() {
             this.loading = true;
-            axios.get(`${this.apiURL}`)
+            axios.get(`${this.apiURL}/crud/pedidos`)
             .then(response => {
                 this.pedidos = response.data
                 this.loading = false;

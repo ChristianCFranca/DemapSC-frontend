@@ -227,14 +227,12 @@ export default {
             loadingBtnCancel: false,
             loadingDeleteBtn: false,
             dialogDelete: false,
-            apiPedidos: "https://demapsm-backend.herokuapp.com/crud/pedidos",
-            apiCargo: "https://demapsm-backend.herokuapp.com/cargos",
-            // apiCargo: "//localhost:8000/cargos",
             response: null,
         }
     },
     props: {
-        inputItem: Object
+        inputItem: Object,
+        apiURL: String
     },
     methods: {
         /* eslint-disable no-unused-vars */
@@ -247,7 +245,7 @@ export default {
             inputItem['color'] = "success";
             inputItem['dataFinalizacao'] = new Date().toLocaleDateString();
             
-            axios.put(`${this.apiPedidos}/${this.inputItem._id}`, inputItem)
+            axios.put(`${this.apiURL}/crud/pedidos/${this.inputItem._id}`, inputItem)
             .then(response => {
                 this.loadingBtnSend = false;
                 this.dialogDelete = false;
@@ -268,7 +266,7 @@ export default {
             this.error = false;
             this.loadingBtnSend = true;
 
-            axios.get(`${this.apiCargo}/keycheck/?key=${this.key}&cargo=${cargo}`)
+            axios.get(`${this.apiURL}/cargos/keycheck/?key=${this.key}&cargo=${cargo}`)
             .then(response => {
                 this.response = response.data;
                 if (this.response['valid']) {

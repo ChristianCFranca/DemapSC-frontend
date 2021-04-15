@@ -318,10 +318,8 @@ export default {
             nonEmptyRules: [v => !!v || "Campo obrigatório."],
             numericRules: [v => !!v || "Campo obrigatório.", v => !isNaN(v) || "Valor não é um número."],
             emailRules: [v => !!v || 'Campo obrigatório.', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido.'],
-            // apiURL: "//localhost:8000/crud/pedidos/",
-            apiURL: "https://demapsm-backend.herokuapp.com/crud/pedidos/",
-            // apiMateriaisURL: "//localhost:8000/crud/materiais/",
-            apiMateriaisURL: "https://demapsm-backend.herokuapp.com/crud/materiais/"
+            // apiURL: "//localhost:8000",
+            apiURL: (process.env.DATABASE_URL === undefined) ? '//localhost:8000' : process.env.DATABASE_URL
         }
     },
     mounted() { // Primeira coisa a executar
@@ -385,7 +383,7 @@ export default {
                 this.pedido.valorDaSolicitacao = valorDaSolicitacao;
 
                 this.loading = true;
-                axios.post(`${this.apiURL}`, this.pedido)
+                axios.post(`${this.apiURL}/crud/pedidos/`, this.pedido)
                 .then(response => {
                     this.resetForm(); 
                     this.success = true;
@@ -414,7 +412,7 @@ export default {
             this.isMateriaisLoading = true;
 
             // Lazily load input items
-            fetch(this.apiMateriaisURL)
+            fetch(`${this.apiURL}/crud/materiais/`)
             .then(res => res.json()) // {"id": 067812854698, "descricao": "Abraçadeira 3/4" Formato U", categoria: "Fixo", "fabReferencia": "Deca", ...}
             .then(res => {
                 this.disableSend = false;
