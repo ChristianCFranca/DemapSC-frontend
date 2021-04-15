@@ -3,8 +3,6 @@ Implementação do front-end do Sistema de Solicitação de Materiais não ofici
 
 ![Vue.js + vuetify](https://i.morioh.com/2019/11/01/47e709b4198f.jpg)
 
-O serviço já está disponível utilizando a plataforma [Heroku](https://dashboard.heroku.com/) na URL https://demapsm.herokuapp.com/. 
-
 ## Instalação e Execução
 
 Caso deseje rodar este projeto localmente:
