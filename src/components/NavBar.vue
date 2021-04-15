@@ -149,8 +149,6 @@ export default {
                 this.error = true;
                 this.loading = false;
                 })
-            
-            
         },
         logValue() {
             console.log(process.env.BACKEND_URL)
