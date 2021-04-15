@@ -12,7 +12,7 @@
             ></v-img>
         </template>
 
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon @click="logValue()"></v-app-bar-nav-icon>
 
         <v-spacer></v-spacer>
 
@@ -151,6 +151,9 @@ export default {
                 })
             
             
+        },
+        logValue() {
+            console.log(process.env.BACKEND_URL)
         }
     }
     
