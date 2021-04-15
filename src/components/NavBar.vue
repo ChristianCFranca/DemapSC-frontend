@@ -29,21 +29,134 @@
             </v-tabs>
         </template>
         
-        <v-btn icon>
-            <v-icon>mdi-dots-vertical</v-icon>
-        </v-btn>
+        <div class="text-center">
+            <v-menu 
+            transition="slide-y-transition"
+            :close-on-content-click="false"
+            :nudge-width="200"
+            offest-y>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn 
+                    v-bind="attrs"
+                    v-on="on"
+                    icon>
+                        <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                </template>
+                <v-card 
+                class="text-center px-4" 
+                color="grey lighten-5"
+                max-width="350">
+                    <v-card-title class="justify-center">Baixar andamentos</v-card-title>
+                    
+                    <v-card-text>
+                        <v-divider></v-divider>
+                        <p class="body-1 my-4">Chave de Identificação do(a) assistente/fiscal:</p>
+                        <v-text-field
+                            v-model="key"
+                            rows="1"
+                            required
+                            shaped
+                            outlined
+                            clearable
+                            prepend-inner-icon="mdi-key"
+                            type="password"
+                        ></v-text-field>
+                    </v-card-text>
+                    <h2 class="font-weight-light red--text mb-3" v-if="error">{{errorMessage}}</h2> 
+                    <v-card-actions class="justify-center pb-8">
+                        <v-btn 
+                        large
+                        outlined
+                        color="blue darken-3"
+                        @click="keyCheck()"
+                        :loading="loading">
+                            <v-icon large left>mdi-download</v-icon>
+                            Download
+                        </v-btn>
+                    </v-card-actions>
+                    
+                </v-card>
+            </v-menu>
+        </div>
 
         </v-app-bar>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
     data() {
         return {
+            error: false,
+            errorMessage: "Chave inválida",
+            key: null,
+            csv_filename: 'data.csv',
+            loading: false,
+            solicitacaoMessage: "Nenhum dado disponível.",
+            apiURL: "//localhost:8000/collect_data/",
+            // apiURL: "https://demapsm-backend.herokuapp.com/crud/pedidos/",
+            apiCargo: "//localhost:8000/cargos",
+            // apiCargo: "https://demapsm-backend.herokuapp.com/cargos"
+        }
+    },
+    methods: {
+        forceFileDownload(response) {
+            const url = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', this.csv_filename)
+            document.body.appendChild(link)
+            link.click()
+        },
+        getPedidosAsCSV() {
+            axios({
+                method: 'get',
+                url: this.apiURL,
+                responseType: 'arraybuffer',
+            })
+            .then(response => {
+                this.forceFileDownload(response)
+                this.loading = false;
+                })
+            .catch(error => {
+                if (error.response === undefined)
+                    this.solicitacaoMessage = "Banco de dados indisponível.";
+                else 
+                    this.solicitacaoMessage = "Nenhum dado disponível.";
+                console.log(error); 
+                this.loading = false; 
+                });
+        },
+        keyCheck(){
+            this.error = false;
+            this.loading = true;   
+
+            axios.get(`${this.apiCargo}/keycheck_both/?key=${this.key}`)
+            .then(response => {
+                this.response = response.data;
+                if (this.response['valid']) {
+                    this.getPedidosAsCSV()
+                }
+                else {
+                    this.errorMessage = "Chave inválida";
+                    this.error = true;
+                    this.loading = false;               
+                }
+                })
+            .catch(error => {
+                console.log(error);
+                this.errorMessage = "Ocorreu um erro no servidor";
+                this.error = true;
+                this.loading = false;
+                })
+            
+            
         }
     }
+    
 }
 
 </script>
