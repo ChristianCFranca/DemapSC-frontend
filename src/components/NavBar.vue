@@ -96,7 +96,7 @@ export default {
             csv_filename: 'data.csv',
             loading: false,
             solicitacaoMessage: "Nenhum dado disponível.",
-            apiURL: (process.env.BACKEND_URL === undefined) ? '//localhost:8000' : process.env.BACKEND_URL
+            apiURL: (process.env.BACKEND_SM_URL === undefined) ? 'http://localhost:8000' : process.env.BACKEND_SM_URL
         }
     },
     methods: {
