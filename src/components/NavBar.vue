@@ -96,10 +96,10 @@ export default {
             csv_filename: 'data.csv',
             loading: false,
             solicitacaoMessage: "Nenhum dado disponível.",
-            apiURL: "//localhost:8000/collect_data/",
-            // apiURL: "https://demapsm-backend.herokuapp.com/crud/pedidos/",
-            apiCargo: "//localhost:8000/cargos",
-            // apiCargo: "https://demapsm-backend.herokuapp.com/cargos"
+            // apiURL: "//localhost:8000/collect_data/",
+            apiURL: "https://demapsm-backend.herokuapp.com/collect_data/",
+            // apiCargo: "//localhost:8000/cargos",
+            apiCargo: "https://demapsm-backend.herokuapp.com/cargos"
         }
     },
     methods: {
