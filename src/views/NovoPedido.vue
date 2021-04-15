@@ -319,7 +319,7 @@ export default {
             numericRules: [v => !!v || "Campo obrigatório.", v => !isNaN(v) || "Valor não é um número."],
             emailRules: [v => !!v || 'Campo obrigatório.', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido.'],
             // apiURL: "//localhost:8000",
-            apiURL: (process.env.DATABASE_URL === undefined) ? '//localhost:8000' : process.env.DATABASE_URL
+            apiURL: (process.env.BACKEND_URL === undefined) ? '//localhost:8000' : process.env.BACKEND_URL
         }
     },
     mounted() { // Primeira coisa a executar
