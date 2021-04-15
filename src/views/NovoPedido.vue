@@ -318,7 +318,7 @@ export default {
             nonEmptyRules: [v => !!v || "Campo obrigatório."],
             numericRules: [v => !!v || "Campo obrigatório.", v => !isNaN(v) || "Valor não é um número."],
             emailRules: [v => !!v || 'Campo obrigatório.', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido.'],
-            apiURL: (process.env.BACKEND_SM_URL === undefined) ? 'http://localhost:8000' : process.env.BACKEND_SM_URL
+            apiURL: (process.env.BACKEND_URL === undefined) ? 'http://localhost:8000' : process.env.BACKEND_URL
         }
     },
     mounted() { // Primeira coisa a executar

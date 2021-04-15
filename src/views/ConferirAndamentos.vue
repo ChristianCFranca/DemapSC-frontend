@@ -185,7 +185,7 @@ export default {
                 {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}
             ],
-            apiURL: (process.env.BACKEND_SM_URL === undefined) ? 'http://localhost:8000' : process.env.BACKEND_SM_URL
+            apiURL: (process.env.BACKEND_URL === undefined) ? 'http://localhost:8000' : process.env.BACKEND_URL
         };
     },
     methods: {
