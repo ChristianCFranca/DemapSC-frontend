@@ -141,6 +141,7 @@
                                                 required
                                                 :items="unidadesDeMedida"
                                                 :rules="nonEmptyRules"
+                                                :disabled="unidadeEncontrada"
                                                 clearable
                                                 filled
                                                 outlined
@@ -283,6 +284,7 @@ export default {
                 "litros", "ml", "km³", "m³", "cm³", "mm³", "pol.³", // Volume
                 "g", "kg", "ton.", // Massa
                 ],
+            unidadeEncontrada: false,
             isMateriaisLoading: false,
             listaDeMateriais: [],
             listaDeMateriaisObj: [],
@@ -298,8 +300,8 @@ export default {
                 email: null,
                 os: null,
                 items: [
-                    {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, 
-                    aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
+                    {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null, 
+                    valorDaSolicitacao: 0, aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
                     direcionamentoDeCompra: null, almoxarifadoPossui: true}
                 ],
                 dataPedido: null,
@@ -337,8 +339,8 @@ export default {
         addItem() {
             this.itemsQtd += 1;
             this.pedido.items.push(
-                {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, finalidade: null, 
-                aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
+                {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null, 
+                valorDaSolicitacao: 0, aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
                 direcionamentoDeCompra: null, almoxarifadoPossui: true}
             )
             this.computeDisable();
@@ -368,19 +370,33 @@ export default {
                 this.pedido.dataPedido = new Date().toLocaleDateString();
                 this.pedido.status = "Aguardando confirmação do(a) fiscal";
 
+                for (let idx = 0; idx < this.pedido.items.length; idx++){
+                    if (this.pedido.items[idx].valorUnitario !== null){
+                        let aux = Number(this.pedido.items[idx].valorUnitario) * Number(this.pedido.items[idx].quantidade); // Obtem a multiplicacao
+                        this.pedido.items[idx].valorTotal = Math.round(aux * 100) / 100 // Arredonda 2 casas decimais
+                    }
+                }
+
+                let valorDaSolicitacao = 0;
+                for (let idx = 0; idx < this.pedido.items.length; idx++){
+                    if (this.pedido.items[idx].valorTotal !== null)
+                        valorDaSolicitacao += this.pedido.items[idx].valorTotal;
+                }
+                this.pedido.valorDaSolicitacao = valorDaSolicitacao;
+
                 this.loading = true;
                 axios.post(`${this.apiURL}`, this.pedido)
                 .then(response => {
                     this.resetForm(); 
                     this.success = true;
                     this.loading = false;
-                    return response
+                    return response;
                     })
                 .catch(error => {
                     console.log(error); 
                     this.error = true;
                     this.loading = false;
-                    return error
+                    return error;
                     });
             } else {
                 console.log("Something is wrong here...")
@@ -412,7 +428,7 @@ export default {
             .finally(() => (this.isMateriaisLoading = false));
         },
         getAllMateriais(json, key) {
-            const values = [... json.map(item => item[key])]
+            const values = [... json.map(item => item[key])];
             return values
         },
         checkInputName(item) {
@@ -422,10 +438,21 @@ export default {
                     if (nome !== null){
                         if (this.listaDeMateriais.includes(nome)){
                             let idx = this.listaDeMateriais.indexOf(nome);
-                            item.categoria = this.listaDeMateriaisObj[idx].categoria
+                            item.categoria = this.listaDeMateriaisObj[idx].categoria;
+                            item.valorUnitario = this.listaDeMateriaisObj[idx].valorUnitario;
+                            item.unidade = this.listaDeMateriaisObj[idx].unidade;
+                            this.unidadeEncontrada = true;
                         } else {
-                            item.categoria = "Outro"
+                            item.categoria = "Outro";
+                            this.unidadeEncontrada = false;
+                            item.valorUnitario = null;
+                            item.unidade = null;
                         }
+                    } else {
+                        item.categoria = null;
+                        this.unidadeEncontrada = false;
+                        item.valorUnitario = null;
+                        item.unidade = null;
                     }
                 }
             }, 100);

@@ -118,6 +118,16 @@
                         <h1 class="font-weight-light"> {{ solicitacaoMessage }} <v-icon large class="mb-2"> {{ iconMessage }}</v-icon></h1> 
                     </template>
 
+                    <template v-slot:[`item.valorDaSolicitacao`]="{ item }">
+                        {{ Number(item.valorDaSolicitacao).toLocaleString('pt-br', {style: 'currency', currency: 'BRL'}) }}
+                        <v-icon 
+                        dense 
+                        :color="item.items.some(function(obj){return obj['valorTotal'] === null}) ? `red` : ``" 
+                        v-if="item.items.some(function(obj){return obj['valorTotal'] === null})">
+                            mdi-alert-octagon-outline
+                        </v-icon>
+                    </template>
+
                     <template v-slot:[`item.statusStep`]="{ item }">
                         <h5 class="body-2 my-5">
                         <v-chip
@@ -168,6 +178,7 @@ export default {
             headers: [
                 { text: "Número da Ordem de Serviço", value: "os", sortable: false, groupable: false },
                 { text: "Quantidade de Itens", value: "quantidade" },
+                { text: "Valor Estimado", value: "valorDaSolicitacao" },
                 { text: "Nome do Requisitante", value: "requisitante" },
                 { text: "Email do Requisitante", value: "email" },
                 { text: "Data do Pedido", value: "dataPedido" },
