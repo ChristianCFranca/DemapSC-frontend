@@ -365,7 +365,7 @@ export default {
                 // Todas as informações do processo são inseridas aqui
                 this.pedido.quantidade = this.pedido.items.length;
                 this.pedido.dataPedido = new Date().toLocaleDateString();
-                this.pedido.status = "Aguardando confirmação do(a) fiscal";
+                this.pedido.status = "Aguardando confirmação do(a) assistente de fiscalização";
 
                 for (let idx = 0; idx < this.pedido.items.length; idx++){
                     if (this.pedido.items[idx].valorUnitario !== null){

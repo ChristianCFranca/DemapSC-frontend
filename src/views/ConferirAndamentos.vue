@@ -180,8 +180,8 @@ export default {
             ],
             pedidos: [],
             messageMapping: [
+                {concluido: "Aprovado pelo(a) assistente de fiscalização", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
                 {concluido: "Aprovado pelo(a) fiscal", andamento: "Aguardando confirmação do(a) fiscal"},
-                {concluido: "Aprovado pelo(a) servidor(a)", andamento: "Aguardando confirmação do(a) servidor(a)"},
                 {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}
             ],
