@@ -243,6 +243,12 @@ export default {
                         inputItem.items[i]['motivoFiscal'] = null;
                     }
                 }
+                let valorDaSolicitacao = 0;
+                for (let idx = 0; idx < inputItem.items.length; idx++){
+                    if (inputItem.items[idx].valorTotal !== null && inputItem.items[idx].aprovadoFiscal) // Tem que ter valor diferente de 0 e estar aprovado pelo fiscal
+                        valorDaSolicitacao += inputItem.items[idx].valorTotal;
+                }
+                inputItem.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
             }
 
             axios.put(`${this.apiURL}/crud/pedidos/${this.inputItem._id}`, inputItem)

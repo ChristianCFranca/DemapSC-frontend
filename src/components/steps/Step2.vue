@@ -216,6 +216,12 @@ export default {
                     inputItem.items[i]['aprovadoFiscal'] = inputItem.items[i]['aprovadoAssistente']
                     inputItem.items[i]['motivoFiscal'] = inputItem.items[i]['motivoAssistente']
                 }
+                let valorDaSolicitacao = 0;
+                for (let idx = 0; idx < inputItem.items.length; idx++){
+                    if (inputItem.items[idx].valorTotal !== null && inputItem.items[idx].aprovadoAssistente) // Tem que ter valor diferente de 0 e estar aprovado pelo assistente
+                        valorDaSolicitacao += inputItem.items[idx].valorTotal;
+                }
+                inputItem.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
             }
 
             axios.put(`${this.apiURL}/crud/pedidos/${this.inputItem._id}`, inputItem)

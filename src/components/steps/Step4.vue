@@ -198,6 +198,12 @@ export default {
             inputItem['statusStep'] += 1;
             inputItem['status'] = "Aguardando aquisição dos itens"
             inputItem['color'] = "teal darken-1";
+            let valorDaSolicitacao = 0;
+            for (let idx = 0; idx < inputItem.items.length; idx++){
+                if (inputItem.items[idx].valorTotal !== null && !inputItem.items[idx].almoxarifadoPossui) // Tem que ter valor diferente de 0 e almoxarifado NÃO possuir
+                    valorDaSolicitacao += inputItem.items[idx].valorTotal;
+            }
+            inputItem.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
             
             axios.put(`${this.apiURL}/crud/pedidos/${this.inputItem._id}`, inputItem)
             .then(response => {

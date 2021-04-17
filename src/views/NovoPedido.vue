@@ -359,7 +359,7 @@ export default {
                 this.remDisable = false
         },
         sendData() {
-            if (this.valid && this.pedido.items[0].categoria !== null){
+            if (this.valid && this.pedido.items.every(function(obj){return obj.categoria !== null})){
                 this.error = false
 
                 // Todas as informações do processo são inseridas aqui
