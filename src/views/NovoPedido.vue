@@ -137,11 +137,11 @@
 
                                             <v-select
                                                 v-model="pedido.items[item-1].unidade"
-                                                label="Unidade"
+                                                label="Unidade*"
                                                 required
                                                 :items="unidadesDeMedida"
                                                 :rules="nonEmptyRules"
-                                                :disabled="unidadeEncontrada"
+                                                :disabled="pedido.items[item-1].categoria !== 'Outro' && pedido.items[item-1].categoria !== null"
                                                 clearable
                                                 filled
                                                 outlined
@@ -284,7 +284,6 @@ export default {
                 "litros", "ml", "km³", "m³", "cm³", "mm³", "pol.³", // Volume
                 "g", "kg", "ton.", // Massa
                 ],
-            unidadeEncontrada: false,
             isMateriaisLoading: false,
             listaDeMateriais: [],
             listaDeMateriaisObj: [],
@@ -302,7 +301,7 @@ export default {
                 items: [
                     {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null, 
                     valorDaSolicitacao: 0, aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
-                    direcionamentoDeCompra: null, almoxarifadoPossui: true}
+                    direcionamentoDeCompra: null, almoxarifadoPossui: true, valorGasto: 0.0}
                 ],
                 dataPedido: null,
                 dataCancelamento: null,
@@ -311,13 +310,15 @@ export default {
                 status: null,
                 statusStep: 2,
                 color: "orange",
-                active: true
+                active: true,
+                valorGastoTotal: null
             },
             addDisable: false,
             remDisable: true,
             nonEmptyRules: [v => !!v || "Campo obrigatório."],
             numericRules: [v => !!v || "Campo obrigatório.", v => !isNaN(v) || "Valor não é um número."],
             emailRules: [v => !!v || 'Campo obrigatório.', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido.'],
+            // apiURL: '//localhost:8000',
             apiURL: '//demapsm-backend.herokuapp.com'
         }
     },
@@ -338,7 +339,7 @@ export default {
             this.pedido.items.push(
                 {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null, 
                 valorDaSolicitacao: 0, aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
-                direcionamentoDeCompra: null, almoxarifadoPossui: true}
+                direcionamentoDeCompra: null, almoxarifadoPossui: true, valorGasto: 0.0}
             )
             this.computeDisable();
         },
@@ -359,6 +360,8 @@ export default {
                 this.remDisable = false
         },
         sendData() {
+            console.log(this.valid)
+            console.log(this.pedido.items.every(function(obj){return obj.categoria !== null}))
             if (this.valid && this.pedido.items.every(function(obj){return obj.categoria !== null})){
                 this.error = false
 
@@ -438,16 +441,13 @@ export default {
                             item.categoria = this.listaDeMateriaisObj[idx].categoria;
                             item.valorUnitario = this.listaDeMateriaisObj[idx].valorUnitario;
                             item.unidade = this.listaDeMateriaisObj[idx].unidade;
-                            this.unidadeEncontrada = true;
                         } else {
                             item.categoria = "Outro";
-                            this.unidadeEncontrada = false;
                             item.valorUnitario = null;
                             item.unidade = null;
                         }
                     } else {
                         item.categoria = null;
-                        this.unidadeEncontrada = false;
                         item.valorUnitario = null;
                         item.unidade = null;
                     }

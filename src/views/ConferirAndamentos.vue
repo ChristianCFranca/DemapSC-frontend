@@ -124,29 +124,34 @@
                     
 
                     <template v-slot:no-data>
-                        <h1 class="font-weight-light"> {{ solicitacaoMessage }} <v-icon large class="mb-2"> {{ iconMessage }}</v-icon></h1> 
+                        <h1 class="font-weight-light"> 
+                            {{ solicitacaoMessage }} 
+                            <v-icon large class="mb-2"> {{ iconMessage }}</v-icon>
+                        </h1> 
+                    </template>
+
+                    <template v-slot:[`item.valorGastoTotal`]="{ item }">
+                        {{ getValorGastoTotal(item) }}
                     </template>
 
                     <template v-slot:[`item.valorDaSolicitacao`]="{ item }">
                         {{ Number(item.valorDaSolicitacao).toLocaleString('pt-br', {style: 'currency', currency: 'BRL'}) }}
                         <v-icon 
                         dense 
-                        :color="item.items.some(function(obj){return obj['valorTotal'] === null}) ? `red` : ``" 
-                        v-if="item.items.some(function(obj){return obj['valorTotal'] === null})">
+                        color="red" 
+                        v-if="naoCadastradoEliminado(item)">
                             mdi-alert-octagon-outline
                         </v-icon>
                     </template>
 
                     <template v-slot:[`item.statusStep`]="{ item }">
-                        <h5 class="body-2 my-5">
                         <v-chip
                             :color="item.color"
                             dark
+                            class="my-5"
                         >
                             {{ item.statusStep }}/6
                         </v-chip>
-                        {{item.status}}
-                        </h5>
                     </template>
                 
                 </v-data-table>
@@ -185,13 +190,15 @@ export default {
             page: 0,
             loading: true,
             headers: [
-                { text: "Número da Ordem de Serviço", value: "os", sortable: false, groupable: false },
+                { text: "Número da Ordem de Serviço", value: "os"},
                 { text: "Quantidade de Itens", value: "quantidade" },
                 { text: "Valor Estimado", value: "valorDaSolicitacao" },
+                { text: "Valor Gasto", value: "valorGastoTotal" },
                 { text: "Nome do Requisitante", value: "requisitante" },
                 { text: "Email do Requisitante", value: "email" },
                 { text: "Data do Pedido", value: "dataPedido" },
-                { text: "Status do Pedido", value: "statusStep" },
+                { text: "Fase do Pedido", value: "statusStep" },
+                { text: "Status do Pedido", value: "status" },
                 { text: '', value: 'data-table-expand', sortable: false, groupable: false }
             ],
             pedidos: [],
@@ -201,25 +208,26 @@ export default {
                 {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}
             ],
+            // apiURL: '//localhost:8000'
             apiURL: '//demapsm-backend.herokuapp.com'
         };
     },
     methods: {
         logTable() {
             this.loading = true;
-            axios.get(`${this.apiURL}/crud/pedidos`)
+            axios.get(`${this.apiURL}/crud/pedidos/`)
             .then(response => {
-                this.pedidos = response.data
+                this.pedidos = response.data;
                 this.loading = false;
                 })
             .catch(error => {
                 if (error.response === undefined){
-                    this.solicitacaoMessage = "Banco de dados indisponível."
-                    this.iconMessage = "mdi-emoticon-sad-outline"
+                    this.solicitacaoMessage = "Banco de dados indisponível.";
+                    this.iconMessage = "mdi-emoticon-sad-outline";
                 }
                 else {
-                    this.solicitacaoMessage = "Nenhuma solicitação em andamento."
-                    this.iconMessage = "mdi-emoticon-happy-outline"
+                    this.solicitacaoMessage = "Nenhuma solicitação em andamento.";
+                    this.iconMessage = "mdi-emoticon-happy-outline";
                 }
 
                 console.log(error); 
@@ -227,25 +235,25 @@ export default {
                 });
         },
         capitalize(value) {
-            if (!value) return ''
-            value = value.toString()
-            return value.charAt(0).toUpperCase() + value.slice(1)
+            if (!value) return '';
+            value = value.toString();
+            return value.charAt(0).toUpperCase() + value.slice(1);
         },
         getMessage(step, item){
             if (item.statusStep > step)
-                return this.messageMapping[step-2].concluido
+                return this.messageMapping[step-2].concluido;
             else
-                return this.messageMapping[step-2].andamento
+                return this.messageMapping[step-2].andamento;
         },
         getColor(statusStep){
             if (statusStep !== 6){
-                return "orange"
+                return "orange";
             } else {
-                return "green"
+                return "green";
             }
         },
         logData(value) {
-            console.log("Logged Value: ", value)
+            console.log("Logged Value: ", value);
         },
         snackbarReactSuccess(message) {
             this.snackbarColor = "success";
@@ -258,13 +266,30 @@ export default {
             if (message) {
                 this.message = message;
                 if (message.data.detail)
-                this.message = message.data.detail;
+                    this.message = message.data.detail;
             } else
-                this.message = "Ocorreu um problema desconhecido"
+                this.message = "Ocorreu um problema desconhecido";
 
-            console.log("mensagem: ", message)
+            console.log("mensagem: ", message);
             this.snackbar = true;
             this.logTable();
+        },
+        getValorGastoTotal(item) {
+            if (item.valorGastoTotal !== null && 
+                item.valorGastoTotal !== undefined) {
+                return Number(item.valorGastoTotal).toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
+            } else if (!item.active) {
+                return Number(0).toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
+            } else {
+                return `-`;
+            }
+        },
+        naoCadastradoEliminado(item) {
+            if (item.statusStep <= 3)
+                return item.items.some(function(obj){return obj['valorTotal'] === null})
+            else{
+                return item.items.some(function(obj){return obj['valorTotal'] === null && obj['aprovadoFiscal']})
+            }
         }
     },
     mounted() {

@@ -333,7 +333,7 @@ export default {
             
         },
         getValorMonetario(valor){
-            if (valor !== null) {
+            if (valor !== null && valor !== null) {
                 return Number(valor).toLocaleString('pt-br', {style: 'currency', currency: 'BRL'})
             } else{
                 return `Item não cadastrado!`
