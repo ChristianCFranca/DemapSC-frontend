@@ -2,14 +2,20 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import NovoPedido from '../views/NovoPedido.vue'
 import ConferirAndamentos from '../views/ConferirAndamentos.vue'
+import TelaDeLogin from '../views/TelaDeLogin.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    redirect: '/novo-pedido',
-    name: 'home',
+    redirect: '/login',
+    name: 'home'
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: TelaDeLogin
   },
   {
     path: '/novo-pedido',
