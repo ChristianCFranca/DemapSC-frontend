@@ -107,28 +107,7 @@
             <v-tabs>
                 <v-spacer></v-spacer>
                 <v-tab route to="/novo-pedido">Nova Solicitação</v-tab>
-                <v-menu offset-y dark>
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-tab v-bind="attrs" v-on="on">Andamentos</v-tab>
-                    </template>
-                    <v-list>
-                        <v-list-item>
-                            <v-btn plain text route to="/andamentos-ativos">
-                                Andamentos Ativos
-                            </v-btn>
-                        </v-list-item>
-                        <v-list-item>
-                            <v-btn plain text route to="/andamentos-concluidos">
-                                Andamentos Concluídos
-                            </v-btn>
-                        </v-list-item>
-                        <v-list-item>
-                            <v-btn plain text route to="/andamentos-cancelados">
-                                Andamentos Cancelados
-                            </v-btn>
-                        </v-list-item>
-                    </v-list>
-                </v-menu>
+                <v-tab route to="/andamentos">Andamentos</v-tab>
                 <v-spacer></v-spacer>
             </v-tabs>
         </template>
@@ -191,7 +170,6 @@
 </template>
 
 <script>
-import ServiceAPI from '@/services/ServiceAPI.js';
 import TrocarSenha from '@/components/TrocarSenha.vue'
 
 export default {
@@ -221,7 +199,7 @@ export default {
             link.click()
         },
         getPedidosAsCSV() {
-            ServiceAPI.collectData()
+            this.$store.dispatch('collectData')
             .then(response => {
                 this.forceFileDownload(response)
                 this.loading = false;
@@ -246,7 +224,7 @@ export default {
             this.error = false;
             this.loading = true;   
 
-            ServiceAPI.checkKeyBoth(this.key)
+            this.$store.dispatch('checkKeyBoth', this.key)
             .then(response => {
                 this.response = response.data;
                 if (this.response['valid']) {

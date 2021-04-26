@@ -7,7 +7,7 @@
             type="success"
             v-if="success"
             >
-            Seu pedido foi realizado com sucesso. Acesse a guia <strong>conferir andamentos</strong> para saber mais.
+            Seu pedido foi realizado com sucesso. Acesse a guia <strong>ANDAMENTOS</strong> para saber mais.
         </v-alert>
         <v-alert
             dense
@@ -293,8 +293,6 @@
 </template>
 
 <script>
-import ServiceAPI from '@/services/ServiceAPI.js';
-
 export default {
     data() {
         return {
@@ -321,13 +319,16 @@ export default {
                 items: [this.generateNewEmptyItem()],
                 valorDaSolicitacao: 0,
                 dataPedido: null,
-                dataCancelamento: null,
-                dataFinalizacao: null,
+                horarioPedido: null,
                 quantidade: 1,
                 status: "Aguardando confirmação do(a) assistente de fiscalização",
                 statusStep: 2,
                 color: "orange",
                 active: true,
+                dataCancelamento: null,
+                horarioCancelamento: null,
+                dataFinalizacao: null,
+                horarioFinalizacao: null,
                 valorGastoTotal: null
             },
             addDisable: false,
@@ -353,7 +354,7 @@ export default {
                 this.errorMateriaisMessage = "Você não está autenticado ou não tem permissão para requisitar materiais.";
                 this.errorGetMateriais = true;
                 this.isMateriaisLoading = false;
-                this.$store.commit('USER_CLEAR_DATA');
+                this.$store.dispatch('logout');
             } else {
                 this.errorMateriaisMessage = "Ocorreu um erro na busca dos materiais disponíveis. Recarregue a página e tente novamente.";
                 this.errorGetMateriais = true;
@@ -364,9 +365,11 @@ export default {
     methods: {
         generateNewEmptyItem() {
             return {
-                nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null,
-                aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
-                direcionamentoDeCompra: null, almoxarifadoPossui: true, valorGasto: 0.0
+                nome: null, quantidade: null, descricao: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null,
+                aprovadoAssistente: true, motivoAssistente: null, dataAprovacaoAssistente: null, horarioAprovacaoAssistente: null, 
+                aprovadoFiscal: true, motivoFiscal: null, dataAprovacaoFiscal: null, horarioAprovacaoFiscal: null, 
+                direcionamentoDeCompra: null, almoxarifadoPossui: true, 
+                valorGasto: 0.0
             }
         },
         resetForm() {
@@ -378,21 +381,26 @@ export default {
         },
         constructPedido() {
             this.error = false;
-            this.sucess = false;
+            this.success = false;
 
             if (!this.$refs.form.validate() || !this.$refs.osForm.validate()) {
-                this.errorMessage = "Certifique-se de que todos os campos com <strong>*</strong> foram devidamente preenchidos."
+                this.errorMessage = "Certifique-se de que todos os campos com * foram devidamente preenchidos."
                 this.error = true;
                 return
             }
 
-            this.pedido.dataPedido = new Date().toLocaleDateString();
+            const dataHorario = new Date().toLocaleString('pt-BR');
+            this.pedido.dataPedido = dataHorario.split(' ')[0];
+            this.pedido.horarioPedido = dataHorario.split(' ')[1];
+
             for (let idx = 0; idx < this.pedido.items.length; idx++){
                 if (this.pedido.items[idx].valorUnitario !== null){
                     let aux = Number(this.pedido.items[idx].valorUnitario) * Number(this.pedido.items[idx].quantidade); // Obtem a multiplicacao
                     this.pedido.items[idx].valorTotal = Math.round(aux * 100) / 100 // Arredonda 2 casas decimais
                 }
             }
+
+            this.pedido.valorDaSolicitacao = null;
             for (let idx = 0; idx < this.pedido.items.length; idx++){
                 if (this.pedido.items[idx].valorTotal !== null)
                     this.pedido.valorDaSolicitacao += this.pedido.items[idx].valorTotal;
@@ -401,7 +409,7 @@ export default {
         },
         sendPedido() {
             this.loading = true;
-            ServiceAPI.postNovoPedido(this.pedido)
+            this.$store.dispatch('postNovoPedido', this.pedido)
             .then(() => {
                 this.resetForm(); 
                 this.success = true;
@@ -411,7 +419,7 @@ export default {
                 if (error.response.status == 401) {
                     this.errorMessage = "Você não está autenticado ou não possui permissão para enviar esse pedido."
                     this.error = true;
-                    this.$store.dispatch('USER_CLEAR_DATA')
+                    this.$store.dispatch('logout')
                 }
                 console.log(error); 
                 this.errorMessage = "Ocorreu um erro ao enviar o seu pedido para o servidor. Atualize a página e tente novamente."

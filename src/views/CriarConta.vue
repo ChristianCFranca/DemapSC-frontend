@@ -87,7 +87,7 @@
                                         :rules="passwordSameRules"
                                         required
                                         class="rounded-lg"
-                                        :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                                        :append-icon="showConfirm ? 'mdi-eye' : 'mdi-eye-off'"
                                         label="Confirme sua senha"
                                         outlined
                                         :type="showConfirm ? `` : `password`"
@@ -190,12 +190,10 @@ export default {
             })
             .catch(error => {
                 this.loading = false;
-                if (error.response.data){
-                    console.log("Erro: ", error.response.data);
+                if (error.response){
                     this.errorMessage = error.response.data.detail;
                 }
                 else {
-                    console.log("Erro: ", error);
                     this.errorMessage = "Houve problema de conexão com o servidor.";
                 }
             })

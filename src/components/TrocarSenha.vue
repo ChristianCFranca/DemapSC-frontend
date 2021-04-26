@@ -105,14 +105,16 @@ export default {
             })
             .catch(error =>{
                 console.log(error.response);
-                this.error = true;
                 if (error.response) {
                     if (error.response.data.detail){
                         this.errorMessage = error.response.data.detail;
+                    } else {
+                        this.errorMessage = error.response.data;
                     }
                 } else {
                     this.errorMessage = "Erro de comunicação com o servidor";
                 }
+                this.error = true;
                 this.loading = false;
             })
         },

@@ -3,8 +3,8 @@ import Vuex from "vuex";
 import axios from 'axios';
 
 const apiClient = axios.create({
-    // baseURL: '//localhost:8000',
-    baseURL: 'https://demapsm-backend.herokuapp.com',
+    baseURL: '//localhost:8000',
+    // baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
         Accept: 'application/json',
@@ -24,7 +24,14 @@ export default new Vuex.Store({
     },
     materiaisList: [],
     pedidos: [],
-    allRoles: ["admin", "fiscal", "assistente", "almoxarife", "regular"]
+    allRoles: ["admin", "fiscal", "assistente", "almoxarife", "regular"],
+    stepsForRoles: {
+      2: ["admin", "assistente", "regular"],
+      3: ["admin", "fiscal", "regular"],
+      4: ["admin", "almoxarife", "regular"],
+      5: ["admin", "assistente", "regular"],
+      6: ["admin", "fiscal", "assistente", "regular"]
+    }
   },
   mutations: {
     SET_AUTHENTICATION_DATA(state, userData) {
@@ -77,6 +84,36 @@ export default new Vuex.Store({
         commit('SET_TODOS_OS_PEDIDOS', response.data)
         return response
       })
+    },
+    postNovoPedido(_, novoPedido) {
+      return apiClient.post('/crud/pedidos/', novoPedido)
+      .then(response => {
+        return response
+      })
+    },
+    putPedidoExistente(_, {_id, pedidoExistente}) {
+      return apiClient.put(`/crud/pedidos/${_id}`, pedidoExistente)
+      .then(response => {
+        return response
+      })
+    },
+    keyCheck(_, {key, cargo}) {
+      return apiClient.get(`/cargos/keycheck/?key=${key}&cargo=${cargo}`)
+      .then(response => {
+        return response
+      })
+    },
+    checkKeyBoth(_, key) {
+      return apiClient.get(`/cargos/keycheck_both/?key=${key}`)
+      .then(response => {
+        return response
+      })
+    },
+    collectData() {
+      return apiClient.get(`/collect_data/`, {responseType: 'arraybuffer'})
+      .then(response => {
+        return response
+      })
     }
   },
   getters: {
@@ -94,10 +131,26 @@ export default new Vuex.Store({
     getAllRoles: state => state.allRoles,
     getMateriais: state => state.materiaisList,
     getMateriaisList: state => state.materiaisList.length == 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
-    getPedidosAtivos: state => state.currentUser.role === "regular" ? 
-    state.pedidos.filter(obj => obj['active'] && obj['email'] === state.currentUser.email && obj['statusStep'] !== 6) : 
-    state.pedidos.filter(obj => obj['active'] && obj['statusStep'] !== 6),
-    getPedidosCancelados: state => state.pedidos.filter(obj => !obj['active']),
-    getPedidosConcluidos: state => state.pedidos.filter(obj => obj['statusStep'] === 6)
+    getPedidosCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
+
+    getPedidosAtivos: (state, getters) => state.currentUser.role === "regular" ? 
+    getters.getPedidosCurrentUser.filter(obj => obj['active'] && obj['statusStep'] !== 6) : 
+    state.pedidos.filter(
+      obj => obj['active'] && 
+      obj['statusStep'] !== 6 && 
+      state.stepsForRoles[obj['statusStep']].includes(state.currentUser.role)
+      ),
+
+    getPedidosCancelados: (state, getters) => state.currentUser.role === "regular" ? 
+    getters.getPedidosCurrentUser.filter(obj => !obj['active']) : 
+    state.pedidos.filter(
+      obj => !obj['active']
+      ),
+
+    getPedidosConcluidos: (state, getters) => state.currentUser.role === "regular" ? 
+    getters.getPedidosCurrentUser.filter(obj => obj['statusStep'] === 6) : 
+    state.pedidos.filter(
+      obj => obj['statusStep'] === 6
+      ),
   }
 });

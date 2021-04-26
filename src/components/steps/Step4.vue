@@ -146,33 +146,13 @@
                             Enviar Confirmação
                         </v-btn>
                     </v-col>
-                    <!-- <v-col>
-                        <v-btn
-                        dark
-                        text
-                        color="red"
-                        :loading="loadingBtnCancel"
-                        @click="keyCheck(`cancel`)">
-                            Cancelar Solicitação
-                        </v-btn>
-                    </v-col> -->
                 </div>
-                <!-- <div v-else>
-                    <h3 class="font-weight-light red--text">{{inputItem.dataCancelamento}}</h3>
-                    <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) almoxarife</h1>
-                    <v-icon
-                    x-large
-                    color="red"
-                    >mdi-cancel</v-icon>
-                </div> -->
             </v-col>
         </v-row>
     </div>
 </template>
 
 <script>
-import ServiceAPI from '@/services/ServiceAPI.js';
-
 export default {
     data() {
         return {
@@ -188,8 +168,7 @@ export default {
         }
     },
     props: {
-        inputItem: Object,
-        apiURL: String
+        inputItem: Object
     },
     methods: {
         /* eslint-disable no-unused-vars */
@@ -207,7 +186,7 @@ export default {
             }
             inputItem.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
             
-            ServiceAPI.putPedidoExistente(_id, inputItem)
+            this.$store.dispatch('putPedidoExistente', {_id: _id, pedidoExistente: inputItem})
             .then(response => {
                 this.loadingBtnSend = false;
                 this.dialogDelete = false;
@@ -219,7 +198,14 @@ export default {
             .catch(error => {
                 this.loadingBtnSend = false;
                 console.log(error);
-                this.$emit('itemCRUDError', error.response);
+                if (error.response){
+                    if (error.response.status === 401)
+                        this.$emit('itemCRUDError', "Usuário não autenticado ou não possui permissão");
+                    else
+                        this.$emit('itemCRUDError', error.response);
+                } else {
+                    this.$emit('itemCRUDError', "Erro de comunicação com o servidor");
+                }
                 });
         },
         /* eslint-disable no-unused-vars */
@@ -228,18 +214,16 @@ export default {
             this.error = false;
             this.loadingBtnSend = true;
 
-            ServiceAPI.keyCheck(this.key, cargo)
+            this.$store.dispatch('keyCheck', {key: this.key, cargo: cargo})
             .then(response => {
                 this.response = response.data;
                 if (this.response['valid']) {
-                    // console.log(`Valid key for cargo ${cargo}!!`);
                     this.updateItemStep();
                 }
                 else {
                     this.loadingBtnSend = false;
                     this.errorMessage = "Chave inválida";
-                    this.error = true;
-                    // console.log(`Invalid key for cargo ${cargo}!!`);                
+                    this.error = true;              
                 }
                 })
             .catch(error => {
@@ -262,7 +246,7 @@ export default {
     },
     computed: {
         cargoCorreto() {
-            return this.expectedRoles.includes(this.$store.getters.getRole);
+            return this.expectedRoles !== undefined ? this.expectedRoles.includes(this.$store.getters.getRole) : false;
         }
     }
 }

@@ -6,6 +6,15 @@
                 <v-btn color="white" v-bind="attrs" text @click="snackbar = false">Close</v-btn>
             </template>
         </v-snackbar>
+
+        <v-tabs background-color="grey lighten-4">
+            <v-spacer></v-spacer>
+            <v-tab class="blue--text" @click="getter=$store.getters.getPedidosAtivos">Ativos</v-tab>
+            <v-tab class="green--text" @click="getter=$store.getters.getPedidosConcluidos">Concluídos</v-tab>
+            <v-tab class="error--text" @click="getter=$store.getters.getPedidosCancelados">Cancelados</v-tab>
+            <v-spacer></v-spacer>
+        </v-tabs>
+
         <v-card class="ma-4">
             <v-card>
 
@@ -54,7 +63,12 @@
                                     :complete="item.statusStep > 2" 
                                     :color="item.statusStep > 2 ? 'success' : item.color"
                                     :rules="[() => (!item.active && item.statusStep === 2) ? false : true]">
-                                        <h4 class="text-center font-weight-regular">{{ getMessage(2, item) }}</h4> 
+                                        <h4 class="text-center font-weight-regular">
+                                            {{ getMessage(2, item) }}
+                                        </h4>
+                                        <p v-if="item.statusStep > 2" class="text-center font-weight-bold mt-1">
+                                            {{ item.dataAprovacaoAssistente }} {{ item.horarioAprovacaoAssistente }}
+                                        </p>
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
@@ -63,7 +77,12 @@
                                     :complete="item.statusStep > 3" 
                                     :color="item.statusStep > 3 ? 'success' : item.color"
                                     :rules="[() => (!item.active && item.statusStep === 3) ? false : true]">
-                                        <h4 class="text-center font-weight-regular">{{ getMessage(3, item) }}</h4> 
+                                        <h4 class="text-center font-weight-regular">
+                                            {{ getMessage(3, item) }}
+                                        </h4> 
+                                        <p v-if="item.statusStep > 3" class="text-center font-weight-bold mt-1">
+                                            {{ item.dataAprovacaoFiscal }} {{ item.horarioAprovacaoFiscal }}
+                                        </p>
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
@@ -72,7 +91,9 @@
                                     :complete="item.statusStep > 4" 
                                     :color="item.statusStep > 4 ? 'success' : item.color"
                                     :rules="[() => (!item.active && item.statusStep === 4) ? false : true]">
-                                        <h4 class="text-center font-weight-regular">{{ getMessage(4, item) }}</h4> 
+                                        <h4 class="text-center font-weight-regular">
+                                            {{ getMessage(4, item) }}
+                                        </h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
@@ -81,7 +102,9 @@
                                     :complete="item.statusStep > 5" 
                                     :color="item.statusStep > 5 ? 'success' : item.color"
                                     :rules="[() => (!item.active && item.statusStep === 5) ? false : true]">
-                                        <h4 class="text-center font-weight-regular">{{ getMessage(5, item) }}</h4> 
+                                        <h4 class="text-center font-weight-regular">
+                                            {{ getMessage(5, item) }}
+                                        </h4> 
                                     </v-stepper-step>
 
                                     <v-divider></v-divider>
@@ -89,26 +112,28 @@
                                     <v-stepper-step step="6" 
                                     :complete="item.statusStep === 6" 
                                     :color="item.color">
-                                        <h4 class="text-center font-weight-regular">Solicitação finalizada</h4> 
+                                        <h4 class="text-center font-weight-regular">
+                                            Solicitação finalizada
+                                        </h4> 
                                     </v-stepper-step>
                                 </v-stepper-header>
 
                                 <v-stepper-items>
 
                                     <v-stepper-content step="2">
-                                        <Step2 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item" :apiURL="apiURL"/>
+                                        <Step2 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="3">
-                                        <Step3 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item" :apiURL="apiURL"/>
+                                        <Step3 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="4">
-                                        <Step4 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item" :apiURL="apiURL"/>
+                                        <Step4 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="5">
-                                        <Step5 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item" :apiURL="apiURL"/>
+                                        <Step5 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
                                     </v-stepper-content>
 
                                     <v-stepper-content step="6">
@@ -179,10 +204,11 @@ export default {
     },
     data() {
         return {
+            getter: [],
             snackbar: false,
             snackbarMessage: '',
             snackbarColor: '',
-            solicitacaoMessage: "Nenhuma solicitação cancelada.",
+            solicitacaoMessage: "Nenhuma solicitação em andamento.",
             iconMessage: "mdi-emoticon-happy-outline",
             expanded: [],
             search: '',
@@ -196,18 +222,17 @@ export default {
                 { text: "Nome do Requisitante", value: "requisitante" },
                 { text: "Email do Requisitante", value: "email" },
                 { text: "Data do Pedido", value: "dataPedido" },
+                { text: "Horário do Pedido", value: "horarioPedido"},
                 { text: "Fase do Pedido", value: "statusStep" },
                 { text: "Status do Pedido", value: "status" },
                 { text: '', value: 'data-table-expand', sortable: false, groupable: false }
             ],
             messageMapping: [
-                {concluido: "Aprovado pelo(a) assistente de fiscalização", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
-                {concluido: "Aprovado pelo(a) fiscal", andamento: "Aguardando confirmação do(a) fiscal"},
+                {concluido: "Aprovado pelo(a) assistente de fiscalização em ", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
+                {concluido: "Aprovado pelo(a) fiscal em ", andamento: "Aguardando confirmação do(a) fiscal"},
                 {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}
-            ],
-            // apiURL: "//localhost:8000",
-            apiURL: "//demapsm-backend-herokuapp.com"
+            ]
         };
     },
     methods: {
@@ -216,6 +241,7 @@ export default {
             this.$store.dispatch('getTodosOsPedidos')
             .then(() => {
                 this.loading = false;
+                this.getter = this.$store.getters.getPedidosAtivos;
                 })
             .catch(error => {
                 if (error.response === undefined){
@@ -224,9 +250,9 @@ export default {
                 } else if (error.response.status === 401){
                     this.solicitacaoMessage = "Você não está autenticado ou não tem permissão para ver essa informação.";
                     this.iconMessage = "mdi-emoticon-sad-outline";
-                    this.$store.commit('USER_CLEAR_DATA')
+                    this.$store.dispatch('logout')
                 } else {
-                    this.solicitacaoMessage = "Nenhuma solicitação cancelada.";
+                    this.solicitacaoMessage = "Nenhuma solicitação em andamento.";
                     this.iconMessage = "mdi-emoticon-happy-outline";
                 }
                 console.log(error); 
@@ -261,8 +287,13 @@ export default {
             this.snackbarColor = "error";
             if (message) {
                 this.message = message;
-                if (message.data.detail)
-                    this.message = message.data.detail;
+                if (message.data){
+                    if (message.data.detail)
+                        this.message = message.data.detail;
+                    else {
+                        this.message = message.data
+                    }
+                }
             } else
                 this.message = "Ocorreu um problema desconhecido";
 
@@ -288,12 +319,11 @@ export default {
         }
     },
     mounted() {
-        if (this.pedidos.length === 0)
-            this.logTable();
+        this.logTable();
     },
     computed: {
         pedidos() {
-            return this.$store.getters.getPedidosCancelados
+            return this.getter
         }
     }
 }

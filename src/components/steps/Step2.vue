@@ -162,7 +162,7 @@
                     </v-col>
                 </div>
                 <div v-if="!inputItem.active">
-                    <h3 class="font-weight-light red--text">{{inputItem.dataCancelamento}}</h3>
+                    <h3 class="font-weight-light red--text text-h6">{{inputItem.dataCancelamento}} às {{inputItem.horarioCancelamento}}</h3>
                     <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) assistente de fiscalização.</h1>
                     <v-icon
                     x-large
@@ -175,7 +175,6 @@
 </template>
 
 <script>
-import ServiceAPI from '@/services/ServiceAPI.js';
 
 export default {
     data() {
@@ -192,14 +191,16 @@ export default {
         }
     },
     props: {
-        inputItem: Object,
-        apiURL: String
+        inputItem: Object
     },
     methods: {
         updateItemStep(cancel){
             let message = "Solicitação atualizado com sucesso";
             // Removemos o id para que ele não seja visto no json de alteração
             let {_id, ...inputItem} = this.inputItem;
+            
+            const now = new Date().toLocaleString('pt-BR');
+            
             if (cancel) {
                 inputItem['active'] = false;
                 inputItem['color'] = "red";
@@ -207,12 +208,15 @@ export default {
                 for (let idx = 0; idx < inputItem.items.length; idx++) {
                     inputItem.items[idx].aprovadoAssistente = false;
                 }
-                inputItem['dataCancelamento'] = new Date().toLocaleDateString();
+                inputItem['dataCancelamento'] = now.split(' ')[0];
+                inputItem['horarioCancelamento'] = now.split(' ')[1];
                 message = "Solicitação cancelada com sucesso";
                 this.loadingDeleteBtn = true;
             } else {
                 inputItem['statusStep'] += 1;
-                inputItem['status'] = "Aguardando confirmação do(a) fiscal"
+                inputItem['status'] = "Aguardando confirmação do(a) fiscal";
+                inputItem['dataAprovacaoAssistente'] = now.split(' ')[0];
+                inputItem['horarioAprovacaoAssistente'] = now.split(' ')[1];
                 for (let i=0; i < inputItem.items.length; i++){
                     inputItem.items[i]['aprovadoFiscal'] = inputItem.items[i]['aprovadoAssistente']
                     inputItem.items[i]['motivoFiscal'] = inputItem.items[i]['motivoAssistente']
@@ -225,7 +229,7 @@ export default {
                 inputItem.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
             }
 
-            ServiceAPI.putPedidoExistente(_id, inputItem)
+            this.$store.dispatch('putPedidoExistente', {_id: _id, pedidoExistente: inputItem})
             .then(response => {
                 this.loadingBtnSend = false;
                 this.dialogDelete = false;
@@ -237,59 +241,46 @@ export default {
             .catch(error => {
                 this.loadingBtnSend = false;
                 console.log(error);
-                this.$emit('itemCRUDError', error.response);
+                if (error.response){
+                    if (error.response.status === 401)
+                        this.$emit('itemCRUDError', "Usuário não autenticado ou não possui permissão");
+                    else
+                        this.$emit('itemCRUDError', error.response);
+                } else {
+                    this.$emit('itemCRUDError', "Erro de comunicação com o servidor");
+                }
                 });
         },
         keyCheck(btn){
             const cargo = 0; // assistente de fiscalizacao
-            if (btn === `send`) {                
-                this.error = false;
+            this.error = false;
+            if (btn === `send`) {      
                 this.loadingBtnSend = true;
-
-                ServiceAPI.keyCheck(this.key, cargo)
-                .then(response => {
-                    this.response = response.data;
-                    if (this.response['valid']) {
-                        console.log(`Valid key for cargo ${cargo}!!`);
-                        this.updateItemStep(false);
-                    }
-                    else {
-                        this.loadingBtnSend = false;
-                        this.errorMessage = "Chave inválida";
-                        this.error = true;
-                        console.log(`Invalid key for cargo ${cargo}!!`);                
-                    }
-                    })
-                .catch(error => {
-                    console.log(error);
-                    this.errorMessage = "Ocorreu um erro no servidor";
-                    this.error = true;
-                    })
-            } else if (btn === `cancel`) {                
-                this.error = false;
+            } else if (btn === `cancel`) {
                 this.loadingBtnCancel = true;
-
-                ServiceAPI.keyCheck(this.key, cargo)
-                .then(response => {
-                    this.response = response.data;
-                    if (this.response['valid']) {
-                        this.loadingBtnCancel = false;
-                        console.log(`Valid key for cargo ${cargo}!!`);
-                        this.dialogDelete = true;
-                    }
-                    else {
-                        this.loadingBtnCancel = false;
-                        this.errorMessage = "Chave inválida";
-                        this.error = true;
-                        console.log(`Invalid key for cargo ${cargo}!!`);                
-                    }
-                    })
-                .catch(error => {
-                    console.log(error);
-                    this.errorMessage = "Ocorreu um erro no servidor";
-                    this.error = true;
-                    })
             }
+
+            this.$store.dispatch('keyCheck', {key: this.key, cargo: cargo})
+            .then(response => {
+                this.response = response.data;
+                if (this.response['valid']) {
+                    if (btn === "send")
+                        this.updateItemStep(false);
+                    else
+                        this.dialogDelete = true;
+                }
+                else {
+                    this.loadingBtnSend = false;
+                    this.loadingBtnCancel = false;
+                    this.errorMessage = "Chave inválida";
+                    this.error = true;
+                }
+                })
+            .catch(error => {
+                console.log(error);
+                this.errorMessage = "Ocorreu um erro no servidor";
+                this.error = true;
+                })
             
         },
         getValorMonetario(valor){
@@ -305,7 +296,7 @@ export default {
     },
     computed: {
         cargoCorreto() {
-            return this.expectedRoles.includes(this.$store.getters.getRole);
+            return this.expectedRoles !== undefined ? this.expectedRoles.includes(this.$store.getters.getRole) : false;
         }
     }
 }

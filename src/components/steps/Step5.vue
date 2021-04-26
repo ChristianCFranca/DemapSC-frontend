@@ -211,33 +211,13 @@
                             Confirmar Aquisição
                         </v-btn>
                     </v-col>
-                    <!-- <v-col>
-                        <v-btn
-                        dark
-                        text
-                        color="red"
-                        :loading="loadingBtnCancel"
-                        @click="keyCheck(`cancel`)">
-                            Cancelar Solicitação
-                        </v-btn>
-                    </v-col> -->
                 </div>
-                <!-- <div v-else>
-                    <h3 class="font-weight-light red--text">{{inputItem.dataCancelamento}}</h3>
-                    <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) fiscal</h1>
-                    <v-icon
-                    x-large
-                    color="red"
-                    >mdi-cancel</v-icon>
-                </div> -->
             </v-col>
         </v-row>
     </div>
 </template>
 
 <script>
-import ServiceAPI from '@/services/ServiceAPI.js';
-
 export default {
     data() {
         return {
@@ -255,8 +235,7 @@ export default {
         }
     },
     props: {
-        inputItem: Object,
-        apiURL: String
+        inputItem: Object
     },
     methods: {
         /* eslint-disable no-unused-vars */
@@ -264,10 +243,13 @@ export default {
             let message = "Solicitação atualizado com sucesso";
             let {_id, ...inputItem} = this.inputItem; // Removemos o id para que ele não seja visto no json de alteração
 
+            const now = new Date().toLocaleString('pt-BR');
+
             inputItem['statusStep'] += 1;
             inputItem['status'] = "Solicitação finalizada";
             inputItem['color'] = "success";
-            inputItem['dataFinalizacao'] = new Date().toLocaleDateString();
+            inputItem['dataFinalizacao'] = now.split(' ')[0];
+            inputItem['horarioFinalizacao'] = now.split(' ')[1];
             let valorGastoTotal = 0; // O v-text-currency ja valida como um float
             for (let idx = 0; idx < inputItem.items.length; idx++){
                 if (
@@ -278,7 +260,7 @@ export default {
             }
             inputItem.valorGastoTotal = valorGastoTotal; // Atualizamos o valor gasto total da proposta
 
-            ServiceAPI.putPedidoExistente(_id, inputItem)
+            this.$store.dispatch('putPedidoExistente', {_id: _id, pedidoExistente: inputItem})
             .then(response => {
                 this.loadingBtnSend = false;
                 this.dialogDelete = false;
@@ -290,7 +272,14 @@ export default {
             .catch(error => {
                 this.loadingBtnSend = false;
                 console.log(error);
-                this.$emit('itemCRUDError', error.response);
+                if (error.response){
+                    if (error.response.status === 401)
+                        this.$emit('itemCRUDError', "Usuário não autenticado ou não possui permissão");
+                    else
+                        this.$emit('itemCRUDError', error.response);
+                } else {
+                    this.$emit('itemCRUDError', "Erro de comunicação com o servidor");
+                }
                 });
         },
         /* eslint-disable no-unused-vars */
@@ -299,7 +288,7 @@ export default {
             this.error = false;
             this.loadingBtnSend = true;
 
-            ServiceAPI.keyCheck(this.key, cargo)
+            this.$store.dispatch('keyCheck', {key: this.key, cargo: cargo})
             .then(response => {
                 this.response = response.data;
                 if (this.response['valid']) {
@@ -324,14 +313,11 @@ export default {
             } else{
                 return `Item não cadastrado!`
             }
-        },
-        logValue(value) {
-            console.log(value)
         }
     },
     computed: {
         cargoCorreto() {
-            return this.expectedRoles.includes(this.$store.getters.getRole);
+            return this.expectedRoles !== undefined ? this.expectedRoles.includes(this.$store.getters.getRole) : false;
         }
     }
 }
