@@ -142,9 +142,13 @@ export default {
             })
             .catch(error => {
                 this.loading = false;
-                if (error.response.data){
-                    console.log("Erro: ", error.response.data);
-                    this.errorMessage = error.response.data.detail;
+                console.log(error);
+                if (error.response){
+                    if (error.response.data){
+                        this.errorMessage = error.response.data.detail;
+                    } else {
+                        this.errorMessage = error.response;
+                    }
                 }
                 else {
                     console.log("Erro: ", error);
