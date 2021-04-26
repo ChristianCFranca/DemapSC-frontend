@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <NavBar/>
-    <v-main class="grey lighten-4">
+    <NavBar v-if="isAuthenticated"/>
+    <v-main :class="isAuthenticated ? `grey lighten-4` : ``">
       <router-view></router-view>
     </v-main>
   </v-app>
@@ -19,5 +19,10 @@ export default {
 
   data: () => ({
   }),
+  computed: {
+    isAuthenticated() {
+      return this.$store.getters.getIsAuthenticated
+    }
+  }
 };
 </script>
