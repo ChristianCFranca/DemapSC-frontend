@@ -368,7 +368,8 @@ export default {
                 nome: null, quantidade: null, descricao: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null,
                 aprovadoAssistente: true, motivoAssistente: null, dataAprovacaoAssistente: null, horarioAprovacaoAssistente: null, 
                 aprovadoFiscal: true, motivoFiscal: null, dataAprovacaoFiscal: null, horarioAprovacaoFiscal: null, 
-                direcionamentoDeCompra: null, almoxarifadoPossui: true, 
+                direcionamentoDeCompra: null, 
+                almoxarifadoPossui: true, dataAprovacaoAlmoxarife: null, horarioAprovacaoAlmoxarife: null,
                 valorGasto: 0.0
             }
         },

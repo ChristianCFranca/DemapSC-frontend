@@ -92,7 +92,10 @@
                                     :color="item.statusStep > 4 ? 'success' : item.color"
                                     :rules="[() => (!item.active && item.statusStep === 4) ? false : true]">
                                         <h4 class="text-center font-weight-regular">
-                                            {{ getMessage(4, item) }}
+                                            {{ getMessage(4, item) }} 
+                                        <p v-if="item.statusStep > 3" class="text-center font-weight-bold mt-1">
+                                            {{ item.dataAprovacaoAlmoxarife }} {{ item.horarioAprovacaoAlmoxarife }}
+                                        </p>
                                         </h4> 
                                     </v-stepper-step>
 
@@ -230,7 +233,7 @@ export default {
             messageMapping: [
                 {concluido: "Aprovado pelo(a) assistente de fiscalização em ", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
                 {concluido: "Aprovado pelo(a) fiscal em ", andamento: "Aguardando confirmação do(a) fiscal"},
-                {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
+                {concluido: "Confirmado pelo(a) almoxarife em ", andamento: "Aguardando confirmação do(a) almoxarife"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}
             ]
         };

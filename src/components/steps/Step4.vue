@@ -142,7 +142,7 @@
                         dark
                         color="blue darken-1"
                         :loading="loadingBtnSend"
-                        @click="keyCheck(`send`)">
+                        @click="keyCheck()">
                             Enviar Confirmação
                         </v-btn>
                     </v-col>
@@ -176,8 +176,12 @@ export default {
             let message = "Solicitação atualizado com sucesso";
             let {_id, ...inputItem} = this.inputItem; // Removemos o id para que ele não seja visto no json de alteração
 
+            const now = new Date().toLocaleString('pt-BR');
+
             inputItem['statusStep'] += 1;
-            inputItem['status'] = "Aguardando aquisição dos itens"
+            inputItem['status'] = "Aguardando aquisição dos itens";
+            inputItem['dataAprovacaoAlmoxarife'] = now.split(' ')[0];
+            inputItem['horarioAprovacaoAlmoxarife'] = now.split(' ')[1];
             inputItem['color'] = "teal darken-1";
             let valorDaSolicitacao = 0;
             for (let idx = 0; idx < inputItem.items.length; idx++){
@@ -209,7 +213,7 @@ export default {
                 });
         },
         /* eslint-disable no-unused-vars */
-        keyCheck(btn){
+        keyCheck(){
             const cargo = 2; // almoxarife             
             this.error = false;
             this.loadingBtnSend = true;
