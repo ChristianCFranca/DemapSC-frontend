@@ -104,7 +104,7 @@ export default {
                 alert("Senha alterada com sucesso!");
             })
             .catch(error =>{
-                console.log(error.response);
+                console.log(error);
                 if (error.response) {
                     if (error.response.data.detail){
                         this.errorMessage = error.response.data.detail;
