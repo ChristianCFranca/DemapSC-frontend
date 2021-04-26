@@ -132,19 +132,20 @@
                                     color="teal darken-2"
                                     >mdi-account-cash-outline</v-icon>
                                 </v-col>
-                                    <v-col cols="12" sm="8">
-                                        <v-currency-field
-                                        v-model="it.valorGasto"
-                                        outlined
-                                        clearable
-                                        label="Valor total gasto*"
-                                        hint="Digite o valor total gasto no item"
-                                        class="rounded-tr-xl"
-                                        prepend-inner-icon="mdi-cash"
-                                        :rules="cashRules"
-                                        required
-                                        validate-on-blur></v-currency-field>
-                                    </v-col>
+
+                                <v-col cols="12" sm="8" v-if="cargoCorreto">
+                                    <v-currency-field
+                                    v-model="it.valorGasto"
+                                    outlined
+                                    clearable
+                                    label="Valor total gasto*"
+                                    hint="Digite o valor total gasto no item"
+                                    class="rounded-tr-xl"
+                                    prepend-inner-icon="mdi-cash"
+                                    :rules="cashRules"
+                                    required
+                                    validate-on-blur></v-currency-field>
+                                </v-col>
                             </v-row>
 
                             <v-row 
@@ -181,7 +182,7 @@
         </v-form>
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
-                <div v-if="inputItem.active">
+                <div v-if="inputItem.active && cargoCorreto">
                     <h2>Chave de Identificação do(a) assistente de fiscalização:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
                         <v-text-field
@@ -235,11 +236,12 @@
 </template>
 
 <script>
-import axios from 'axios';
+import ServiceAPI from '@/services/ServiceAPI.js';
 
 export default {
     data() {
         return {
+            expectedRoles: ['assistente', 'admin'],
             valid: false,
             cashRules: [v => !!v || "Campo obrigatório.", v => v != "0,00" || "Valor deve ser maior que 0."],
             error: false,
@@ -276,7 +278,7 @@ export default {
             }
             inputItem.valorGastoTotal = valorGastoTotal; // Atualizamos o valor gasto total da proposta
 
-            axios.put(`${this.apiURL}/crud/pedidos/${this.inputItem._id}`, inputItem)
+            ServiceAPI.putPedidoExistente(_id, inputItem)
             .then(response => {
                 this.loadingBtnSend = false;
                 this.dialogDelete = false;
@@ -297,7 +299,7 @@ export default {
             this.error = false;
             this.loadingBtnSend = true;
 
-            axios.get(`${this.apiURL}/cargos/keycheck/?key=${this.key}&cargo=${cargo}`)
+            ServiceAPI.keyCheck(this.key, cargo)
             .then(response => {
                 this.response = response.data;
                 if (this.response['valid']) {
@@ -325,6 +327,11 @@ export default {
         },
         logValue(value) {
             console.log(value)
+        }
+    },
+    computed: {
+        cargoCorreto() {
+            return this.expectedRoles.includes(this.$store.getters.getRole);
         }
     }
 }

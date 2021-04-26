@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';
 import vuetify from './plugins/vuetify';
-import VCurrencyField from 'v-currency-field'
-import { VTextField } from 'vuetify/lib'  //Globally import VTextField
-import axios from 'axios';
+import VCurrencyField from 'v-currency-field';
+import { VTextField } from 'vuetify/lib';  //Globally import VTextField
 
 
 Vue.config.productionTip = false
@@ -22,8 +22,15 @@ Vue.use(VCurrencyField, {
 })
 
 new Vue({
+  created() {
+    const userString = localStorage.getItem('user');
+    if (userString) {
+      const userData = JSON.parse(userString);
+      this.$store.commit('SET_AUTHENTICATION_DATA', userData);
+    }
+  },
   router,
   vuetify,
-  axios,
+  store,
   render: h => h(App)
 }).$mount('#app')

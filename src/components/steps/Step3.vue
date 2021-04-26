@@ -100,7 +100,8 @@
                 <v-col 
                 cols="12"
                 sm="3"
-                md="3">
+                md="3"
+                v-if="cargoCorreto || !inputItem.active">
                     <v-row justify="center">
                         <v-switch v-model="it.aprovadoFiscal"
                         label="Aprovado" 
@@ -144,7 +145,7 @@
         </div>
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
-                <div v-if="inputItem.active">
+                <div v-if="inputItem.active && cargoCorreto">
                     <h2>Chave de Identificação do(a) fiscal:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
                         <v-text-field
@@ -184,7 +185,7 @@
                         </v-btn>
                     </v-col>
                 </div>
-                <div v-else>
+                <div v-if="!inputItem.active">
                     <h3 class="font-weight-light red--text">{{inputItem.dataCancelamento}}</h3>
                     <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) fiscal.</h1>
                     <v-icon
@@ -198,11 +199,12 @@
 </template>
 
 <script>
-import axios from 'axios';
+import ServiceAPI from '@/services/ServiceAPI.js';
 
 export default {
     data() {
         return {
+            expectedRole: ['fiscal', 'admin'],
             error: false,
             errorDirecionamento: false,
             errorMessageDirecionamento: "Campo obrigatório",
@@ -251,7 +253,7 @@ export default {
                 inputItem.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
             }
 
-            axios.put(`${this.apiURL}/crud/pedidos/${this.inputItem._id}`, inputItem)
+            ServiceAPI.putPedidoExistente(_id, inputItem)
             .then(response => {
                 this.loadingBtnSend = false;
                 this.dialogDelete = false;
@@ -274,7 +276,7 @@ export default {
                 this.errorDirecionamento = false;
                 this.loadingBtnSend = true;
 
-                axios.get(`${this.apiURL}/cargos/keycheck/?key=${this.key}&cargo=${cargo}`)
+                ServiceAPI.keyCheck(this.key, cargo)
                 .then(response => {
                     this.response = response.data;
                     if (this.response['valid']) {
@@ -309,7 +311,7 @@ export default {
             } else if (btn === `cancel`) {                
                 this.error = false;
                 this.loadingBtnCancel = true;
-                axios.get(`${this.apiURL}/cargos/keycheck/?key=${this.key}&cargo=${cargo}`)
+                ServiceAPI.keyCheck(this.key, cargo)
                 .then(response => {
                     this.response = response.data;
                     if (this.response['valid']) {
@@ -341,6 +343,11 @@ export default {
         },
         logValue(value) {
             console.log(value)
+        }
+    },
+    computed: {
+        cargoCorreto() {
+            return this.expectedRoles.includes(this.$store.getters.getRole);
         }
     }
 }

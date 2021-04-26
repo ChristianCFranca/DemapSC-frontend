@@ -15,55 +15,58 @@
             type="error"
             v-if="error"
             >
-            Ocorreu um erro na realização do seu pedido. Certifique-se de que todos os campos com <strong>*</strong> foram devidamente preenchidos.
+            {{ errorMessage }}
         </v-alert>
 
         <v-card-title> Solicitação de Aquisição de Material não Codificado </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-            <v-form ref="form" v-model="valid">
-                <v-container>
-                    <v-row>
+                   
+            <v-container>
+                <v-row>
+                    <v-col
+                        cols="12"
+                        sm="4"
+                        md="4">
 
-                        <v-col
-                            cols="12"
-                            sm="4"
-                            md="4">
+                        <v-text-field
+                            v-model="pedido.requisitante"
+                            label="Nome do Requisitante*"
+                            required
+                            :counter="50"
+                            :rules="nonEmptyRules"
+                            clearable
+                            :disabled="true"
+                            outlined
+                        ></v-text-field>
 
-                            <v-text-field
-                                v-model="pedido.requisitante"
-                                label="Nome do Requisitante*"
-                                required
-                                :counter="50"
-                                :rules="nonEmptyRules"
-                                clearable
-                            ></v-text-field>
-
-                        </v-col>
+                    </v-col>
                         
 
-                        <v-col
-                            cols="12"
-                            sm="4"
-                            md="4">
+                    <v-col
+                        cols="12"
+                        sm="4"
+                        md="4">
 
-                            <v-text-field
-                                v-model="pedido.email"
-                                label="Email do Requisitante*"
-                                required
-                                :counter="50"
-                                :rules="emailRules"
-                                clearable
-                            ></v-text-field>
+                        <v-text-field
+                            v-model="pedido.email"
+                            label="Email do Requisitante*"
+                            required
+                            :counter="50"
+                            :rules="emailRules"
+                            clearable
+                            :disabled="true"
+                            outlined
+                        ></v-text-field>
 
-                        </v-col>
+                    </v-col>
 
+                    <v-col
+                        cols="12"
+                        sm="4"
+                        md="4">
 
-                        <v-col
-                            cols="12"
-                            sm="4"
-                            md="4">
-
+                        <v-form ref="osForm" v-model="valid">
                             <v-text-field
                                 v-model="pedido.os"
                                 label="Número da Ordem de Serviço Associada*"
@@ -72,12 +75,19 @@
                                 :rules="nonEmptyRules"
                                 clearable
                             ></v-text-field>
+                        </v-form>
 
-                        </v-col>
+                    </v-col>
+                </v-row>
 
+            </v-container>
 
-                        <v-container>
-                            <v-row v-for="item in itemsQtd" :key="item">
+            <v-form ref="form" v-model="valid">
+                <v-container>
+                    <v-row>
+
+                        <template>
+                            <v-row v-for="item in pedido.items.length" :key="item">
                                 <v-col
                                     cols="12"
                                     sm="7"
@@ -97,7 +107,6 @@
                                                 :items="listaDeMateriais"
                                                 :loading="isMateriaisLoading"
                                                 :disabled="isMateriaisLoading"
-                                                @click="searchMateriais()"
                                                 @blur="checkInputName(pedido.items[item-1])"
                                                 hide-no-data
                                                 hide-selected
@@ -221,14 +230,27 @@
                                 </v-col>
                             </v-row>
                         
-                        </v-container>
+                        </template>
                         <v-container>
                             <v-row no-gutters>
                                 <v-col cols="12" align="center">
-                                    <v-btn depressed class="mt-4 mb-2" color="blue-grey lighten-4" @click="addItem()" :disabled="addDisable">Adicionar Item</v-btn>
+                                    <v-btn 
+                                    depressed 
+                                    class="mt-4 mb-2" 
+                                    color="blue-grey lighten-4" 
+                                    @click="pedido.items.push(generateNewEmptyItem())" 
+                                    :disabled="pedido.items.length >= 5">
+                                    Adicionar Item
+                                    </v-btn>
                                 </v-col>
                                 <v-col cols="12" align="center">
-                                    <v-btn depressed color="blue-grey lighten-4" @click="removeItem()" :disabled="remDisable">Remover Item</v-btn>
+                                    <v-btn 
+                                    depressed 
+                                    color="blue-grey lighten-4" 
+                                    @click="pedido.items.pop()" 
+                                    :disabled="pedido.items.length <= 1">
+                                    Remover Item
+                                    </v-btn>
                                 </v-col>
                             </v-row>
 
@@ -252,7 +274,7 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="sendData()"
+            @click="constructPedido()"
             :loading="loading"
             :disabled="disableSend"
           >
@@ -263,18 +285,17 @@
             dense
             outlined
             type="error"
-            v-if="disableSend"
+            v-if="errorGetMateriais"
             >
-            Ocorreu um erro na busca dos materiais disponíveis. Recarregue a página e tente novamente.
+            {{ errorMateriaisMessage }}
         </v-alert>
     </v-card>
 </template>
 
 <script>
-import axios from 'axios';
+import ServiceAPI from '@/services/ServiceAPI.js';
 
 export default {
-
     data() {
         return {
             unidadesDeMedida: [
@@ -285,29 +306,25 @@ export default {
                 "g", "kg", "ton.", // Massa
                 ],
             isMateriaisLoading: false,
-            listaDeMateriais: [],
-            listaDeMateriaisObj: [],
             loading: false,
             disableSend: false,
             errorGetMateriais: false,
+            errorMateriaisMessage: null,
             success: false,
+            errorMessage: null,
             error: false,
             valid: false,
-            itemsQtd: 1,
             pedido: {
-                requisitante: null,
-                email: null,
+                requisitante: this.$store.getters.getCompleteName,
+                email: this.$store.getters.getEmail,
                 os: null,
-                items: [
-                    {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null, 
-                    valorDaSolicitacao: 0, aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
-                    direcionamentoDeCompra: null, almoxarifadoPossui: true, valorGasto: 0.0}
-                ],
+                items: [this.generateNewEmptyItem()],
+                valorDaSolicitacao: 0,
                 dataPedido: null,
                 dataCancelamento: null,
                 dataFinalizacao: null,
-                quantidade: null,
-                status: null,
+                quantidade: 1,
+                status: "Aguardando confirmação do(a) assistente de fiscalização",
                 statusStep: 2,
                 color: "orange",
                 active: true,
@@ -318,118 +335,89 @@ export default {
             nonEmptyRules: [v => !!v || "Campo obrigatório."],
             numericRules: [v => !!v || "Campo obrigatório.", v => !isNaN(v) || "Valor não é um número."],
             emailRules: [v => !!v || 'Campo obrigatório.', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido.'],
-            // apiURL: '//localhost:8000',
-            apiURL: '//demapsm-backend.herokuapp.com'
         }
     },
-    mounted() { // Primeira coisa a executar
-        this.searchMateriais();
+    mounted() {
+        this.isMateriaisLoading = true;
+        this.disableSend = true;
+
+        // Lazily load input items
+        this.$store.dispatch('getMateriais')
+        .then(() => {
+            this.disableSend = false;
+            this.isMateriaisLoading = false;
+        })
+        .catch(error => {
+            console.log(error);
+            if (error.response.status === 401) {
+                this.errorMateriaisMessage = "Você não está autenticado ou não tem permissão para requisitar materiais.";
+                this.errorGetMateriais = true;
+                this.isMateriaisLoading = false;
+                this.$store.commit('USER_CLEAR_DATA');
+            } else {
+                this.errorMateriaisMessage = "Ocorreu um erro na busca dos materiais disponíveis. Recarregue a página e tente novamente.";
+                this.errorGetMateriais = true;
+                this.isMateriaisLoading = false;
+            }
+        })
     },
     methods: {
-        logValue(value) {
-            console.log("Logged value: ", value)
+        generateNewEmptyItem() {
+            return {
+                nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null,
+                aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
+                direcionamentoDeCompra: null, almoxarifadoPossui: true, valorGasto: 0.0
+            }
         },
         resetForm() {
             this.error = false;
+            this.errorDueToValid = false;
             this.success = false;
             this.$refs.form.reset();
+            this.$refs.osForm.reset();
         },
-        addItem() {
-            this.itemsQtd += 1;
-            this.pedido.items.push(
-                {nome: null, descricao: null, quantidade: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null, 
-                valorDaSolicitacao: 0, aprovadoAssistente: true, motivoAssistente: null, aprovadoFiscal: true, motivoFiscal: null, 
-                direcionamentoDeCompra: null, almoxarifadoPossui: true, valorGasto: 0.0}
-            )
-            this.computeDisable();
-        },
-        removeItem() {
-            this.itemsQtd -= 1;
-            this.pedido.items.pop()
-            this.computeDisable();
-        },
-        computeDisable() {
-            if (this.itemsQtd >= 5)
-                this.addDisable = true
-            else
-                this.addDisable = false
+        constructPedido() {
+            this.error = false;
+            this.sucess = false;
 
-            if (this.itemsQtd === 1)
-                this.remDisable = true
-            else
-                this.remDisable = false
-        },
-        sendData() {
-            console.log(this.valid)
-            console.log(this.pedido.items.every(function(obj){return obj.categoria !== null}))
-            if (this.valid && this.pedido.items.every(function(obj){return obj.categoria !== null})){
-                this.error = false
-
-                // Todas as informações do processo são inseridas aqui
-                this.pedido.quantidade = this.pedido.items.length;
-                this.pedido.dataPedido = new Date().toLocaleDateString();
-                this.pedido.status = "Aguardando confirmação do(a) assistente de fiscalização";
-
-                for (let idx = 0; idx < this.pedido.items.length; idx++){
-                    if (this.pedido.items[idx].valorUnitario !== null){
-                        let aux = Number(this.pedido.items[idx].valorUnitario) * Number(this.pedido.items[idx].quantidade); // Obtem a multiplicacao
-                        this.pedido.items[idx].valorTotal = Math.round(aux * 100) / 100 // Arredonda 2 casas decimais
-                    }
-                }
-
-                let valorDaSolicitacao = 0;
-                for (let idx = 0; idx < this.pedido.items.length; idx++){
-                    if (this.pedido.items[idx].valorTotal !== null)
-                        valorDaSolicitacao += this.pedido.items[idx].valorTotal;
-                }
-                this.pedido.valorDaSolicitacao = valorDaSolicitacao;
-
-                this.loading = true;
-                axios.post(`${this.apiURL}/crud/pedidos/`, this.pedido)
-                .then(response => {
-                    this.resetForm(); 
-                    this.success = true;
-                    this.loading = false;
-                    return response;
-                    })
-                .catch(error => {
-                    console.log(error); 
-                    this.error = true;
-                    this.loading = false;
-                    return error;
-                    });
-            } else {
-                console.log("Something is wrong here...")
-                this.success = false
-                this.error = true
+            if (!this.$refs.form.validate() || !this.$refs.osForm.validate()) {
+                this.errorMessage = "Certifique-se de que todos os campos com <strong>*</strong> foram devidamente preenchidos."
+                this.error = true;
+                return
             }
+
+            this.pedido.dataPedido = new Date().toLocaleDateString();
+            for (let idx = 0; idx < this.pedido.items.length; idx++){
+                if (this.pedido.items[idx].valorUnitario !== null){
+                    let aux = Number(this.pedido.items[idx].valorUnitario) * Number(this.pedido.items[idx].quantidade); // Obtem a multiplicacao
+                    this.pedido.items[idx].valorTotal = Math.round(aux * 100) / 100 // Arredonda 2 casas decimais
+                }
+            }
+            for (let idx = 0; idx < this.pedido.items.length; idx++){
+                if (this.pedido.items[idx].valorTotal !== null)
+                    this.pedido.valorDaSolicitacao += this.pedido.items[idx].valorTotal;
+            }
+            this.sendPedido()
         },
-        searchMateriais() {
-            // Items have already been loaded
-            if (this.listaDeMateriais.length > 0) return
-
-            // Items have already been requested
-            if (this.isMateriaisLoading) return
-
-            this.isMateriaisLoading = true;
-
-            // Lazily load input items
-            fetch(`${this.apiURL}/crud/materiais/`)
-            .then(res => res.json()) // {"id": 067812854698, "descricao": "Abraçadeira 3/4" Formato U", categoria: "Fixo", "fabReferencia": "Deca", ...}
-            .then(res => {
-                this.disableSend = false;
-                this.listaDeMateriaisObj = res;
-                this.listaDeMateriais = this.getAllMateriais(res, "descricao");
-            })
-            .catch(err => {
-                this.disableSend = true;
-                console.log(err);
-            })
-            .finally(() => (this.isMateriaisLoading = false));
-        },
-        getAllMateriais(json, key) {
-            const values = [... json.map(item => item[key])];
-            return values
+        sendPedido() {
+            this.loading = true;
+            ServiceAPI.postNovoPedido(this.pedido)
+            .then(() => {
+                this.resetForm(); 
+                this.success = true;
+                this.loading = false;
+                })
+            .catch(error => {
+                if (error.response.status == 401) {
+                    this.errorMessage = "Você não está autenticado ou não possui permissão para enviar esse pedido."
+                    this.error = true;
+                    this.$store.dispatch('USER_CLEAR_DATA')
+                }
+                console.log(error); 
+                this.errorMessage = "Ocorreu um erro ao enviar o seu pedido para o servidor. Atualize a página e tente novamente."
+                this.error = true;
+                this.loading = false;
+                });
         },
         checkInputName(item) {
             setTimeout(() => {
@@ -438,9 +426,9 @@ export default {
                     if (nome !== null){
                         if (this.listaDeMateriais.includes(nome)){
                             let idx = this.listaDeMateriais.indexOf(nome);
-                            item.categoria = this.listaDeMateriaisObj[idx].categoria;
-                            item.valorUnitario = this.listaDeMateriaisObj[idx].valorUnitario;
-                            item.unidade = this.listaDeMateriaisObj[idx].unidade;
+                            item.categoria = this.$store.getters.getMateriais[idx].categoria;
+                            item.valorUnitario = this.$store.getters.getMateriais[idx].valorUnitario;
+                            item.unidade = this.$store.getters.getMateriais[idx].unidade;
                         } else {
                             item.categoria = "Outro";
                             item.valorUnitario = null;
@@ -456,6 +444,16 @@ export default {
             
         }
         
+    },
+    computed: {
+        listaDeMateriais() {
+            return this.$store.getters.getMateriaisList;
+        }
+    },
+    watch: {
+        'pedido.items.length'() {
+            this.pedido.quantidade = this.pedido.items.length;
+        }
     }
 
 }

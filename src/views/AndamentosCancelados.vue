@@ -163,7 +163,6 @@
 
 
 <script>
-import axios from 'axios';
 import Step2 from "@/components/steps/Step2.vue"
 import Step3 from "@/components/steps/Step3.vue"
 import Step4 from "@/components/steps/Step4.vue"
@@ -183,7 +182,7 @@ export default {
             snackbar: false,
             snackbarMessage: '',
             snackbarColor: '',
-            solicitacaoMessage: "Nenhuma solicitação em andamento.",
+            solicitacaoMessage: "Nenhuma solicitação cancelada.",
             iconMessage: "mdi-emoticon-happy-outline",
             expanded: [],
             search: '',
@@ -201,35 +200,35 @@ export default {
                 { text: "Status do Pedido", value: "status" },
                 { text: '', value: 'data-table-expand', sortable: false, groupable: false }
             ],
-            pedidos: [],
             messageMapping: [
                 {concluido: "Aprovado pelo(a) assistente de fiscalização", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
                 {concluido: "Aprovado pelo(a) fiscal", andamento: "Aguardando confirmação do(a) fiscal"},
                 {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}
             ],
-            // apiURL: '//localhost:8000'
-            apiURL: '//demapsm-backend.herokuapp.com'
+            // apiURL: "//localhost:8000",
+            apiURL: "//demapsm-backend-herokuapp.com"
         };
     },
     methods: {
         logTable() {
             this.loading = true;
-            axios.get(`${this.apiURL}/crud/pedidos/`)
-            .then(response => {
-                this.pedidos = response.data;
+            this.$store.dispatch('getTodosOsPedidos')
+            .then(() => {
                 this.loading = false;
                 })
             .catch(error => {
                 if (error.response === undefined){
                     this.solicitacaoMessage = "Banco de dados indisponível.";
                     this.iconMessage = "mdi-emoticon-sad-outline";
-                }
-                else {
-                    this.solicitacaoMessage = "Nenhuma solicitação em andamento.";
+                } else if (error.response.status === 401){
+                    this.solicitacaoMessage = "Você não está autenticado ou não tem permissão para ver essa informação.";
+                    this.iconMessage = "mdi-emoticon-sad-outline";
+                    this.$store.commit('USER_CLEAR_DATA')
+                } else {
+                    this.solicitacaoMessage = "Nenhuma solicitação cancelada.";
                     this.iconMessage = "mdi-emoticon-happy-outline";
                 }
-
                 console.log(error); 
                 this.loading = false; 
                 });
@@ -252,9 +251,6 @@ export default {
                 return "green";
             }
         },
-        logData(value) {
-            console.log("Logged Value: ", value);
-        },
         snackbarReactSuccess(message) {
             this.snackbarColor = "success";
             this.snackbarMessage = message;
@@ -270,7 +266,6 @@ export default {
             } else
                 this.message = "Ocorreu um problema desconhecido";
 
-            console.log("mensagem: ", message);
             this.snackbar = true;
             this.logTable();
         },
@@ -294,6 +289,11 @@ export default {
     },
     mounted() {
         this.logTable();
+    },
+    computed: {
+        pedidos() {
+            return this.$store.getters.getPedidosCancelados
+        }
     }
 }
 </script>
