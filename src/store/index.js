@@ -25,6 +25,7 @@ export default new Vuex.Store({
     materiaisList: [],
     pedidos: [],
     allRoles: ["admin", "fiscal", "assistente", "almoxarife", "regular"],
+    rolesThatCanDownload: ["admin", "fiscar", "assistente"],
     stepsForRoles: {
       2: ["admin", "assistente", "regular"],
       3: ["admin", "fiscal", "regular"],
@@ -132,6 +133,7 @@ export default new Vuex.Store({
     getAllRoles: state => state.allRoles,
     getMateriais: state => state.materiaisList,
     getMateriaisList: state => state.materiaisList.length == 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
+    getCanUserDownload: (state, getters) => state.rolesThatCanDownload.includes(getters.getRole),
     getPedidosCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
 
     getPedidosAtivos: (state, getters) => state.currentUser.role === "regular" ? 

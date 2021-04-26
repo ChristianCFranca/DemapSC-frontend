@@ -123,7 +123,8 @@
                     <v-btn 
                     v-bind="attrs"
                     v-on="on"
-                    icon>
+                    icon
+                    :disabled="!$store.getters.getCanUserDownload">
                         <v-icon>mdi-dots-vertical</v-icon>
                     </v-btn>
                 </template>
