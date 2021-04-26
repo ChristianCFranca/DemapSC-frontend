@@ -187,7 +187,7 @@ export default {
             expanded: [],
             search: '',
             page: 0,
-            loading: true,
+            loading: false,
             headers: [
                 { text: "Número da Ordem de Serviço", value: "os"},
                 { text: "Quantidade de Itens", value: "quantidade" },
@@ -288,7 +288,8 @@ export default {
         }
     },
     mounted() {
-        this.logTable();
+        if (this.pedidos.length === 0)
+            this.logTable();
     },
     computed: {
         pedidos() {

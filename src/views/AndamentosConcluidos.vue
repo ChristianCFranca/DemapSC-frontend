@@ -182,12 +182,12 @@ export default {
             snackbar: false,
             snackbarMessage: '',
             snackbarColor: '',
-            solicitacaoMessage: "Nenhuma solicitação em andamento.",
+            solicitacaoMessage: "Nenhuma solicitação concluída.",
             iconMessage: "mdi-emoticon-happy-outline",
             expanded: [],
             search: '',
             page: 0,
-            loading: true,
+            loading: false,
             headers: [
                 { text: "Número da Ordem de Serviço", value: "os"},
                 { text: "Quantidade de Itens", value: "quantidade" },
@@ -226,7 +226,7 @@ export default {
                     this.iconMessage = "mdi-emoticon-sad-outline";
                     this.$store.commit('USER_CLEAR_DATA')
                 } else {
-                    this.solicitacaoMessage = "Nenhuma solicitação em andamento.";
+                    this.solicitacaoMessage = "Nenhuma solicitação concluída.";
                     this.iconMessage = "mdi-emoticon-happy-outline";
                 }
                 console.log(error); 
@@ -288,7 +288,8 @@ export default {
         }
     },
     mounted() {
-        this.logTable();
+        if (this.pedidos.length === 0)
+            this.logTable();
     },
     computed: {
         pedidos() {
