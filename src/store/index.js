@@ -69,7 +69,7 @@ export default new Vuex.Store({
       .then(response => response)
     },
     changePassword({ getters }, passwordJSON) {
-      return apiClient.put(`/auth/users/update?username=${getters.getEmail}`, passwordJSON)
+      return apiClient.put(`/auth/users/update/?username=${getters.getEmail}`, passwordJSON)
       .then(response => response)
     },
     getMateriais({ commit }) {
