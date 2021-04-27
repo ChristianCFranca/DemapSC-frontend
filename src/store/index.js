@@ -3,8 +3,8 @@ import Vuex from "vuex";
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: '//localhost:8000',
-    // baseURL: 'https://demapsm-backend.herokuapp.com',
+    // baseURL: '//localhost:8000',
+    baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
         Accept: 'application/json',
