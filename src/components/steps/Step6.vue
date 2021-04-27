@@ -165,6 +165,68 @@
         </div>
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
+                <p class="text-h6"> Aprovações: </p>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-subtitle class="text-subtitle-1">
+                            Assistente:
+                        </v-list-item-subtitle>
+                        <p class="text-h6">
+                            {{ inputItem.assistente }} 
+                            <span class="font-weight-light">no dia</span> 
+                            {{ inputItem.dataAprovacaoAssistente }} 
+                            <span class="font-weight-light">às</span> 
+                            {{ inputItem.horarioAprovacaoAssistente }}
+                        </p>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-subtitle class="text-subtitle-1">
+                            Fiscal:
+                        </v-list-item-subtitle>
+                        <p class="text-h6">
+                            {{ inputItem.fiscal }} 
+                            <span class="font-weight-light">no dia</span> 
+                            {{ inputItem.dataAprovacaoFiscal }} 
+                            <span class="font-weight-light">às</span> 
+                            {{ inputItem.horarioAprovacaoFiscal }}
+                        </p>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-subtitle class="text-subtitle-1">
+                            Almoxarife:
+                        </v-list-item-subtitle>
+                        <p class="text-h6">
+                            {{ inputItem.almoxarife }} 
+                            <span class="font-weight-light">no dia</span> 
+                            {{ inputItem.dataAprovacaoAlmoxarife }} 
+                            <span class="font-weight-light">às</span> 
+                            {{ inputItem.horarioAprovacaoAlmoxarife }}
+                        </p>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-subtitle class="text-subtitle-1">
+                            Recebimento:
+                        </v-list-item-subtitle>
+                        <p class="text-h6">
+                            {{ inputItem.recebimento }} 
+                            <span class="font-weight-light">no dia</span> 
+                            {{ inputItem.dataFinalizacao }} 
+                            <span class="font-weight-light">às</span> 
+                            {{ inputItem.horarioFinalizacao }}
+                        </p>
+                    </v-list-item-content>
+                </v-list-item>
+            </v-col>
+        </v-row>
+        <v-divider class="my-4"></v-divider>
+        <v-row no-gutters justify="center">
+            <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div>
                     <h3 class="font-weight-light success--text text-h6">{{inputItem.dataFinalizacao}} às {{inputItem.horarioFinalizacao}}</h3>
                     <h1 class="font-weight-regular success--text">Solicitação finalizada com sucesso!</h1>

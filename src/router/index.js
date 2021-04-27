@@ -5,6 +5,8 @@ import NovoPedido from '../views/NovoPedido.vue'
 import Andamentos from '../views/Andamentos.vue'
 import Login from '../views/Login.vue'
 import CriarConta from '../views/CriarConta.vue'
+import CriarUsuario from '../views/CriarUsuario.vue'
+import Usuarios from '../views/Usuarios.vue'
 
 Vue.use(VueRouter)
 
@@ -33,6 +35,16 @@ const routes = [
     path: '/criarconta',
     name: 'criar-conta',
     component: CriarConta
+  },
+  {
+    path: '/criarusuario',
+    name: 'criar-usuario',
+    component: CriarUsuario
+  },
+  {
+    path: '/usuarios',
+    name: 'usuarios',
+    component: Usuarios
   }
 ]
 

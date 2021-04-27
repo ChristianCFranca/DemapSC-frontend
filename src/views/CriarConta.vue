@@ -110,7 +110,7 @@
                                 text
                                 color="blue"
                                 large
-                                @click="reserForm">Limpar</v-btn>
+                                @click="resetForm">Limpar</v-btn>
 
                                 <v-btn
                                 text
@@ -162,7 +162,7 @@ export default {
         }
     },
     methods: {
-        reserForm() {
+        resetForm() {
             this.errorMessage = null;
             this.$refs.form.reset();
         },
@@ -186,7 +186,7 @@ export default {
             .then(() => {
                 this.loading = false;
                 this.successMessage = "Conta criada com sucesso!";
-                this.reserForm();
+                this.resetForm();
             })
             .catch(error => {
                 this.loading = false;

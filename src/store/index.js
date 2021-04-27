@@ -3,8 +3,8 @@ import Vuex from "vuex";
 import axios from 'axios';
 
 const apiClient = axios.create({
-    // baseURL: '//localhost:8000',
-    baseURL: 'https://demapsm-backend.herokuapp.com',
+    baseURL: '//localhost:8000',
+    // baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
         Accept: 'application/json',
@@ -32,7 +32,15 @@ export default new Vuex.Store({
       4: ["admin", "almoxarife", "regular"],
       5: ["admin", "assistente", "regular"],
       6: ["admin", "fiscal", "assistente", "regular"]
-    }
+    },
+    permissionsPerRole: {
+      "admin": ["admin", "fiscal", "assistente", "almoxarife", "regular"],
+      "fiscal": ["fiscal", "assistente", "almoxarife", "regular"],
+      "assistente": ["regular"],
+      "almoxarife": [],
+      "regular": []
+    },
+    allUsers: []
   },
   mutations: {
     SET_AUTHENTICATION_DATA(state, userData) {
@@ -42,6 +50,9 @@ export default new Vuex.Store({
       state.currentUser.token = userData.access_token;
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${userData.access_token}`;
       localStorage.setItem('user', JSON.stringify(userData));
+    },
+    SET_ALL_USERS(state, users) {
+      state.allUsers = users;
     },
     SET_MATERIAIS(state, materiais) {
       state.materiaisList = materiais;
@@ -71,8 +82,18 @@ export default new Vuex.Store({
     },
     changePassword({ getters }, userDataJSON) {
       userDataJSON.username = getters.getEmail;
-      return apiClient.put('/auth/users/update/', userDataJSON)
+      return apiClient.put('/auth/users/update/password', userDataJSON)
       .then(response => response)
+    },
+    updateUser(_, userDataJSON) {
+      return apiClient.put('/auth/users/update/general', userDataJSON)
+      .then(response => response)
+    },
+    getUsers({ commit }) {
+      return apiClient.get('/auth/users/')
+      .then(response => {
+        commit('SET_ALL_USERS', response.data)
+      })
     },
     getMateriais({ commit }) {
       return apiClient.get('/crud/materiais/')
@@ -120,22 +141,18 @@ export default new Vuex.Store({
   },
   getters: {
     getIsAuthenticated: state => state.currentUser.token !== null,
-    getPermissions: state => {
-      if (state.currentUser.role === "regular" || state.currentUser.role === "almoxarife") return []
-      else if (state.currentUser.role === "assistente") return ["regular"]
-      else if (state.currentUser.role === "fiscal") return ["assistente", "almoxarife","regular"]
-      else if (state.currentUser.role === "admin") return ["fiscal", "assistente", "almoxarife","regular"]
-    },
+    getPermissions: state => state.permissionsPerRole[state.currentUser.role],
     getCompleteName: state => state.currentUser.nome,
     getFirstLastName: state => `${state.currentUser.nome.split(' ')[0]} ${state.currentUser.nome.split(' ').slice(-1)[0]}`,
     getEmail: state => state.currentUser.email,
     getRole: state => state.currentUser.role,
     getAllRoles: state => state.allRoles,
+    getAllUsers: (state, getters) => state.allUsers.length === 0 ? [] : 
+    state.allUsers.filter(obj => state.permissionsPerRole[getters.getRole].includes(obj.role) && obj.username !== getters.getEmail),
     getMateriais: state => state.materiaisList,
-    getMateriaisList: state => state.materiaisList.length == 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
+    getMateriaisList: state => state.materiaisList.length === 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
     getCanUserDownload: (state, getters) => state.rolesThatCanDownload.includes(getters.getRole),
     getPedidosCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
-
     getPedidosAtivos: (state, getters) => state.currentUser.role === "regular" ? 
     getters.getPedidosCurrentUser.filter(obj => obj['active'] && obj['statusStep'] !== 6) : 
     state.pedidos.filter(
@@ -143,13 +160,11 @@ export default new Vuex.Store({
       obj['statusStep'] !== 6 && 
       state.stepsForRoles[obj['statusStep']].includes(state.currentUser.role)
       ),
-
     getPedidosCancelados: (state, getters) => state.currentUser.role === "regular" ? 
     getters.getPedidosCurrentUser.filter(obj => !obj['active']) : 
     state.pedidos.filter(
       obj => !obj['active']
       ),
-
     getPedidosConcluidos: (state, getters) => state.currentUser.role === "regular" ? 
     getters.getPedidosCurrentUser.filter(obj => obj['statusStep'] === 6) : 
     state.pedidos.filter(

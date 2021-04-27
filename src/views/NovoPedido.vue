@@ -71,9 +71,11 @@
                                 v-model="pedido.os"
                                 label="Número da Ordem de Serviço Associada*"
                                 required
+                                outlined
                                 :counter="20"
                                 :rules="nonEmptyRules"
                                 clearable
+                                filled
                             ></v-text-field>
                         </v-form>
 
@@ -97,8 +99,7 @@
                                         <v-col
                                         cols="12"
                                         sm="7"
-                                        md="7"
-                                        >
+                                        md="7">
                                             <v-combobox
                                                 v-model="pedido.items[item-1].nome"
                                                 :label="(listaDeMateriais.length > 0) ? `Nome do Item ${item}*` : `Carregando... por favor aguarde`"
@@ -323,6 +324,10 @@ export default {
                 quantidade: 1,
                 status: "Aguardando confirmação do(a) assistente de fiscalização",
                 statusStep: 2,
+                assistente: null,
+                fiscal: null,
+                almoxarife: null,
+                recebimento: null,
                 color: "orange",
                 active: true,
                 dataCancelamento: null,

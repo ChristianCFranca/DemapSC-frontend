@@ -200,7 +200,8 @@ export default {
             let {_id, ...inputItem} = this.inputItem;
             
             const now = new Date().toLocaleString('pt-BR');
-            
+            inputItem['assistente'] = this.$store.getters.getCompleteName;
+
             if (cancel) {
                 inputItem['active'] = false;
                 inputItem['color'] = "red";

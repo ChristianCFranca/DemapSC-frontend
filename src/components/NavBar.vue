@@ -19,6 +19,7 @@
                         <v-btn 
                         text 
                         color="blue"
+                        :loading="logoutLoading"
                         @click="logout()">
                             Sim
                         </v-btn>
@@ -36,8 +37,7 @@
         <v-navigation-drawer
         v-model="drawer"
         absolute
-        temporary
-        >
+        temporary>
             <v-system-bar></v-system-bar>
             <v-list>
                 <v-list-item link>
@@ -46,34 +46,35 @@
                     {{ $store.getters.getFirstLastName }}
                     </v-list-item-title>
                     <v-list-item-subtitle>{{ $store.getters.getEmail }}</v-list-item-subtitle>
+                    <div class="my-1 text-h6">| {{ $store.getters.getRole }}</div>
                 </v-list-item-content>
                 </v-list-item>
                 <v-divider></v-divider>
-                <v-list-item link @click="dialogTrocarSenha=!dialogTrocarSenha">
-                    <v-list-item-icon>
-                    <v-icon>mdi-account-edit</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Trocar Senha</v-list-item-title>
-                </v-list-item>
                 <v-list-group
                 :value="false"
-                prepend-icon="mdi-account-plus"
-                v-if="$store.getters.getPermissions.length !== 0">
+                prepend-icon="mdi-account-edit">
                     <template v-slot:activator>
-                        <v-list-item-title>Criar Usuários</v-list-item-title>
+                    <v-list-item-title>Editar Dados</v-list-item-title>
                     </template>
-                    <div v-for="role in $store.getters.getAllRoles" :key="role">
-                        <v-list-item
-                        link
-                        v-if="$store.getters.getPermissions.includes(role)">
-                            <v-list-item-icon>
-                            <v-icon v-text="`mdi-plus`" right></v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-title v-text="role"></v-list-item-title>
-
-                        </v-list-item>
-                    </div>
+                    <v-list-item link @click="dialogTrocarSenha=!dialogTrocarSenha">
+                        <v-list-item-icon>
+                        <v-icon right>mdi-circle-edit-outline</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Trocar Senha</v-list-item-title>
+                    </v-list-item>
                 </v-list-group>
+                <v-list-item link v-if="$store.getters.getPermissions.length !== 0" @click="goToCadastro()">
+                    <v-list-item-icon>
+                    <v-icon>mdi-account-plus</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Criar Usuário</v-list-item-title>
+                </v-list-item>
+                <v-list-item link v-if="$store.getters.getPermissions.length !== 0" @click="goToUsuarios()">
+                    <v-list-item-icon>
+                    <v-icon>mdi-account-group</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Usuários do Sistema</v-list-item-title>
+                </v-list-item>
                 <v-list-item class="justify-center">
                     <v-btn plain text x-large class="mr-5" @click="dialogSair=true" color="blue">
                         <v-icon>mdi-logout</v-icon>
@@ -180,6 +181,7 @@ export default {
     data() {
         return {
             drawer: false,
+            logoutLoading: false,
             error: false,
             errorMessage: "Chave inválida",
             key: null,
@@ -215,10 +217,16 @@ export default {
                 });
         },
         logout() {
+            this.logoutLoading = true;
             this.dialogSair = false;
             this.$store.dispatch('logout')
             .then(() => {
-                this.$router.push({name: 'novo-pedido'})
+                this.$router.push({name: 'login'});
+                this.logoutLoading = false;
+            })
+            .catch(() => {
+                alert("Ocorreu um erro no logout.")
+                this.$router.push({name: 'login'});
             })
         },
         keyCheck(){
@@ -243,6 +251,14 @@ export default {
                 this.error = true;
                 this.loading = false;
                 })
+        },
+        goToCadastro(){
+            this.drawer = false;
+            this.$router.push({name: 'criar-usuario'})
+        },
+        goToUsuarios(){
+            this.drawer = false;
+            this.$router.push({name: 'usuarios'})
         }
     }
 }

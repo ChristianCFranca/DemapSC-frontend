@@ -147,6 +147,23 @@
         </div>
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
+                <p class="text-h6"> Aprovado Por: </p>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-subtitle class="text-subtitle-1">
+                            Assistente:
+                        </v-list-item-subtitle>
+                        <p class="text-h6">
+                            {{ inputItem.assistente }} 
+                            <span class="font-weight-light">no dia</span> 
+                            {{ inputItem.dataAprovacaoAssistente }} 
+                            <span class="font-weight-light"></span> 
+                            {{ inputItem.horarioAprovacaoAssistente }}
+                        </p>
+                    </v-list-item-content>
+                </v-list-item>
+            </v-col>
+            <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active && cargoCorreto">
                     <h2>Chave de Identificação do(a) fiscal:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
@@ -228,6 +245,7 @@ export default {
             let {_id, ...inputItem} = this.inputItem;
 
             const now = new Date().toLocaleString('pt-BR');
+            inputItem['fiscal'] = this.$store.getters.getCompleteName;
 
             if (cancel) {
                 inputItem['active'] = false;

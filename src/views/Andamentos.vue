@@ -16,175 +16,162 @@
         </v-tabs>
 
         <v-card class="ma-4">
-            <v-card>
+            <v-card-title>
+                Solicitações em Andamento
 
-                <v-card-title>
-                    Solicitações em Andamento
+                <v-spacer></v-spacer>
 
-                    <v-spacer></v-spacer>
+                <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Pesquisar"
+                    single-line
+                    hide-details
+                ></v-text-field>
 
-                    <v-text-field
-                        v-model="search"
-                        append-icon="mdi-magnify"
-                        label="Pesquisar"
-                        single-line
-                        hide-details
-                    ></v-text-field>
+            </v-card-title>
 
-                </v-card-title>
-
-                <v-data-table
-                :headers="headers"
-                :items="pedidos"
-                :search="search"
-                :items-per-page="15"
-                item-key="_id"
-                class="elevation-1"
-                multi-sort
-                show-expand
-                :loading="loading"
-                loading-text="Carregando... Por favor aguarde"
-                >
-                    
-                    <template v-slot:expanded-item="{ headers, item }">
-                        <td :colspan="headers.length">
-                            
-                            <v-stepper alt-labels class="my-4" :value="item.statusStep">
-                                <v-stepper-header>
-                                    <v-stepper-step step="1" 
-                                    :complete="item.statusStep > 1" 
-                                    color="success">
-                                        <h4 class="text-center font-weight-regular">Solicitação realizada</h4> 
-                                    </v-stepper-step>
-
-                                    <v-divider></v-divider>
-
-                                    <v-stepper-step step="2" 
-                                    :complete="item.statusStep > 2" 
-                                    :color="item.statusStep > 2 ? 'success' : item.color"
-                                    :rules="[() => (!item.active && item.statusStep === 2) ? false : true]">
-                                        <h4 class="text-center font-weight-regular">
-                                            {{ getMessage(2, item) }}
-                                        </h4>
-                                        <p v-if="item.statusStep > 2" class="text-center font-weight-bold mt-1">
-                                            {{ item.dataAprovacaoAssistente }} {{ item.horarioAprovacaoAssistente }}
-                                        </p>
-                                    </v-stepper-step>
-
-                                    <v-divider></v-divider>
-
-                                    <v-stepper-step step="3" 
-                                    :complete="item.statusStep > 3" 
-                                    :color="item.statusStep > 3 ? 'success' : item.color"
-                                    :rules="[() => (!item.active && item.statusStep === 3) ? false : true]">
-                                        <h4 class="text-center font-weight-regular">
-                                            {{ getMessage(3, item) }}
-                                        </h4> 
-                                        <p v-if="item.statusStep > 3" class="text-center font-weight-bold mt-1">
-                                            {{ item.dataAprovacaoFiscal }} {{ item.horarioAprovacaoFiscal }}
-                                        </p>
-                                    </v-stepper-step>
-
-                                    <v-divider></v-divider>
-
-                                    <v-stepper-step step="4" 
-                                    :complete="item.statusStep > 4" 
-                                    :color="item.statusStep > 4 ? 'success' : item.color"
-                                    :rules="[() => (!item.active && item.statusStep === 4) ? false : true]">
-                                        <h4 class="text-center font-weight-regular">
-                                            {{ getMessage(4, item) }} 
-                                        <p v-if="item.statusStep > 3" class="text-center font-weight-bold mt-1">
-                                            {{ item.dataAprovacaoAlmoxarife }} {{ item.horarioAprovacaoAlmoxarife }}
-                                        </p>
-                                        </h4> 
-                                    </v-stepper-step>
-
-                                    <v-divider></v-divider>
-
-                                    <v-stepper-step step="5" 
-                                    :complete="item.statusStep > 5" 
-                                    :color="item.statusStep > 5 ? 'success' : item.color"
-                                    :rules="[() => (!item.active && item.statusStep === 5) ? false : true]">
-                                        <h4 class="text-center font-weight-regular">
-                                            {{ getMessage(5, item) }}
-                                        </h4> 
-                                    </v-stepper-step>
-
-                                    <v-divider></v-divider>
-
-                                    <v-stepper-step step="6" 
-                                    :complete="item.statusStep === 6" 
-                                    :color="item.color">
-                                        <h4 class="text-center font-weight-regular">
-                                            Solicitação finalizada
-                                        </h4> 
-                                    </v-stepper-step>
-                                </v-stepper-header>
-
-                                <v-stepper-items>
-
-                                    <v-stepper-content step="2">
-                                        <Step2 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
-                                    </v-stepper-content>
-
-                                    <v-stepper-content step="3">
-                                        <Step3 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
-                                    </v-stepper-content>
-
-                                    <v-stepper-content step="4">
-                                        <Step4 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
-                                    </v-stepper-content>
-
-                                    <v-stepper-content step="5">
-                                        <Step5 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
-                                    </v-stepper-content>
-
-                                    <v-stepper-content step="6">
-                                        <Step6 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
-                                    </v-stepper-content>
-                                    
-                                </v-stepper-items>
-                                
-                            </v-stepper>
-
-                        </td>
-                    </template>
-                    
-
-                    <template v-slot:no-data>
-                        <h1 class="font-weight-light"> 
-                            {{ solicitacaoMessage }} 
-                            <v-icon large class="mb-2"> {{ iconMessage }}</v-icon>
-                        </h1> 
-                    </template>
-
-                    <template v-slot:[`item.valorGastoTotal`]="{ item }">
-                        {{ getValorGastoTotal(item) }}
-                    </template>
-
-                    <template v-slot:[`item.valorDaSolicitacao`]="{ item }">
-                        {{ Number(item.valorDaSolicitacao).toLocaleString('pt-br', {style: 'currency', currency: 'BRL'}) }}
-                        <v-icon 
-                        dense 
-                        color="red" 
-                        v-if="naoCadastradoEliminado(item)">
-                            mdi-alert-octagon-outline
-                        </v-icon>
-                    </template>
-
-                    <template v-slot:[`item.statusStep`]="{ item }">
-                        <v-chip
-                            :color="item.color"
-                            dark
-                            class="my-5"
-                        >
-                            {{ item.statusStep }}/6
-                        </v-chip>
-                    </template>
+            <v-data-table
+            :headers="headers"
+            :items="pedidos"
+            :search="search"
+            :items-per-page="15"
+            item-key="_id"
+            class="elevation-1"
+            multi-sort
+            show-expand
+            :loading="loading"
+            loading-text="Carregando... Por favor aguarde"
+            >
                 
-                </v-data-table>
+                <template v-slot:expanded-item="{ headers, item }">
+                    <td :colspan="headers.length">
+                        
+                        <v-stepper alt-labels class="my-4" :value="item.statusStep">
+                            <v-stepper-header>
+                                <v-stepper-step step="1" 
+                                :complete="item.statusStep > 1" 
+                                color="success">
+                                    <h4 class="text-center font-weight-regular">Solicitação realizada</h4> 
+                                </v-stepper-step>
 
-            </v-card>
+                                <v-divider></v-divider>
+
+                                <v-stepper-step step="2" 
+                                :complete="item.statusStep > 2" 
+                                :color="item.statusStep > 2 ? 'success' : item.color"
+                                :rules="[() => (!item.active && item.statusStep === 2) ? false : true]">
+                                    <h4 class="text-center font-weight-regular">
+                                        {{ getMessage(2, item) }}
+                                    </h4>
+                                </v-stepper-step>
+
+                                <v-divider></v-divider>
+
+                                <v-stepper-step step="3" 
+                                :complete="item.statusStep > 3" 
+                                :color="item.statusStep > 3 ? 'success' : item.color"
+                                :rules="[() => (!item.active && item.statusStep === 3) ? false : true]">
+                                    <h4 class="text-center font-weight-regular">
+                                        {{ getMessage(3, item) }}
+                                    </h4>
+                                </v-stepper-step>
+
+                                <v-divider></v-divider>
+
+                                <v-stepper-step step="4" 
+                                :complete="item.statusStep > 4" 
+                                :color="item.statusStep > 4 ? 'success' : item.color"
+                                :rules="[() => (!item.active && item.statusStep === 4) ? false : true]">
+                                    <h4 class="text-center font-weight-regular">
+                                        {{ getMessage(4, item) }} 
+                                    </h4> 
+                                </v-stepper-step>
+
+                                <v-divider></v-divider>
+
+                                <v-stepper-step step="5" 
+                                :complete="item.statusStep > 5" 
+                                :color="item.statusStep > 5 ? 'success' : item.color"
+                                :rules="[() => (!item.active && item.statusStep === 5) ? false : true]">
+                                    <h4 class="text-center font-weight-regular">
+                                        {{ getMessage(5, item) }}
+                                    </h4> 
+                                </v-stepper-step>
+
+                                <v-divider></v-divider>
+
+                                <v-stepper-step step="6" 
+                                :complete="item.statusStep === 6" 
+                                :color="item.color">
+                                    <h4 class="text-center font-weight-regular">
+                                        Solicitação finalizada
+                                    </h4> 
+                                </v-stepper-step>
+                            </v-stepper-header>
+
+                            <v-stepper-items>
+
+                                <v-stepper-content step="2">
+                                    <Step2 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
+                                </v-stepper-content>
+
+                                <v-stepper-content step="3">
+                                    <Step3 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
+                                </v-stepper-content>
+
+                                <v-stepper-content step="4">
+                                    <Step4 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
+                                </v-stepper-content>
+
+                                <v-stepper-content step="5">
+                                    <Step5 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
+                                </v-stepper-content>
+
+                                <v-stepper-content step="6">
+                                    <Step6 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
+                                </v-stepper-content>
+                                
+                            </v-stepper-items>
+                            
+                        </v-stepper>
+
+                    </td>
+                </template>
+                
+
+                <template v-slot:no-data>
+                    <h1 class="font-weight-light"> 
+                        {{ solicitacaoMessage }} 
+                        <v-icon large class="mb-2"> {{ iconMessage }}</v-icon>
+                    </h1> 
+                </template>
+
+                <template v-slot:[`item.valorGastoTotal`]="{ item }">
+                    {{ getValorGastoTotal(item) }}
+                </template>
+
+                <template v-slot:[`item.valorDaSolicitacao`]="{ item }">
+                    {{ Number(item.valorDaSolicitacao).toLocaleString('pt-br', {style: 'currency', currency: 'BRL'}) }}
+                    <v-icon 
+                    dense 
+                    color="red" 
+                    v-if="naoCadastradoEliminado(item)">
+                        mdi-alert-octagon-outline
+                    </v-icon>
+                </template>
+
+                <template v-slot:[`item.statusStep`]="{ item }">
+                    <v-chip
+                        :color="item.color"
+                        dark
+                        class="my-5"
+                    >
+                        {{ item.statusStep }}/6
+                    </v-chip>
+                </template>
+            
+            </v-data-table>
         </v-card>
         </v-container>
 </template>
@@ -218,7 +205,7 @@ export default {
             page: 0,
             loading: false,
             headers: [
-                { text: "Número da Ordem de Serviço", value: "os"},
+                { text: "Número da OS", value: "os"},
                 { text: "Quantidade de Itens", value: "quantidade" },
                 { text: "Valor Estimado", value: "valorDaSolicitacao" },
                 { text: "Valor Gasto", value: "valorGastoTotal" },
@@ -231,9 +218,9 @@ export default {
                 { text: '', value: 'data-table-expand', sortable: false, groupable: false }
             ],
             messageMapping: [
-                {concluido: "Aprovado pelo(a) assistente de fiscalização em ", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
-                {concluido: "Aprovado pelo(a) fiscal em ", andamento: "Aguardando confirmação do(a) fiscal"},
-                {concluido: "Confirmado pelo(a) almoxarife em ", andamento: "Aguardando confirmação do(a) almoxarife"},
+                {concluido: "Aprovado pelo(a) assistente de fiscalização", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
+                {concluido: "Aprovado pelo(a) fiscal", andamento: "Aguardando confirmação do(a) fiscal"},
+                {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}
             ]
         };
@@ -254,6 +241,9 @@ export default {
                     this.solicitacaoMessage = "Você não está autenticado ou não tem permissão para ver essa informação.";
                     this.iconMessage = "mdi-emoticon-sad-outline";
                     this.$store.dispatch('logout')
+                    .then(() => {
+                        this.$router.push({name: 'login'});
+                    })
                 } else {
                     this.solicitacaoMessage = "Nenhuma solicitação em andamento.";
                     this.iconMessage = "mdi-emoticon-happy-outline";
@@ -326,7 +316,7 @@ export default {
     },
     computed: {
         pedidos() {
-            return this.getter
+            return this.getter;
         }
     }
 }
