@@ -63,13 +63,13 @@
         </v-dialog>
 
 
-        <v-dialog v-model="dialogDelete" max-width="500px">
+        <v-dialog v-model="dialogDelete" max-width="600px">
             <v-card>
-                <v-card-title class="headline">Tem certeza que deseja apagar esse usuário?</v-card-title>
+                <v-card-title class="headline justify-center">Tem certeza que deseja apagar esse usuário?</v-card-title>
                 <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="dialogDelete=false">Cancelar</v-btn>
-                <v-btn color="blue darken-1" text @click="dialogDelete=false">OK</v-btn>
+                <v-btn color="blue darken-1" text :loading="loadingDelete" @click="deleteConfirm()">OK</v-btn>
                 <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
@@ -132,6 +132,7 @@ export default {
         return {
             search: '',
             loading: false,
+            loadingDelete: false,
             loadingSend: false,
             snackbar: false,
             snackbarColor: 'error',
@@ -160,8 +161,41 @@ export default {
             this.editedItem.role = item.role;
             this.dialog = true;
         },
-        deleteItem() {
-            this.dialog = true;
+        deleteItem(item) {
+            this.stagedForDeletion = item.username;
+            this.dialogDelete = true;
+        },
+        deleteConfirm() {
+            this.loadingDelete = true;
+            this.$store.dispatch('deleteUser', this.stagedForDeletion)
+            .then(() => {
+                this.dialogDelete = false;
+                this.loadingDelete = false;
+                this.snackbarMessage = "Usuário excluído com sucesso!";
+                this.snackbarColor = "success";
+                this.snackbar = true;
+                this.setUsers();
+            })
+            .catch(error => {
+                console.log(error)
+                this.dialogDelete = false;
+                this.loadingDelete = false;
+                this.snackbarMessage = "Ocorreu um erro ao excluir o usuário...";
+                this.snackbarColor = "error";
+                this.snackbar = true;
+                if (error.response) {
+                    if (error.response.status === 401) {
+                        this.snackbarMessage = "Você não está autenticado ou não possui permissão para fazer isso.";
+                        this.snackbarColor = "error";
+                        this.snackbar = true;
+                        this.$store.dispatch('logout');
+                    }
+                } else {
+                    this.snackbarMessage = "Ocorreu um erro de comunicação com o servidor.";
+                    this.snackbarColor = "error";
+                    this.snackbar = true;
+                }
+            })
         },
         updateUser() {
             this.loadingSend = true;
@@ -197,7 +231,6 @@ export default {
         },
         setUsers() {
             this.loading = true;
-            console.log(this.loading)
             this.$store.dispatch('getUsers')
             .then(() => {
                 if (this.users.length === 0){

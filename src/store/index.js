@@ -89,6 +89,10 @@ export default new Vuex.Store({
       return apiClient.put('/auth/users/update/general', userDataJSON)
       .then(response => response)
     },
+    deleteUser(_, username) {
+      return apiClient.delete(`/auth/users/delete/?username=${username}`)
+      .then(response => response)
+    },
     getUsers({ commit }) {
       return apiClient.get('/auth/users/')
       .then(response => {

@@ -194,12 +194,19 @@ export default {
             this.$store.dispatch('register', newUserData)
             .then(() => {
                 this.loading = false;
-                this.successMessage = "Conta criada com sucesso!";
+                this.successMessage = "Usuário cadastrado com sucesso!";
                 this.resetForm();
             })
             .catch(error => {
                 this.loading = false;
                 if (error.response){
+                    if (error.response.status === 401){
+                        this.errorMessage = "Você não está autenticado ou não possui permissão para fazer isso.";
+                        this.$store.distpach('logout')
+                        .then(() => {
+                            this.$router.push({name: 'login'})
+                        })
+                    }
                     this.errorMessage = error.response.data.detail;
                 }
                 else {
