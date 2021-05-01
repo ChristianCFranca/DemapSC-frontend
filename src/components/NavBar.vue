@@ -219,14 +219,13 @@ export default {
         logout() {
             this.logoutLoading = true;
             this.dialogSair = false;
+            this.$router.push({name: 'login'});
             this.$store.dispatch('logout')
             .then(() => {
-                this.$router.push({name: 'login'});
                 this.logoutLoading = false;
             })
             .catch(() => {
                 alert("Ocorreu um erro no logout.")
-                this.$router.push({name: 'login'});
             })
         },
         keyCheck(){

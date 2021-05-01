@@ -275,7 +275,7 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="constructPedido()"
+            @click="checarEConstruirPedido()"
             :loading="loading"
             :disabled="disableSend"
           >
@@ -385,7 +385,7 @@ export default {
             this.$refs.form.reset();
             this.$refs.osForm.reset();
         },
-        constructPedido() {
+        checarEConstruirPedido() {
             this.error = false;
             this.success = false;
 
@@ -395,19 +395,14 @@ export default {
                 return
             }
 
-            const dataHorario = new Date().toLocaleString('pt-BR');
-            this.pedido.dataPedido = dataHorario.split(' ')[0];
-            this.pedido.horarioPedido = dataHorario.split(' ')[1];
+            [this.pedido.dataPedido, this.pedido.horarioPedido] = new Date().toLocaleString('pt-BR').split(' '); // Obtem a data e o horario
 
-            this.pedido.items.forEach((function(item, idx) {
-                if (idx === 0)
-                    this.valorDaSolicitacao = null;
-                let aux = item.valorUnitario ? Number(item.valorUnitario) * Number(item.quantidade) : null; // Obtem a multiplicacao
-                this.items[idx].valorTotal = aux ? Math.round(aux * 100) / 100 : null; // Arredonda 2 casas decimais, obtendo o valor para 
-                this.valorDaSolicitacao += this.items[idx].valorTotal ? this.items[idx].valorTotal : null; // cast Number em null resulta 0
-                this.valorDaSolicitacao = this.valorDaSolicitacao ? this.valorDaSolicitacao : null; // if (0) resulta em false
-            }).bind(this.pedido))
-            
+            this.pedido.items.forEach(function(item, idx) { // Valor padrão permanecerá null se nenhum dos itens atender o requisito
+                if (item.valorUnitario) // Quer dizer que existe no banco de dados pois o usuario nao altera isso
+                    this.items[idx].valorTotal = Math.round(Number(item.valorUnitario) * Number(item.quantidade) * 100) / 100;
+                    this.valorDaSolicitacao += this.items[idx].valorTotal;
+            }, this.pedido);
+
             this.sendPedido()
         },
         sendPedido() {
