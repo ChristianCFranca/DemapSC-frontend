@@ -190,7 +190,7 @@
                         </v-list-item-subtitle>
                         <p class="text-h6">
                             {{ inputItem.assistente }} 
-                            <span class="font-weight-light">no dia</span> 
+                            <span class="font-weight-light">em</span> 
                             {{ inputItem.dataAprovacaoAssistente }} 
                             <span class="font-weight-light">às</span> 
                             {{ inputItem.horarioAprovacaoAssistente }}
@@ -204,7 +204,7 @@
                         </v-list-item-subtitle>
                         <p class="text-h6">
                             {{ inputItem.fiscal }} 
-                            <span class="font-weight-light">no dia</span> 
+                            <span class="font-weight-light">em</span> 
                             {{ inputItem.dataAprovacaoFiscal }} 
                             <span class="font-weight-light">às</span> 
                             {{ inputItem.horarioAprovacaoFiscal }}
@@ -218,7 +218,7 @@
                         </v-list-item-subtitle>
                         <p class="text-h6">
                             {{ inputItem.almoxarife }} 
-                            <span class="font-weight-light">no dia</span> 
+                            <span class="font-weight-light">em</span> 
                             {{ inputItem.dataAprovacaoAlmoxarife }} 
                             <span class="font-weight-light">às</span> 
                             {{ inputItem.horarioAprovacaoAlmoxarife }}

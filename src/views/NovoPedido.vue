@@ -108,7 +108,7 @@
                                                 :items="listaDeMateriais"
                                                 :loading="isMateriaisLoading"
                                                 :disabled="isMateriaisLoading"
-                                                @blur="checkInputName(pedido.items[item-1])"
+                                                @blur="mapMaterialParaPropriedades(pedido.items[item-1])"
                                                 hide-no-data
                                                 hide-selected
                                                 :counter="100"
@@ -399,18 +399,15 @@ export default {
             this.pedido.dataPedido = dataHorario.split(' ')[0];
             this.pedido.horarioPedido = dataHorario.split(' ')[1];
 
-            for (let idx = 0; idx < this.pedido.items.length; idx++){
-                if (this.pedido.items[idx].valorUnitario !== null){
-                    let aux = Number(this.pedido.items[idx].valorUnitario) * Number(this.pedido.items[idx].quantidade); // Obtem a multiplicacao
-                    this.pedido.items[idx].valorTotal = Math.round(aux * 100) / 100 // Arredonda 2 casas decimais
-                }
-            }
-
-            this.pedido.valorDaSolicitacao = null;
-            for (let idx = 0; idx < this.pedido.items.length; idx++){
-                if (this.pedido.items[idx].valorTotal !== null)
-                    this.pedido.valorDaSolicitacao += this.pedido.items[idx].valorTotal;
-            }
+            this.pedido.items.forEach((function(item, idx) {
+                if (idx === 0)
+                    this.valorDaSolicitacao = null;
+                let aux = item.valorUnitario ? Number(item.valorUnitario) * Number(item.quantidade) : null; // Obtem a multiplicacao
+                this.items[idx].valorTotal = aux ? Math.round(aux * 100) / 100 : null; // Arredonda 2 casas decimais, obtendo o valor para 
+                this.valorDaSolicitacao += this.items[idx].valorTotal ? this.items[idx].valorTotal : null; // cast Number em null resulta 0
+                this.valorDaSolicitacao = this.valorDaSolicitacao ? this.valorDaSolicitacao : null; // if (0) resulta em false
+            }).bind(this.pedido))
+            
             this.sendPedido()
         },
         sendPedido() {
@@ -422,10 +419,13 @@ export default {
                 this.loading = false;
                 })
             .catch(error => {
-                if (error.response.status == 401) {
+                if (error ?.response ?.status == 401) {
                     this.errorMessage = "Você não está autenticado ou não possui permissão para enviar esse pedido."
                     this.error = true;
                     this.$store.dispatch('logout')
+                    .then(() => {
+                        this.$router.push({name: "login"})
+                    })
                 }
                 console.log(error); 
                 this.errorMessage = "Ocorreu um erro ao enviar o seu pedido para o servidor. Atualize a página e tente novamente."
@@ -433,27 +433,24 @@ export default {
                 this.loading = false;
                 });
         },
-        checkInputName(item) {
+        mapMaterialParaPropriedades(item) {
             setTimeout(() => {
-                if (this.listaDeMateriais.length > 0){
-                    let nome = item.nome;
-                    if (nome !== null){
-                        if (this.listaDeMateriais.includes(nome)){
-                            let idx = this.listaDeMateriais.indexOf(nome);
-                            item.categoria = this.$store.getters.getMateriais[idx].categoria;
-                            item.valorUnitario = this.$store.getters.getMateriais[idx].valorUnitario;
-                            item.unidade = this.$store.getters.getMateriais[idx].unidade;
-                        } else {
-                            item.categoria = "Outro";
-                            item.valorUnitario = null;
-                            item.unidade = null;
-                        }
-                    } else {
-                        item.categoria = null;
-                        item.valorUnitario = null;
-                        item.unidade = null;
-                    }
+                if (this.listaDeMateriais.length <= 0)
+                    return
+                if (!item.nome) {
+                    item.categoria = null;
+                    item.valorUnitario = null;
+                    item.unidade = null;
+                    return
                 }
+                let idx = this.listaDeMateriais.indexOf(item.nome); // Retorna -1 se não estiver na lista
+                if (idx === -1) {
+                    item.categoria = "Outro";
+                    item.valorUnitario = null;
+                    item.unidade = null;
+                    return
+                }
+                ({categoria: item.categoria, valorUnitario: item.valorUnitario, unidade: item.unidade} = this.$store.getters.getMateriais[idx]);
             }, 100);
             
         }

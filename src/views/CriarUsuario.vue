@@ -199,19 +199,17 @@ export default {
             })
             .catch(error => {
                 this.loading = false;
-                if (error.response){
-                    if (error.response.status === 401){
-                        this.errorMessage = "Você não está autenticado ou não possui permissão para fazer isso.";
-                        this.$store.distpach('logout')
-                        .then(() => {
-                            this.$router.push({name: 'login'})
-                        })
-                    }
+                if (error ?.response ?.status === 401){
+                    this.errorMessage = "Você não está autenticado ou não possui permissão para fazer isso.";
+                    this.$store.distpach('logout')
+                    .then(() => {
+                        this.$router.push({name: 'login'})
+                    })
+                }
+                else if (error ?.response ?.data ?.detail)
                     this.errorMessage = error.response.data.detail;
-                }
-                else {
+                else
                     this.errorMessage = "Houve problema de conexão com o servidor.";
-                }
             })
         }
     }

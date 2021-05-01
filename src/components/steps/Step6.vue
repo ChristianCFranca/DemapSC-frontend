@@ -173,7 +173,7 @@
                         </v-list-item-subtitle>
                         <p class="text-h6">
                             {{ inputItem.assistente }} 
-                            <span class="font-weight-light">no dia</span> 
+                            <span class="font-weight-light">em</span> 
                             {{ inputItem.dataAprovacaoAssistente }} 
                             <span class="font-weight-light">às</span> 
                             {{ inputItem.horarioAprovacaoAssistente }}
@@ -187,7 +187,7 @@
                         </v-list-item-subtitle>
                         <p class="text-h6">
                             {{ inputItem.fiscal }} 
-                            <span class="font-weight-light">no dia</span> 
+                            <span class="font-weight-light">em</span> 
                             {{ inputItem.dataAprovacaoFiscal }} 
                             <span class="font-weight-light">às</span> 
                             {{ inputItem.horarioAprovacaoFiscal }}
@@ -201,7 +201,7 @@
                         </v-list-item-subtitle>
                         <p class="text-h6">
                             {{ inputItem.almoxarife }} 
-                            <span class="font-weight-light">no dia</span> 
+                            <span class="font-weight-light">em</span> 
                             {{ inputItem.dataAprovacaoAlmoxarife }} 
                             <span class="font-weight-light">às</span> 
                             {{ inputItem.horarioAprovacaoAlmoxarife }}
@@ -215,16 +215,16 @@
                         </v-list-item-subtitle>
                         <p class="text-h6">
                             {{ inputItem.recebimento }} 
-                            <span class="font-weight-light">no dia</span> 
+                            <span class="font-weight-light">em</span> 
                             {{ inputItem.dataFinalizacao }} 
                             <span class="font-weight-light">às</span> 
                             {{ inputItem.horarioFinalizacao }}
                         </p>
                     </v-list-item-content>
                 </v-list-item>
+                <v-divider class="my-4"></v-divider>
             </v-col>
         </v-row>
-        <v-divider class="my-4"></v-divider>
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div>

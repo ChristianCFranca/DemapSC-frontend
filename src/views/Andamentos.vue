@@ -234,10 +234,11 @@ export default {
                 this.getter = this.$store.getters.getPedidosAtivos;
                 })
             .catch(error => {
-                if (error.response === undefined){
+                console.log(error);
+                if (error.response){
                     this.solicitacaoMessage = "Banco de dados indisponível.";
                     this.iconMessage = "mdi-emoticon-sad-outline";
-                } else if (error.response.status === 401){
+                } else if (error ?.response ?.status === 401){
                     this.solicitacaoMessage = "Você não está autenticado ou não tem permissão para ver essa informação.";
                     this.iconMessage = "mdi-emoticon-sad-outline";
                     this.$store.dispatch('logout')
@@ -247,8 +248,7 @@ export default {
                 } else {
                     this.solicitacaoMessage = "Nenhuma solicitação em andamento.";
                     this.iconMessage = "mdi-emoticon-happy-outline";
-                }
-                console.log(error); 
+                } 
                 this.loading = false; 
                 });
         },
@@ -278,18 +278,14 @@ export default {
         },
         snackbarReactError(message) {
             this.snackbarColor = "error";
-            if (message) {
+            if (message ?.data ?.detail)
+                this.message = message.data.detail;
+            else if (message ?.data)
+                this.message = message.data;
+            else if(message)
                 this.message = message;
-                if (message.data){
-                    if (message.data.detail)
-                        this.message = message.data.detail;
-                    else {
-                        this.message = message.data
-                    }
-                }
-            } else
+            else
                 this.message = "Ocorreu um problema desconhecido";
-
             this.snackbar = true;
             this.logTable();
         },

@@ -162,7 +162,12 @@
                     </v-col>
                 </div>
                 <div v-if="!inputItem.active">
-                    <h3 class="font-weight-light red--text text-h6">{{inputItem.dataCancelamento}} às {{inputItem.horarioCancelamento}}</h3>
+                    <h3 class="font-weight-light red--text text-h6">
+                        <span class="font-weight-bold">{{inputItem.assistente}}</span> em 
+                        <span class="font-weight-bold">{{inputItem.dataCancelamento}}</span> às 
+                        <span class="font-weight-bold">{{inputItem.horarioCancelamento}}</span>
+                    </h3>
+                    <v-divider class="my-3"></v-divider>
                     <h1 class="font-weight-regular red--text">Solicitação cancelada pelo(a) assistente de fiscalização.</h1>
                     <v-icon
                     x-large

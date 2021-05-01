@@ -183,13 +183,11 @@ export default {
                 this.snackbarMessage = "Ocorreu um erro ao excluir o usuário...";
                 this.snackbarColor = "error";
                 this.snackbar = true;
-                if (error.response) {
-                    if (error.response.status === 401) {
-                        this.snackbarMessage = "Você não está autenticado ou não possui permissão para fazer isso.";
-                        this.snackbarColor = "error";
-                        this.snackbar = true;
-                        this.$store.dispatch('logout');
-                    }
+                if (error.response ?.status === 401) {
+                    this.snackbarMessage = "Você não está autenticado ou não possui permissão para fazer isso.";
+                    this.snackbarColor = "error";
+                    this.snackbar = true;
+                    this.$store.dispatch('logout');
                 } else {
                     this.snackbarMessage = "Ocorreu um erro de comunicação com o servidor.";
                     this.snackbarColor = "error";
@@ -215,13 +213,11 @@ export default {
                 this.snackbarMessage = "Ocorreu um erro ao modificar o usuário...";
                 this.snackbarColor = "error";
                 this.snackbar = true;
-                if (error.response) {
-                    if (error.response.status === 401) {
-                        this.snackbarMessage = "Você não está autenticado ou não possui permissão para fazer isso.";
-                        this.snackbarColor = "error";
-                        this.snackbar = true;
-                        this.$store.dispatch('logout');
-                    }
+                if (error.response ?.status === 401) {
+                    this.snackbarMessage = "Você não está autenticado ou não possui permissão para fazer isso.";
+                    this.snackbarColor = "error";
+                    this.snackbar = true;
+                    this.$store.dispatch('logout');
                 } else {
                     this.snackbarMessage = "Ocorreu um erro de comunicação com o servidor.";
                     this.snackbarColor = "error";
@@ -243,19 +239,15 @@ export default {
                 this.loading = false;
                 this.iconMessage = "mdi-emoticon-sad-outline";
                 console.log(error)
-                if (error.response) {
-                    if (error.response.data)
-                        if (error.response.data.detail){
-                            this.solicitacaoMessage = error.response.data.detail;
-                        } else {
-                            this.solicitacaoMessage = error.response.data;
-                        }
-                    if (error.response.status === 401) {
-                        this.solicitacaoMessage = "Usuário não possui permissão.";
-                        this.$store.dispatch('logout');
-                    } else {
-                        this.solicitacaoMessage = "Ocorreu um erro de comunicação com o servidor.";
-                    }
+                if (error ?.response ?.status === 401) {
+                    this.solicitacaoMessage = "Usuário não possui permissão.";
+                    this.$store.dispatch('logout');
+                }
+                else if (error ?.response ?.data ?.detail){
+                    this.solicitacaoMessage = error.response.data.detail;
+                } 
+                else if (error ?.response ?.data) {
+                    this.solicitacaoMessage = error.response.data;
                 } else {
                     this.solicitacaoMessage = "Ocorreu um erro de comunicação com o servidor.";
                 }
