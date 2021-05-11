@@ -355,7 +355,7 @@ export default {
         })
         .catch(error => {
             console.log(error);
-            if (error.response.status === 401) {
+            if (error?.response?.status === 401) {
                 this.errorMateriaisMessage = "Você não está autenticado ou não tem permissão para requisitar materiais.";
                 this.errorGetMateriais = true;
                 this.isMateriaisLoading = false;

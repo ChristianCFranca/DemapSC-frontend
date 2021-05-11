@@ -16,11 +16,12 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    tokenRemainingSeconds: null,
     currentUser: {
       nome: null,
       role: null,
       email: null,
-      token: null
+      token: null,
     },
     materiaisList: [],
     pedidos: [],
@@ -43,6 +44,14 @@ export default new Vuex.Store({
     allUsers: []
   },
   mutations: {
+    ENGAGE_TOKEN_COUNTDOWN(state) {
+      const originalTokenTime = localStorage.getItem('tokenOriginalTime');
+      state.tokenRemainingSeconds = 30*60 - Math.trunc((new Date().getTime() - originalTokenTime)/1000); // 30 minutos menos o tempo passado
+      setInterval(function () {
+        if (state.tokenRemainingSeconds)
+          state.tokenRemainingSeconds--;
+      }, 1000)
+    },
     SET_AUTHENTICATION_DATA(state, userData) {
       state.currentUser.nome = userData.nome_completo;
       state.currentUser.role = userData.role;
@@ -50,6 +59,8 @@ export default new Vuex.Store({
       state.currentUser.token = userData.access_token;
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${userData.access_token}`;
       localStorage.setItem('user', JSON.stringify(userData));
+      if (!localStorage.getItem('tokenOriginalTime'))
+        localStorage.setItem('tokenOriginalTime', JSON.stringify(new Date().getTime()));
     },
     SET_ALL_USERS(state, users) {
       state.allUsers = users;
@@ -62,6 +73,7 @@ export default new Vuex.Store({
     },
     USER_CLEAR_DATA() {
       localStorage.removeItem('user');
+      localStorage.removeItem('tokenOriginalTime');
       location.reload(); // Força um refresh da página, destruindo o estado do vuex
     }
   },
@@ -70,6 +82,7 @@ export default new Vuex.Store({
       return apiClient.post('/auth/token', credentials)
       .then(response => {
         commit('SET_AUTHENTICATION_DATA', response.data)
+        commit('ENGAGE_TOKEN_COUNTDOWN')
         return response
       })
     },
@@ -144,6 +157,7 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    getSessaoRestante: state => state.tokenRemainingSeconds,
     getIsAuthenticated: state => state.currentUser.token !== null,
     getPermissions: state => state.permissionsPerRole[state.currentUser.role],
     getCompleteName: state => state.currentUser.nome,

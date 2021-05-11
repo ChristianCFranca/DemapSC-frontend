@@ -49,7 +49,7 @@
                     <div class="my-1 text-h6">| {{ $store.getters.getRole }}</div>
                 </v-list-item-content>
                 </v-list-item>
-                <v-divider></v-divider>
+                <v-divider class="mx-4"></v-divider>
                 <v-list-group
                 :value="false"
                 prepend-icon="mdi-account-edit">
@@ -75,6 +75,14 @@
                     </v-list-item-icon>
                     <v-list-item-title>Usuários do Sistema</v-list-item-title>
                 </v-list-item>
+                <v-divider class="mx-4 my-4"></v-divider>
+                <v-list-item two-line>
+                    <v-list-item-content>
+                        <v-list-item-subtitle class="text-center">Tempo de Sessão Restante</v-list-item-subtitle>
+                        <v-list-item-title class="text-center text-h5 font-weight-light">{{ `${remainingMinutes}:${remainingSeconds}` }}</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-divider class="mx-4 my-4"></v-divider>
                 <v-list-item class="justify-center">
                     <v-btn plain text x-large class="mr-5" @click="dialogSair=true" color="blue">
                         <v-icon>mdi-logout</v-icon>
@@ -112,14 +120,13 @@
                 <v-spacer></v-spacer>
             </v-tabs>
         </template>
-        
         <div class="text-center">
             <v-menu 
             transition="slide-y-transition"
             :close-on-content-click="false"
             :nudge-width="200"
             offest-y>
-                
+
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn 
                     v-bind="attrs"
@@ -192,6 +199,10 @@ export default {
             dialogSair: false
         }
     },
+    mounted() {
+        if (!this.$store.getters.getSessaoRestante)
+            this.$store.commit('ENGAGE_TOKEN_COUNTDOWN')
+    },
     methods: {
         forceFileDownload(response) {
             const url = window.URL.createObjectURL(new Blob([response.data]))
@@ -258,6 +269,21 @@ export default {
         goToUsuarios(){
             this.drawer = false;
             this.$router.push({name: 'usuarios'})
+        }
+    },
+    computed: {
+        remainingMinutes() {
+            return String(Math.trunc(this.$store.getters.getSessaoRestante/60)).padStart(2, '0');
+        },
+        remainingSeconds() {
+            return String(this.$store.getters.getSessaoRestante%60).padStart(2, '0');
+        }
+    },
+    watch: {
+        '$store.getters.getSessaoRestante'() {
+            if (this.$store.getters.getSessaoRestante <= 0){
+                this.$store.dispatch('logout')
+            }
         }
     }
 }
