@@ -157,7 +157,7 @@
                             {{ inputItem.assistente }} 
                             <span class="font-weight-light">em</span> 
                             {{ inputItem.dataAprovacaoAssistente }} 
-                            <span class="font-weight-light"></span> 
+                            <span class="font-weight-light">às</span> 
                             {{ inputItem.horarioAprovacaoAssistente }}
                         </p>
                     </v-list-item-content>
