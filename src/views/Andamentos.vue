@@ -238,17 +238,12 @@ export default {
                 if (error.response){
                     this.solicitacaoMessage = "Banco de dados indisponível.";
                     this.iconMessage = "mdi-emoticon-sad-outline";
-                } else if (error ?.response ?.status === 401){
+                } 
+                if (error ?.response ?.status === 401){
                     this.solicitacaoMessage = "Você não está autenticado ou não tem permissão para ver essa informação.";
                     this.iconMessage = "mdi-emoticon-sad-outline";
                     this.$store.dispatch('logout')
-                    .then(() => {
-                        this.$router.push({name: 'login'});
-                    })
-                } else {
-                    this.solicitacaoMessage = "Nenhuma solicitação em andamento.";
-                    this.iconMessage = "mdi-emoticon-happy-outline";
-                } 
+                }
                 this.loading = false; 
                 });
         },
@@ -278,9 +273,9 @@ export default {
         },
         snackbarReactError(message) {
             this.snackbarColor = "error";
-            if (message ?.data ?.detail)
+            if (message?.data?.detail)
                 this.message = message.data.detail;
-            else if (message ?.data)
+            else if (message?.data)
                 this.message = message.data;
             else if(message)
                 this.message = message;

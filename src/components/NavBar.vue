@@ -143,7 +143,7 @@
                 max-width="350">
                     <v-card-title class="justify-center">Baixar andamentos</v-card-title>
                     
-                    <v-card-text>
+                    <!-- <v-card-text>
                         <v-divider></v-divider>
                         <p class="body-1 my-4">Chave de Identificação do(a) assistente/fiscal:</p>
                         <v-text-field
@@ -156,7 +156,7 @@
                             prepend-inner-icon="mdi-key"
                             type="password"
                         ></v-text-field>
-                    </v-card-text>
+                    </v-card-text> -->
                     <h2 class="font-weight-light red--text mb-3" v-if="error">{{errorMessage}}</h2> 
                     <v-card-actions class="justify-center pb-8">
                         <v-btn 
@@ -242,25 +242,25 @@ export default {
         keyCheck(){
             this.error = false;
             this.loading = true;   
-
-            this.$store.dispatch('checkKeyBoth', this.key)
-            .then(response => {
-                this.response = response.data;
-                if (this.response['valid']) {
-                    this.getPedidosAsCSV()
-                }
-                else {
-                    this.errorMessage = "Chave inválida";
-                    this.error = true;
-                    this.loading = false;               
-                }
-                })
-            .catch(error => {
-                console.log(error);
-                this.errorMessage = "Ocorreu um erro no servidor";
-                this.error = true;
-                this.loading = false;
-                })
+            this.getPedidosAsCSV()
+            // this.$store.dispatch('checkKeyBoth', this.key)
+            // .then(response => {
+            //     this.response = response.data;
+            //     if (this.response['valid']) {
+            //         this.getPedidosAsCSV()
+            //     }
+            //     else {
+            //         this.errorMessage = "Chave inválida";
+            //         this.error = true;
+            //         this.loading = false;               
+            //     }
+            // })
+            // .catch(error => {
+            //     console.log(error);
+            //     this.errorMessage = "Ocorreu um erro no servidor";
+            //     this.error = true;
+            //     this.loading = false;
+            // })
         },
         goToCadastro(){
             this.drawer = false;

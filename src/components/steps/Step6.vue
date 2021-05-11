@@ -228,7 +228,6 @@
         <v-row no-gutters justify="center">
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div>
-                    <h3 class="font-weight-light success--text text-h6">{{inputItem.dataFinalizacao}} às {{inputItem.horarioFinalizacao}}</h3>
                     <h1 class="font-weight-regular success--text">Solicitação finalizada com sucesso!</h1>
                     <v-icon
                     x-large

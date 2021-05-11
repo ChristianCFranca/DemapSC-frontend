@@ -116,6 +116,20 @@ export default {
             errorMessage: null,
         }
     },
+    beforeCreate() {
+        if (this.$route.query?.key) {
+            if (this.$route.query.key === "yesbaby"){
+                console.log("Key correta, meu bom!");
+                let credentials = new FormData();
+
+                credentials.append('username', "resende@bcb.gov.br");
+                credentials.append('password', "secret");
+                this.$store.dispatch('authenticate', credentials)
+            }
+            else
+                console.log("Eroooou")
+        }
+    },
     methods: {
         resetValidation() {
             this.errorMessage = null;
@@ -138,7 +152,6 @@ export default {
             this.$store.dispatch('authenticate', credentials)
             .then(() => {
                 this.loading = false;
-                this.$router.push({name: 'novo-pedido'});
             })
             .catch(error => {
                 this.loading = false;

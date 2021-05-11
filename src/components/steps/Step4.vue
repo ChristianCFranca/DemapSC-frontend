@@ -150,7 +150,8 @@
             </v-col>
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active && cargoCorreto">
-                    <h2>Chave de Identificação do(a) almoxarife:</h2>
+                    <h2 class="my-4">Aguardando confirmação do(a) almoxarife:</h2>
+                    <!-- <h2>Chave de Identificação do(a) almoxarife:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
                         <v-text-field
                             v-model="key"
@@ -166,7 +167,7 @@
 
                         <h2 class="font-weight-light red--text" v-if="error">{{errorMessage}}</h2> 
                         
-                    </v-col>    
+                    </v-col> -->
 
                     <v-col>
                         <v-btn
@@ -234,39 +235,38 @@ export default {
             .catch(error => {
                 this.loadingBtnSend = false;
                 console.log(error);
-                if (error.response){
-                    if (error.response.status === 401)
-                        this.$emit('itemCRUDError', "Usuário não autenticado ou não possui permissão");
-                    else
-                        this.$emit('itemCRUDError', error.response);
-                } else {
+                if (error?.response?.status === 401)
+                    this.$emit('itemCRUDError', "Usuário não autenticado ou não possui permissão");
+                else if (error?.response)
+                    this.$emit('itemCRUDError', error.response);
+                else
                     this.$emit('itemCRUDError', "Erro de comunicação com o servidor");
-                }
                 });
         },
         /* eslint-disable no-unused-vars */
-        keyCheck(){
-            const cargo = 2; // almoxarife             
+        keyCheck(){          
             this.error = false;
             this.loadingBtnSend = true;
-
-            this.$store.dispatch('keyCheck', {key: this.key, cargo: cargo})
-            .then(response => {
-                this.response = response.data;
-                if (this.response['valid']) {
-                    this.updateItemStep();
-                }
-                else {
-                    this.loadingBtnSend = false;
-                    this.errorMessage = "Chave inválida";
-                    this.error = true;              
-                }
-                })
-            .catch(error => {
-                console.log(error);
-                this.errorMessage = "Ocorreu um erro no servidor";
-                this.error = true;
-                })
+            this.updateItemStep();
+            
+            // const cargo = 2; // almoxarife   
+            // this.$store.dispatch('keyCheck', {key: this.key, cargo: cargo})
+            // .then(response => {
+            //     this.response = response.data;
+            //     if (this.response['valid']) {
+            //         this.updateItemStep();
+            //     }
+            //     else {
+            //         this.loadingBtnSend = false;
+            //         this.errorMessage = "Chave inválida";
+            //         this.error = true;              
+            //     }
+            //     })
+            // .catch(error => {
+            //     console.log(error);
+            //     this.errorMessage = "Ocorreu um erro no servidor";
+            //     this.error = true;
+            //     })
             
         },
         getValorMonetario(valor){

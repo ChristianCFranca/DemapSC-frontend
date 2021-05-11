@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from 'axios';
+import router from '../router';
 
 const apiClient = axios.create({
     // baseURL: '//localhost:8000',
@@ -83,11 +84,13 @@ export default new Vuex.Store({
       .then(response => {
         commit('SET_AUTHENTICATION_DATA', response.data)
         commit('ENGAGE_TOKEN_COUNTDOWN')
+        router.push({name: 'andamentos'});
         return response
       })
     },
     logout({ commit }) {
       commit('USER_CLEAR_DATA')
+      router.push({name: 'login'})
     },
     register(_, newUserData) {
       return apiClient.post('/auth/users/create/', newUserData)

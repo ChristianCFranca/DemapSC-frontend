@@ -143,8 +143,7 @@
                                     class="rounded-tr-xl"
                                     prepend-inner-icon="mdi-cash"
                                     :rules="cashRules"
-                                    required
-                                    validate-on-blur></v-currency-field>
+                                    required></v-currency-field>
                                 </v-col>
                             </v-row>
 
@@ -228,7 +227,8 @@
             </v-col>
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active && cargoCorreto">
-                    <h2>Chave de Identificação do(a) assistente de fiscalização:</h2>
+                    <h2 class="my-4">Aguardando confirmação do(a) assistente de fiscalização:</h2>
+                    <!-- <h2>Chave de Identificação do(a) assistente de fiscalização:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
                         <v-text-field
                             v-model="key"
@@ -244,14 +244,14 @@
 
                         <h2 class="font-weight-light red--text" v-if="error">{{errorMessage}}</h2> 
                         
-                    </v-col>    
+                    </v-col>  -->
 
                     <v-col>
                         <v-btn
                         color="blue darken-1"
                         class="white--text"
                         :loading="loadingBtnSend"
-                        @click="keyCheck(`send`)"
+                        @click="keyCheck()"
                         :disabled="!valid">
                             Confirmar Aquisição
                         </v-btn>
@@ -318,39 +318,38 @@ export default {
             .catch(error => {
                 this.loadingBtnSend = false;
                 console.log(error);
-                if (error.response){
-                    if (error.response.status === 401)
-                        this.$emit('itemCRUDError', "Usuário não autenticado ou não possui permissão");
-                    else
-                        this.$emit('itemCRUDError', error.response);
-                } else {
+                if (error?.response?.status === 401)
+                    this.$emit('itemCRUDError', "Usuário não autenticado ou não possui permissão");
+                else if (error?.response)
+                    this.$emit('itemCRUDError', error.response);
+                else
                     this.$emit('itemCRUDError', "Erro de comunicação com o servidor");
-                }
                 });
         },
         /* eslint-disable no-unused-vars */
-        keyCheck(btn){
-            const cargo = 0; // assistente de fiscalização             
+        keyCheck(){        
             this.error = false;
             this.loadingBtnSend = true;
+            this.updateItemStep();
 
-            this.$store.dispatch('keyCheck', {key: this.key, cargo: cargo})
-            .then(response => {
-                this.response = response.data;
-                if (this.response['valid']) {
-                    this.updateItemStep();
-                }
-                else {
-                    this.loadingBtnSend = false;
-                    this.errorMessage = "Chave inválida";
-                    this.error = true;              
-                }
-                })
-            .catch(error => {
-                console.log(error);
-                this.errorMessage = "Ocorreu um erro no servidor";
-                this.error = true;
-                })
+            // const cargo = 0; // assistente de fiscalização     
+            // this.$store.dispatch('keyCheck', {key: this.key, cargo: cargo})
+            // .then(response => {
+            //     this.response = response.data;
+            //     if (this.response['valid']) {
+            //         this.updateItemStep();
+            //     }
+            //     else {
+            //         this.loadingBtnSend = false;
+            //         this.errorMessage = "Chave inválida";
+            //         this.error = true;              
+            //     }
+            // })
+            // .catch(error => {
+            //     console.log(error);
+            //     this.errorMessage = "Ocorreu um erro no servidor";
+            //     this.error = true;
+            // })
             
         },
         getValorMonetario(valor){

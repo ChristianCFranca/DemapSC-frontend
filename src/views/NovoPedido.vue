@@ -344,6 +344,9 @@ export default {
         }
     },
     mounted() {
+        if (this.$store.getters.getMateriaisList.length > 0) // Já carregou os materiais
+            return
+
         this.isMateriaisLoading = true;
         this.disableSend = true;
 
@@ -418,9 +421,6 @@ export default {
                     this.errorMessage = "Você não está autenticado ou não possui permissão para enviar esse pedido."
                     this.error = true;
                     this.$store.dispatch('logout')
-                    .then(() => {
-                        this.$router.push({name: "login"})
-                    })
                 }
                 console.log(error); 
                 this.errorMessage = "Ocorreu um erro ao enviar o seu pedido para o servidor. Atualize a página e tente novamente."

@@ -10,6 +10,7 @@
         <v-dialog
         v-model="dialog"
         max-width="500px">
+        <v-form ref="form">
             <v-card>
                 <v-card-title>
                 <span class="headline"> Editar Usuário </span>
@@ -26,6 +27,18 @@
                                 outlined
                                 v-model="editedItem.nome_completo"
                                 label="Nome do usuário"
+                                ></v-text-field>
+                            </v-col>
+
+                            <v-col
+                            cols="12"
+                            sm="12"
+                            md="12">
+                                <v-text-field
+                                outlined
+                                v-model="editedItem.username"
+                                :rules="usernameRules"
+                                label="Email do usuário"
                                 ></v-text-field>
                             </v-col>
                             
@@ -60,6 +73,7 @@
                     </v-btn>
                 </v-card-actions>
             </v-card>
+        </v-form>
         </v-dialog>
 
 
@@ -148,14 +162,21 @@ export default {
                 { text: 'Ações', value: 'actions', sortable: false },
             ],
             editedItem: {
+                id: '',
                 username: '',
                 nome_completo: '',
                 role: ''
-            }
+            },
+            usernameRules: [
+                v => !!v || 'Campo obrigatório.', 
+                v => /.+@.+\../.test(v) || 'E-mail deve ser válido.', 
+                v => /.+@bcb.gov.br/.test(v) || 'Domínio deve ser bcb.gov.br'
+            ]
         }
     },
     methods: {
         editItem(item) {
+            this.editedItem.id = item.id;
             this.editedItem.username = item.username;
             this.editedItem.nome_completo = item.nome_completo;
             this.editedItem.role = item.role;
@@ -196,6 +217,8 @@ export default {
             })
         },
         updateUser() {
+            if (!this.$refs.form.validate())
+                return
             this.loadingSend = true;
             this.$store.dispatch('updateUser', this.editedItem)
             .then(() => {
@@ -218,6 +241,10 @@ export default {
                     this.snackbarColor = "error";
                     this.snackbar = true;
                     this.$store.dispatch('logout');
+                } else if(error.response?.data?.detail) {
+                    this.snackbarMessage = error.response?.data?.detail;
+                    this.snackbarColor = "error";
+                    this.snackbar = true;
                 } else {
                     this.snackbarMessage = "Ocorreu um erro de comunicação com o servidor.";
                     this.snackbarColor = "error";
@@ -239,14 +266,14 @@ export default {
                 this.loading = false;
                 this.iconMessage = "mdi-emoticon-sad-outline";
                 console.log(error)
-                if (error ?.response ?.status === 401) {
+                if (error?.response?.status === 401) {
                     this.solicitacaoMessage = "Usuário não possui permissão.";
                     this.$store.dispatch('logout');
                 }
-                else if (error ?.response ?.data ?.detail){
+                else if (error?.response?.data?.detail){
                     this.solicitacaoMessage = error.response.data.detail;
                 } 
-                else if (error ?.response ?.data) {
+                else if (error?.response?.data) {
                     this.solicitacaoMessage = error.response.data;
                 } else {
                     this.solicitacaoMessage = "Ocorreu um erro de comunicação com o servidor.";
