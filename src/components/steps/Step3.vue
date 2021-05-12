@@ -112,7 +112,7 @@
                     </v-row>
 
                     <div v-if="it.aprovadoFiscal">
-                        <h2 class="body-1 font-weight-bold">Na ausência do item no almoxarifado, a compra deverá ser realizada por:</h2>
+                        <h2 class="body-1 font-weight-bold">Na ausência do item no almoxarifado (DILOG), a compra deverá ser realizada por:</h2>
                         <v-col cols="12" align="center" class="d-flex justify-center">
                             <v-radio-group v-model="it.direcionamentoDeCompra" row>
                                 <v-radio
@@ -267,7 +267,7 @@ export default {
                 this.loadingDeleteBtn = true;
             } else {
                 inputItem['statusStep'] += 1;
-                inputItem['status'] = "Aguardando confirmação do(a) almoxarife";
+                inputItem['status'] = "Aguardando confirmação da DILOG";
                 inputItem['dataAprovacaoFiscal'] = now.split(' ')[0];
                 inputItem['horarioAprovacaoFiscal'] = now.split(' ')[1];
                 for (let i=0; i < inputItem.items.length; i++){

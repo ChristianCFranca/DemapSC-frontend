@@ -32,7 +32,7 @@ export default new Vuex.Store({
       2: ["admin", "assistente", "regular"],
       3: ["admin", "fiscal", "regular"],
       4: ["admin", "almoxarife", "regular"],
-      5: ["admin", "assistente", "regular"],
+      5: ["admin", "fiscal", "regular"],
       6: ["admin", "fiscal", "assistente", "regular"]
     },
     permissionsPerRole: {
@@ -91,6 +91,10 @@ export default new Vuex.Store({
     logout({ commit }) {
       commit('USER_CLEAR_DATA')
       router.push({name: 'login'})
+    },
+    requestNewPassword(_, username) {
+      return apiClient.get(`/auth/users/password/request?username=${username}`)
+      .then(response => response)
     },
     register(_, newUserData) {
       return apiClient.post('/auth/users/create/', newUserData)

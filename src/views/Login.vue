@@ -63,8 +63,15 @@
                                 @click:append="show=!show">
                                 </v-text-field>
 
+                                <a class="blue--text text-decoration-underline" @click="dialogEsqueciSenha=true">
+                                    Esqueci minha senha
+                                </a>
+
                                 <p v-if="errorMessage !== null" class="text-h5 red--text text-center font-weight-light">
                                     {{ errorMessage }}
+                                </p>
+                                <p v-if="passwordResetSuccess" class="text-h5 green--text text-center font-weight-light">
+                                    Sua senha foi atualizada com sucesso!
                                 </p>
                             </v-card-text>
                             <v-card-actions>
@@ -89,6 +96,43 @@
                 </v-form>
             </v-col>
         </v-row>
+
+        <v-dialog 
+        v-model="dialogEsqueciSenha"
+        max-width="500px">
+            <v-card>
+                <v-container>
+                    <v-card-title>
+                        Esqueci minha senha
+                    </v-card-title>
+                    <v-divider></v-divider>
+                    <v-card-text>
+                        <v-form ref="forgetPassword">
+                            <v-text-field 
+                            v-model="forgetUsername"
+                            :rules="usernameRules"
+                            required
+                            class="rounded-lg mt-5"
+                            label="Digite seu e-mail"
+                            outlined>
+                            </v-text-field>
+                        </v-form>
+                    </v-card-text>
+                    <p v-if="messageForget !== null" v-html="messageForget" 
+                    :class="`text-h6 text-center font-weight-light ${forgetError ? `red--text` : `green--text`}`">
+                        {{ messageForget }}
+                    </p>
+                    <v-card-actions class="justify-center">
+                        <v-btn text color="blue" :loading="forgetLoading" @click="requestNewPassword()">
+                            Solicitar nova senha
+                        </v-btn>
+                        <v-btn text color="error" @click="dialogEsqueciSenha=false">
+                            Cancelar
+                        </v-btn>
+                    </v-card-actions>
+                </v-container>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -114,20 +158,22 @@ export default {
             valid: false,
             show: false,
             errorMessage: null,
+            dialogEsqueciSenha: false,
+            forgetUsername: '',
+            forgetLoading: false,
+            messageForget: null,
+            forgetError: false,
+            passwordResetSuccess: false
         }
     },
-    beforeCreate() {
-        if (this.$route.query?.key) {
-            if (this.$route.query.key === "yesbaby"){
-                console.log("Key correta, meu bom!");
-                let credentials = new FormData();
-
-                credentials.append('username', "resende@bcb.gov.br");
-                credentials.append('password', "secret");
-                this.$store.dispatch('authenticate', credentials)
+    mounted() {
+        if (this.$route.query?.passwordReset) {
+            if (this.$route.query.passwordReset === "success"){
+                this.passwordResetSuccess = true;
             }
-            else
-                console.log("Eroooou")
+            else {
+                this.errorMessage = "Ocorreu um erro ao atualizar sua senha.";
+            }
         }
     },
     methods: {
@@ -136,6 +182,7 @@ export default {
             this.$refs.form.reset();
         },
         login() {
+            this.passwordResetSuccess = false;
             if (!this.valid) {
                 this.errorMessage = "Todos os campos são obrigatórios.";
                 return
@@ -169,6 +216,43 @@ export default {
                 }
             })
             
+        },
+        requestNewPassword() {
+            if (!this.$refs.forgetPassword.validate())
+                return
+
+            this.messageForget = null;
+            this.forgetError = false;
+            this.forgetLoading = true;
+            this.$store.dispatch('requestNewPassword', this.forgetUsername)
+            .then(() => {
+                this.forgetLoading = false;
+                this.forgetError = false;
+                this.messageForget = `Uma nova senha foi enviada para o email <br> <strong>${this.forgetUsername}</strong>`
+            })
+            .catch(error => {
+                this.forgetLoading = false;
+                this.forgetError = true;
+                console.log(error);
+                if (error.response){
+                    if (error.response.data){
+                        this.messageForget = error.response.data.detail;
+                    } else {
+                        this.messageForget = error.response;
+                    }
+                }
+                else {
+                    this.messageForget = "Houve problema de conexão com o servidor.";
+                }
+            })
+        }
+    },
+    watch: {
+        dialogEsqueciSenha() {
+            if (!this.dialogEsqueciSenha)
+                this.$refs.forgetPassword.reset();
+                this.forgetUsername = '';
+                this.messageForget = null;
         }
     }
 }

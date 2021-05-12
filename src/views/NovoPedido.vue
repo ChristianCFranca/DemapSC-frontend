@@ -377,7 +377,7 @@ export default {
                 aprovadoAssistente: true, motivoAssistente: null, dataAprovacaoAssistente: null, horarioAprovacaoAssistente: null, 
                 aprovadoFiscal: true, motivoFiscal: null, dataAprovacaoFiscal: null, horarioAprovacaoFiscal: null, 
                 direcionamentoDeCompra: null, 
-                almoxarifadoPossui: true, dataAprovacaoAlmoxarife: null, horarioAprovacaoAlmoxarife: null,
+                almoxarifadoPossui: true, infoDILOG: null, dataAprovacaoAlmoxarife: null, horarioAprovacaoAlmoxarife: null,
                 valorGasto: 0.0
             }
         },

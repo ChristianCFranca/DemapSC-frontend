@@ -220,7 +220,7 @@ export default {
             messageMapping: [
                 {concluido: "Aprovado pelo(a) assistente de fiscalização", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
                 {concluido: "Aprovado pelo(a) fiscal", andamento: "Aguardando confirmação do(a) fiscal"},
-                {concluido: "Confirmado pelo(a) almoxarife", andamento: "Aguardando confirmação do(a) almoxarife"},
+                {concluido: "Confirmado pela DILOG", andamento: "Aguardando confirmação da DILOG"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}
             ]
         };

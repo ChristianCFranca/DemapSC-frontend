@@ -143,7 +143,8 @@
                                     class="rounded-tr-xl"
                                     prepend-inner-icon="mdi-cash"
                                     :rules="cashRules"
-                                    required></v-currency-field>
+                                    required
+                                    validate-on-blur></v-currency-field>
                                 </v-col>
                             </v-row>
 
@@ -170,6 +171,15 @@
                                     large 
                                     color="indigo darken-2"
                                     >mdi-archive-arrow-up-outline</v-icon>
+                                </v-col>
+
+                                <v-col cols="12" v-if="it.almoxarifadoPossui">
+                                    <div class="text-body-2 font-weight-bold text-center">
+                                        Informações da DILOG
+                                    </div>
+                                    <div class="text-body-2 text-justify">
+                                        {{ it.infoDILOG }}
+                                    </div>
                                 </v-col>
                             </v-row>
                             
@@ -227,8 +237,8 @@
             </v-col>
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active && cargoCorreto">
-                    <h2 class="my-4">Aguardando confirmação do(a) assistente de fiscalização:</h2>
-                    <!-- <h2>Chave de Identificação do(a) assistente de fiscalização:</h2>
+                    <h2 class="my-4">Aguardando confirmação do(a) fiscal:</h2>
+                    <!-- <h2>Chave de Identificação do(a) fiscal:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
                         <v-text-field
                             v-model="key"
@@ -266,7 +276,7 @@
 export default {
     data() {
         return {
-            expectedRoles: ['assistente', 'admin'],
+            expectedRoles: ['fiscal', 'admin'],
             valid: false,
             cashRules: [v => !!v || "Campo obrigatório.", v => v != "0,00" || "Valor deve ser maior que 0."],
             error: false,
@@ -332,7 +342,7 @@ export default {
             this.loadingBtnSend = true;
             this.updateItemStep();
 
-            // const cargo = 0; // assistente de fiscalização     
+            // const cargo = 0; // fiscal     
             // this.$store.dispatch('keyCheck', {key: this.key, cargo: cargo})
             // .then(response => {
             //     this.response = response.data;

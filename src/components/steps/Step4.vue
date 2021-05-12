@@ -103,13 +103,27 @@
                     md="3"
                     v-if="cargoCorreto || !inputItem.active">
                         <v-row justify="center">
-                            <v-switch 
-                            inset
-                            v-model="it.almoxarifadoPossui"
-                            :label="it.almoxarifadoPossui ? `Possui em estoque`: `Não possui em estoque`" 
-                            color="blue"
-                            class="mt-15"
-                            :disabled="!inputItem.active"></v-switch>
+                            <v-col cols="12" class="d-flex justify-center">
+                                <v-switch 
+                                inset
+                                v-model="it.almoxarifadoPossui"
+                                :label="it.almoxarifadoPossui ? `Possui em estoque`: `Não possui em estoque`" 
+                                color="blue"
+                                class="mt-15"
+                                :disabled="!inputItem.active"></v-switch>
+                            </v-col>
+                            <v-col cols="12" class="d-flex justify-center">
+                                <v-textarea
+                                v-model="it.infoDILOG"
+                                label="Informações adicionais por parte da DILOG"
+                                max-height="150"
+                                :counter="200"
+                                clearable
+                                outlined
+                                v-if="it.almoxarifadoPossui"
+                                :disabled="!inputItem.active"></v-textarea>
+                            </v-col>
+
                         </v-row>
                     </v-col>
                 </v-row>
@@ -150,7 +164,7 @@
             </v-col>
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active && cargoCorreto">
-                    <h2 class="my-4">Aguardando confirmação do(a) almoxarife:</h2>
+                    <h2 class="my-4">Aguardando confirmação da DILOG:</h2>
                     <!-- <h2>Chave de Identificação do(a) almoxarife:</h2>
                     <v-col cols="12" xs="12" sm="12" md="6" align="center">
                         <v-text-field
