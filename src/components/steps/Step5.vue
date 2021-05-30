@@ -300,6 +300,7 @@ export default {
 
             const now = new Date().toLocaleString('pt-BR');
             inputItem['recebimento'] = this.$store.getters.getCompleteName;
+            inputItem['emailRecebimento'] = this.$store.getters.getEmail;
 
             inputItem['statusStep'] += 1;
             inputItem['status'] = "Solicitação finalizada";

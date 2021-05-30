@@ -224,6 +224,7 @@ export default {
 
             const now = new Date().toLocaleString('pt-BR');
             inputItem['almoxarife'] = this.$store.getters.getCompleteName;
+            inputItem['emailAlmoxarife'] = this.$store.getters.getEmail;
 
             inputItem['statusStep'] += 1;
             inputItem['status'] = "Aguardando aquisição dos itens";

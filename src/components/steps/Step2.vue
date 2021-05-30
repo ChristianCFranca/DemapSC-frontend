@@ -208,6 +208,7 @@ export default {
             
             const now = new Date().toLocaleString('pt-BR');
             inputItem['assistente'] = this.$store.getters.getCompleteName;
+            inputItem['emailAssistente'] = this.$store.getters.getEmail;
 
             if (cancel) {
                 inputItem['active'] = false;

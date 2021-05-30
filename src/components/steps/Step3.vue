@@ -253,6 +253,7 @@ export default {
 
             const now = new Date().toLocaleString('pt-BR');
             inputItem['fiscal'] = this.$store.getters.getCompleteName;
+            inputItem['emailFiscal'] = this.$store.getters.getEmail;
 
             if (cancel) {
                 inputItem['active'] = false;
