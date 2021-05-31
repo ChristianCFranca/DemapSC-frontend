@@ -4,8 +4,8 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    baseURL: '//localhost:8000',
-    // baseURL: 'https://demapsm-backend.herokuapp.com',
+    // baseURL: '//localhost:8000',
+    baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
         Accept: 'application/json',
