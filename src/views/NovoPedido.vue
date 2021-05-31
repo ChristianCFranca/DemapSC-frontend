@@ -326,10 +326,16 @@ export default {
                 statusStep: 2,
                 assistente: null,
                 emailAssistente: null,
+                dataAprovacaoAssistente: null,
+                horarioAprovacaoAssistente: null,
                 fiscal: null,
                 emailFiscal: null,
+                dataAprovacaoFiscal: null,
+                horarioAprovacaoFiscal: null,
                 almoxarife: null,
                 emailAlmoxarife: null,
+                dataAprovacaoAlmoxarife: null,
+                horarioAprovacaoAlmoxarife: null,
                 recebimento: null,
                 emailRecebimento: null,
                 color: "orange",
@@ -378,10 +384,10 @@ export default {
         generateNewEmptyItem() {
             return {
                 nome: null, quantidade: null, descricao: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null,
-                aprovadoAssistente: true, motivoAssistente: null, dataAprovacaoAssistente: null, horarioAprovacaoAssistente: null, 
-                aprovadoFiscal: true, motivoFiscal: null, dataAprovacaoFiscal: null, horarioAprovacaoFiscal: null, 
+                aprovadoAssistente: true, motivoAssistente: null,
+                aprovadoFiscal: true, motivoFiscal: null,
                 direcionamentoDeCompra: null, 
-                almoxarifadoPossui: true, infoDILOG: null, dataAprovacaoAlmoxarife: null, horarioAprovacaoAlmoxarife: null,
+                almoxarifadoPossui: true, infoDILOG: null, 
                 valorGasto: 0.0
             }
         },
