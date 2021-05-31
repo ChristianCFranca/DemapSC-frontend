@@ -53,6 +53,21 @@
                                 ></v-select>
                             </v-col>
 
+                            <v-col
+                            cols="12"
+                            sm="12"
+                            md="12">
+                                <v-text-field
+                                hint="Digite a nova senha"
+                                outlined
+                                v-model="editedItem.password"
+                                label="Nova senha para o usuário"
+                                :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                                :type="show ? `` : `password`"
+                                @click:append="show=!show"
+                                ></v-text-field>
+                            </v-col>
+
                         </v-row>
                     </v-container>
                 </v-card-text>
@@ -144,6 +159,7 @@
 export default {
     data() {
         return {
+            show: false,
             search: '',
             loading: false,
             loadingDelete: false,
@@ -165,12 +181,13 @@ export default {
                 id: '',
                 username: '',
                 nome_completo: '',
-                role: ''
+                role: '',
+                password: ''
             },
             usernameRules: [
                 v => !!v || 'Campo obrigatório.', 
-                v => /.+@.+\../.test(v) || 'E-mail deve ser válido.', 
-                v => /.+@bcb.gov.br/.test(v) || 'Domínio deve ser bcb.gov.br'
+                v => /.+@([a-zA-Z0-9]]?)+/.test(v) || 'E-mail deve ser válido.', 
+                v => /.+@(.?)+bcb.gov.br/.test(v) || 'Domínio deve finalizar com bcb.gov.br'
             ]
         }
     },
@@ -219,6 +236,9 @@ export default {
         updateUser() {
             if (!this.$refs.form.validate())
                 return
+            if (!this.editedItem.password)
+                this.editedItem.password = null
+                
             this.loadingSend = true;
             this.$store.dispatch('updateUser', this.editedItem)
             .then(() => {

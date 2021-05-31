@@ -147,8 +147,8 @@ export default {
             ],
             usernameRules: [
                 v => !!v || 'Campo obrigatório.', 
-                v => /.+@.+\../.test(v) || 'E-mail deve ser válido.', 
-                v => /.+@bcb.gov.br/.test(v) || 'Domínio deve ser bcb.gov.br'
+                v => /.+@([a-zA-Z0-9]]?)+/.test(v) || 'E-mail deve ser válido.', 
+                v => /.+@(.?)+bcb.gov.br/.test(v) || 'Domínio deve finalizar com bcb.gov.br'
             ],
             passwordRules: [
                 v => !!v || 'Campo obrigatório.'
