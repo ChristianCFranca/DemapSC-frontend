@@ -21,8 +21,7 @@
         <v-card-title> Solicitação de Aquisição de Material não Codificado </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-                   
-            <v-container>
+                <v-container>
                 <v-row>
                     <v-col
                         cols="12"
@@ -61,12 +60,17 @@
 
                     </v-col>
 
+                </v-row>
+
+                    
+                <v-form ref="osForm" v-model="valid">
+                <v-row>
+
                     <v-col
                         cols="12"
-                        sm="4"
+                        sm="12"
                         md="4">
 
-                        <v-form ref="osForm" v-model="valid">
                             <v-text-field
                                 v-model="pedido.os"
                                 label="Número da Ordem de Serviço Associada*"
@@ -77,11 +81,30 @@
                                 clearable
                                 filled
                             ></v-text-field>
-                        </v-form>
 
                     </v-col>
-                </v-row>
 
+                    <v-col 
+                        cols="12"
+                        xs="12"
+                        md="8">
+                        <v-text-field
+                            v-model="pedido.finalidade"
+                            :label="'Finalidade dos Materiais'"
+                            required
+                            :counter="100"
+                            :rules="nonEmptyRules"
+                            clearable
+                            filled
+                            outlined
+                        ></v-text-field>
+
+                    </v-col>
+
+                </v-row>
+                </v-form>
+
+            <v-divider class="my-4"></v-divider>
             </v-container>
 
             <v-form ref="form" v-model="valid">
@@ -92,14 +115,14 @@
                             <v-row v-for="item in pedido.items.length" :key="item">
                                 <v-col
                                     cols="12"
-                                    sm="7"
-                                    md="7">
+                                    sm="5"
+                                    md="5">
 
                                     <v-row class="mx-1">
                                         <v-col
                                         cols="12"
-                                        sm="7"
-                                        md="7">
+                                        sm="12"
+                                        md="12">
                                             <v-combobox
                                                 v-model="pedido.items[item-1].nome"
                                                 :label="(listaDeMateriais.length > 0) ? `Nome do Item ${item}*` : `Carregando... por favor aguarde`"
@@ -123,8 +146,8 @@
                                         
                                         <v-col
                                         cols="12"
-                                        sm="3"
-                                        md="3">
+                                        sm="12"
+                                        md="8">
 
                                             <v-text-field
                                                 v-model="pedido.items[item-1].quantidade"
@@ -142,8 +165,8 @@
 
                                         <v-col
                                         cols="12"
-                                        sm="2"
-                                        md="2">
+                                        sm="12"
+                                        md="4">
 
                                             <v-select
                                                 v-model="pedido.items[item-1].unidade"
@@ -158,55 +181,34 @@
                                             ></v-select>
 
                                         </v-col>
-                                    </v-row>
-                                    
-                                    <v-row>
-
-                                        <v-col
-                                            cols="12"
-                                            sm="8"
-                                            md="8">
-
-                                            <v-text-field
-                                                v-model="pedido.items[item-1].finalidade"
-                                                :label="'Finalidade do Item ' + item +'*'"
-                                                hint="De preferência escolha um item dos disponíveis."
-                                                required
-                                                :counter="100"
-                                                :rules="nonEmptyRules"
-                                                clearable
-                                                filled
-                                                outlined
-                                                class="ml-4"
-                                            ></v-text-field>
-                                            
-                                        </v-col>
-
-                                        <v-col
-                                            cols="12"
-                                            sm="4"
-                                            md="4">
-                                            <v-radio-group v-model="pedido.items[item-1].categoria" row>
-                                                <v-radio
-                                                    :label="`Sob Demanda`"
-                                                    value="Sob Demanda"
-                                                    disabled
-                                                ></v-radio>
-                                                <v-radio
-                                                    :label="`Fixo`"
-                                                    value="Fixo"
-                                                    disabled
-                                                ></v-radio>
-                                                <v-radio
-                                                    :label="`Outro`"
-                                                    value="Outro"
-                                                    disabled
-                                                ></v-radio>
-                                            </v-radio-group>
-
-                                        </v-col>
 
                                     </v-row>
+
+                                </v-col>
+
+                                <v-col
+                                    cols="12"
+                                    sm="2"
+                                    md="1">
+                                    <v-radio-group v-model="pedido.items[item-1].categoria">
+                                        <v-radio
+                                            :label="`Sob Demanda`"
+                                            value="Sob Demanda"
+                                            disabled
+                                            class="mb-6"
+                                        ></v-radio>
+                                        <v-radio
+                                            :label="`Fixo`"
+                                            value="Fixo"
+                                            disabled
+                                            class="mb-6"
+                                        ></v-radio>
+                                        <v-radio
+                                            :label="`Outro`"
+                                            value="Outro"
+                                            disabled
+                                        ></v-radio>
+                                    </v-radio-group>
 
                                 </v-col>
 
@@ -214,11 +216,11 @@
                                 <v-col
                                     cols="12"
                                     sm="5"
-                                    md="5">
+                                    md="6">
 
                                     <v-textarea
                                         v-model="pedido.items[item-1].descricao"
-                                        :label="'Descrição do Item ' + item"
+                                        :label="'Descrição do Item ' + item + ' (opcional)'"
                                         height="165"
                                         :counter="300"
                                         clearable
@@ -229,6 +231,7 @@
 
 
                                 </v-col>
+
                             </v-row>
                         
                         </template>
@@ -317,6 +320,7 @@ export default {
                 requisitante: this.$store.getters.getCompleteName,
                 email: this.$store.getters.getEmail,
                 os: null,
+                finalidade: null,
                 items: [this.generateNewEmptyItem()],
                 valorDaSolicitacao: 0,
                 dataPedido: null,
@@ -383,7 +387,7 @@ export default {
     methods: {
         generateNewEmptyItem() {
             return {
-                nome: null, quantidade: null, descricao: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null, finalidade: null,
+                nome: null, quantidade: null, descricao: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null,
                 aprovadoAssistente: true, motivoAssistente: null,
                 aprovadoFiscal: true, motivoFiscal: null,
                 direcionamentoDeCompra: null, 
@@ -425,6 +429,7 @@ export default {
                 this.resetForm(); 
                 this.success = true;
                 this.loading = false;
+                this.pedido.items = [this.pedido.items[0]];
                 })
             .catch(error => {
                 if (error ?.response ?.status == 401) {

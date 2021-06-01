@@ -36,12 +36,6 @@
                                     {{ it.categoria }}
                                 </p>
                                 <v-list-item-subtitle class="mt-6">
-                                    Finalidade
-                                </v-list-item-subtitle>
-                                <p class="text-justify body-1">
-                                    {{ it.finalidade }}
-                                </p>
-                                <v-list-item-subtitle class="mt-6">
                                     Quantidade
                                 </v-list-item-subtitle>
                                 <v-list-item-title>

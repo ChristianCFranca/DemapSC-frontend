@@ -111,6 +111,17 @@
                             </v-stepper-header>
 
                             <v-stepper-items>
+                                <v-container class="mx-3 my-3 text-center">
+                                    <div class="font-weight-normal grey--text text-body-2">
+                                        Finalidade dos Materiais
+                                    </div>
+                                    <div class="font-weight-normal text-body-1">
+                                        {{ item.finalidade }}
+                                    </div>
+                                </v-container>
+
+                                
+                                    <v-divider></v-divider>
 
                                 <v-stepper-content step="2">
                                     <Step2 @itemCRUD="snackbarReactSuccess" @itemCRUDError="snackbarReactError" :inputItem="item"/>
