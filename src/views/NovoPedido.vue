@@ -175,6 +175,7 @@
                                                 :items="unidadesDeMedida"
                                                 :rules="nonEmptyRules"
                                                 :disabled="pedido.items[item-1].categoria !== 'Outro' && pedido.items[item-1].categoria !== null"
+                                                @blur="mapMaterialParaPropriedades(pedido.items[item-1])"
                                                 clearable
                                                 filled
                                                 outlined
@@ -444,24 +445,23 @@ export default {
                 });
         },
         mapMaterialParaPropriedades(item) {
-            setTimeout(() => {
-                if (this.listaDeMateriais.length <= 0)
-                    return
-                if (!item.nome) {
-                    item.categoria = null;
-                    item.valorUnitario = null;
-                    item.unidade = null;
-                    return
-                }
-                let idx = this.listaDeMateriais.indexOf(item.nome); // Retorna -1 se não estiver na lista
-                if (idx === -1) {
-                    item.categoria = "Outro";
-                    item.valorUnitario = null;
-                    item.unidade = null;
-                    return
-                }
-                ({categoria: item.categoria, valorUnitario: item.valorUnitario, unidade: item.unidade} = this.$store.getters.getMateriais[idx]);
-            }, 100);
+            if (this.listaDeMateriais.length <= 0)
+                return
+            if (!item.nome) {
+                item.categoria = null;
+                item.valorUnitario = null;
+                item.unidade = null;
+                return
+            }
+            let idx = this.listaDeMateriais.indexOf(item.nome); // Retorna -1 se não estiver na lista
+            if (idx === -1) {
+                item.categoria = "Outro";
+                item.valorUnitario = null;
+                item.unidade = null;
+                return
+            }
+            ({categoria: item.categoria, valorUnitario: item.valorUnitario, unidade: item.unidade} = this.$store.getters.getMateriais[idx]);
+        
             
         }
         
