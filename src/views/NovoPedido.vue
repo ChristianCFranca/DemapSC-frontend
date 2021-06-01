@@ -90,7 +90,7 @@
                         md="8">
                         <v-text-field
                             v-model="pedido.finalidade"
-                            :label="'Finalidade dos Materiais'"
+                            label="Finalidade dos Materiais*"
                             required
                             :counter="100"
                             :rules="nonEmptyRules"
