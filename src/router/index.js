@@ -13,7 +13,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/novo-pedido',
+    redirect: '/andamentos',
     name: 'home'
   },
   {
