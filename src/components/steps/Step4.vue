@@ -225,12 +225,6 @@ export default {
             inputItem['dataAprovacaoAlmoxarife'] = now.split(' ')[0];
             inputItem['horarioAprovacaoAlmoxarife'] = now.split(' ')[1];
             inputItem['color'] = "teal darken-1";
-            let valorDaSolicitacao = 0;
-            for (let idx = 0; idx < inputItem.items.length; idx++){
-                if (inputItem.items[idx].valorTotal !== null && !inputItem.items[idx].almoxarifadoPossui) // Tem que ter valor diferente de 0 e almoxarifado NÃO possuir
-                    valorDaSolicitacao += inputItem.items[idx].valorTotal;
-            }
-            inputItem.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
             
             this.$store.dispatch('putPedidoExistente', {_id: _id, pedidoExistente: inputItem})
             .then(response => {
