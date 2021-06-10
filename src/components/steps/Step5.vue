@@ -169,9 +169,9 @@
 
                                 <v-col cols="12" v-if="it.almoxarifadoPossui">
                                     <div class="text-body-2 font-weight-bold text-center">
-                                        Informações da DILOG
+                                        Informações da DILOG:
                                     </div>
-                                    <div class="text-body-2 text-justify">
+                                    <div class="text-body-2 text-center">
                                         {{ it.infoDILOG }}
                                     </div>
                                 </v-col>
