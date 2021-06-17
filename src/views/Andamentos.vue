@@ -1,5 +1,5 @@
 <template>
-        <v-container>
+        <v-container fluid>
         <v-snackbar v-model="snackbar" :timeout="4000" top :color="snackbarColor">
             {{ snackbarMessage }}
             <template v-slot:action="{ attrs }">
@@ -15,7 +15,7 @@
             <v-spacer></v-spacer>
         </v-tabs>
 
-        <v-card class="ma-4">
+        <v-card class="my-4">
             <v-card-title>
                 Solicitações em Andamento
 
@@ -36,6 +36,7 @@
             :items="pedidos"
             :search="search"
             :items-per-page="15"
+            :expanded="expanded"
             item-key="_id"
             class="elevation-1"
             multi-sort
@@ -149,7 +150,6 @@
 
                     </td>
                 </template>
-                
 
                 <template v-slot:no-data>
                     <h1 class="font-weight-light"> 
@@ -216,6 +216,7 @@ export default {
             page: 0,
             loading: false,
             headers: [
+                { text: '', value: 'data-table-expand', sortable: false, groupable: false },
                 { text: "Número da OS", value: "os"},
                 { text: "Quantidade de Itens", value: "quantidade" },
                 { text: "Valor Estimado", value: "valorDaSolicitacao" },
@@ -225,8 +226,7 @@ export default {
                 { text: "Data do Pedido", value: "dataPedido" },
                 { text: "Horário do Pedido", value: "horarioPedido"},
                 { text: "Fase do Pedido", value: "statusStep" },
-                { text: "Status do Pedido", value: "status" },
-                { text: '', value: 'data-table-expand', sortable: false, groupable: false }
+                { text: "Status do Pedido", value: "status" }
             ],
             messageMapping: [
                 {concluido: "Aprovado pelo(a) assistente de fiscalização", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
