@@ -229,11 +229,9 @@ export default {
         },
         logout() {
             this.logoutLoading = true;
-            this.dialogSair = false;
-            this.$router.push({name: 'login'});
+            console.log("entrei")
             this.$store.dispatch('logout')
             .then(() => {
-                this.logoutLoading = false;
             })
             .catch(() => {
                 alert("Ocorreu um erro no logout.")

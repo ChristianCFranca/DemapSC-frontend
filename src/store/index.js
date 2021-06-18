@@ -4,8 +4,8 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    // baseURL: '//localhost:8000',
-    baseURL: 'https://demapsm-backend.herokuapp.com',
+    baseURL: '//localhost:8000',
+    // baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
         Accept: 'application/json',
@@ -90,7 +90,6 @@ export default new Vuex.Store({
     },
     logout({ commit }) {
       commit('USER_CLEAR_DATA')
-      router.push({name: 'login'})
     },
     requestNewPassword(_, username) {
       return apiClient.get(`/auth/users/password/request?username=${username}`)
@@ -177,7 +176,7 @@ export default new Vuex.Store({
     getMateriais: state => state.materiaisList,
     getMateriaisList: state => state.materiaisList.length === 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
     getCanUserDownload: (state, getters) => state.rolesThatCanDownload.includes(getters.getRole),
-    getPedidosCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
+    getPedidosCurrentUser: state => state.pedidos,//.filter(obj => obj['email'] === state.currentUser.email),
     getPedidosAtivos: (state, getters) => state.currentUser.role === "regular" ? 
     getters.getPedidosCurrentUser.filter(obj => obj['active'] && obj['statusStep'] !== 6) : 
     state.pedidos.filter(

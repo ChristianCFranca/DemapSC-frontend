@@ -271,6 +271,9 @@ export default {
                     this.snackbar = true;
                 }
             })
+            .finally(() => {
+                this.editedItem.password = null
+            })
         },
         setUsers() {
             this.loading = true;

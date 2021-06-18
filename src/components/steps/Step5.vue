@@ -231,25 +231,7 @@
             </v-col>
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active && cargoCorreto">
-                    <h2 class="my-4">Aguardando confirmação do(a) fiscal:</h2>
-                    <!-- <h2>Chave de Identificação do(a) fiscal:</h2>
-                    <v-col cols="12" xs="12" sm="12" md="6" align="center">
-                        <v-text-field
-                            v-model="key"
-                            class="mt-4"
-                            rows="1"
-                            required
-                            shaped
-                            outlined
-                            clearable
-                            prepend-inner-icon="mdi-key"
-                            type="password"
-                        ></v-text-field>
-
-                        <h2 class="font-weight-light red--text" v-if="error">{{errorMessage}}</h2> 
-                        
-                    </v-col>  -->
-
+                    <h2 class="my-4">Aguardando confirmação da aquisição:</h2>
                     <v-col>
                         <v-btn
                         color="blue darken-1"
@@ -287,7 +269,6 @@ export default {
         inputItem: Object
     },
     methods: {
-        /* eslint-disable no-unused-vars */
         updateItemStep(){
             let message = "Solicitação atualizado com sucesso";
             let {_id, ...inputItem} = this.inputItem; // Removemos o id para que ele não seja visto no json de alteração
@@ -331,31 +312,10 @@ export default {
                     this.$emit('itemCRUDError', "Erro de comunicação com o servidor");
                 });
         },
-        /* eslint-disable no-unused-vars */
         keyCheck(){        
             this.error = false;
             this.loadingBtnSend = true;
             this.updateItemStep();
-
-            // const cargo = 0; // fiscal     
-            // this.$store.dispatch('keyCheck', {key: this.key, cargo: cargo})
-            // .then(response => {
-            //     this.response = response.data;
-            //     if (this.response['valid']) {
-            //         this.updateItemStep();
-            //     }
-            //     else {
-            //         this.loadingBtnSend = false;
-            //         this.errorMessage = "Chave inválida";
-            //         this.error = true;              
-            //     }
-            // })
-            // .catch(error => {
-            //     console.log(error);
-            //     this.errorMessage = "Ocorreu um erro no servidor";
-            //     this.error = true;
-            // })
-            
         },
         getValorMonetario(valor){
             if (valor !== null && valor !== null) {
@@ -367,7 +327,15 @@ export default {
     },
     computed: {
         cargoCorreto() {
-            return this.expectedRoles !== undefined ? this.expectedRoles.includes(this.$store.getters.getRole) : false;
+            if (this.expectedRoles) {
+                if (this.$store.getters.getRole === "regular" && !this.inputItem.items.some(item => !item.almoxarifadoPossui && item.direcionamentoDeCompra === 'Demap')) {
+                    console.log("entrei")
+                    return true
+                }
+                return this.expectedRoles.includes(this.$store.getters.getRole)
+            } else {
+                return false
+            }
         }
     }
 }

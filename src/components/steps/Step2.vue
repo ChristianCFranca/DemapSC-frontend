@@ -120,20 +120,6 @@
             <v-col cols="12" xs="12" sm="6" md="5" align="center">
                 <div v-if="inputItem.active && cargoCorreto">
                     <h2 class="my-4">Aguardando aprovação do(a) assistente de fiscalização:</h2>
-                    <!-- <h2>Chave de Identificação do(a) assistente de fiscalização:</h2>
-                    <v-col cols="12" xs="12" sm="12" md="6" align="center">
-                        <v-text-field
-                            v-model="key"
-                            class="mt-4"
-                            rows="1"
-                            required
-                            shaped
-                            outlined
-                            clearable
-                            prepend-inner-icon="mdi-key"
-                            type="password"
-                        ></v-text-field>
-                    </v-col>     -->
                     <h2 class="font-weight-light red--text" v-if="error">{{errorMessage}}</h2>    
                     <v-col>
                         <v-btn
@@ -261,30 +247,6 @@ export default {
                 this.loadingBtnCancel = true;
                 this.dialogDelete = true;
             }
-
-            // const cargo = 0; // assistente de fiscalizacao
-            // this.$store.dispatch('keyCheck', {key: this.key, cargo: cargo})
-            // .then(response => {
-            //     this.response = response.data;
-            //     if (this.response['valid']) {
-            //         if (btn === "send")
-            //             this.updateItemStep(false);
-            //         else
-            //             this.dialogDelete = true;
-            //     }
-            //     else {
-            //         this.loadingBtnSend = false;
-            //         this.loadingBtnCancel = false;
-            //         this.errorMessage = "Chave inválida";
-            //         this.error = true;
-            //     }
-            // })
-            // .catch(error => {
-            //     console.log(error);
-            //     this.errorMessage = "Ocorreu um erro no servidor";
-            //     this.error = true;
-            // })
-            
         },
         getValorMonetario(valor){
             if (valor !== null && valor !== null) {
