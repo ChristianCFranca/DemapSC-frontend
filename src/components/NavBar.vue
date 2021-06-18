@@ -241,24 +241,6 @@ export default {
             this.error = false;
             this.loading = true;   
             this.getPedidosAsCSV()
-            // this.$store.dispatch('checkKeyBoth', this.key)
-            // .then(response => {
-            //     this.response = response.data;
-            //     if (this.response['valid']) {
-            //         this.getPedidosAsCSV()
-            //     }
-            //     else {
-            //         this.errorMessage = "Chave inválida";
-            //         this.error = true;
-            //         this.loading = false;               
-            //     }
-            // })
-            // .catch(error => {
-            //     console.log(error);
-            //     this.errorMessage = "Ocorreu um erro no servidor";
-            //     this.error = true;
-            //     this.loading = false;
-            // })
         },
         goToCadastro(){
             this.drawer = false;
