@@ -155,8 +155,8 @@ export default new Vuex.Store({
         return response
       })
     },
-    collectData() {
-      return apiClient.get(`/collect_data/`, {responseType: 'arraybuffer'})
+    collectData(_, rota) {
+      return apiClient.get(`/collect-data/${rota}`, {responseType: 'arraybuffer'})
       .then(response => {
         return response
       })

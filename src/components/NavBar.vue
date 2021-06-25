@@ -141,35 +141,40 @@
                 class="text-center px-4" 
                 color="grey lighten-5"
                 max-width="350">
-                    <v-card-title class="justify-center">Baixar andamentos</v-card-title>
-                    
-                    <!-- <v-card-text>
-                        <v-divider></v-divider>
-                        <p class="body-1 my-4">Chave de Identificação do(a) assistente/fiscal:</p>
-                        <v-text-field
-                            v-model="key"
-                            rows="1"
-                            required
-                            shaped
-                            outlined
-                            clearable
-                            prepend-inner-icon="mdi-key"
-                            type="password"
-                        ></v-text-field>
-                    </v-card-text> -->
+                <div>
+                    <v-card-title class="justify-center">Baixar compras para o Demap</v-card-title>
                     <h2 class="font-weight-light red--text mb-3" v-if="error">{{errorMessage}}</h2> 
                     <v-card-actions class="justify-center pb-8">
                         <v-btn 
                         large
                         outlined
+                        id="compras-demap"
                         color="blue darken-3"
-                        @click="keyCheck()"
-                        :loading="loading">
+                        @click="downloadFile"
+                        :loading="loadingCompras">
                             <v-icon large left>mdi-download</v-icon>
-                            Download
+                            Compras Demap
                         </v-btn>
                     </v-card-actions>
-                    
+                    <p v-if="solicitacaoMessageCompra" class="warning--text">{{solicitacaoMessageCompra}}</p>
+                </div>
+                <v-divider></v-divider>
+                <div>
+                    <v-card-title class="justify-center">Baixar andamentos</v-card-title>
+                    <h2 class="font-weight-light red--text mb-3" v-if="error">{{errorMessage}}</h2> 
+                    <v-card-actions class="justify-center pb-8">
+                        <v-btn 
+                        large
+                        outlined
+                        id="andamentos"
+                        color="blue darken-3"
+                        @click="downloadFile"
+                        :loading="loadingAndamentos">
+                            <v-icon large left>mdi-download</v-icon>
+                            Andamentos
+                        </v-btn>
+                    </v-card-actions>
+                </div>
                 </v-card>
             </v-menu>
         </div>
@@ -192,9 +197,10 @@ export default {
             error: false,
             errorMessage: "Chave inválida",
             key: null,
-            csv_filename: 'data.csv',
-            loading: false,
-            solicitacaoMessage: "Nenhum dado disponível.",
+            filename: null,
+            loadingCompras: false,
+            loadingAndamentos: false,
+            solicitacaoMessageCompra: null,
             dialogTrocarSenha: false,
             dialogSair: false
         }
@@ -208,24 +214,9 @@ export default {
             const url = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = url
-            link.setAttribute('download', this.csv_filename)
+            link.setAttribute('download', this.filename)
             document.body.appendChild(link)
             link.click()
-        },
-        getPedidosAsCSV() {
-            this.$store.dispatch('collectData')
-            .then(response => {
-                this.forceFileDownload(response)
-                this.loading = false;
-                })
-            .catch(error => {
-                if (error.response === undefined)
-                    this.solicitacaoMessage = "Banco de dados indisponível.";
-                else 
-                    this.solicitacaoMessage = "Nenhum dado disponível.";
-                console.log(error); 
-                this.loading = false; 
-                });
         },
         logout() {
             this.logoutLoading = true;
@@ -237,10 +228,41 @@ export default {
                 alert("Ocorreu um erro no logout.")
             })
         },
-        keyCheck(){
+        collectData(rota) {
+            this.$store.dispatch('collectData', rota)
+            .then(response => {
+                this.forceFileDownload(response)
+                })
+            .catch(error => {
+                if (!error.response)
+                    this.solicitacaoMessageCompra = "Banco de dados indisponível.";
+                else if (error ?.response ?.status === 401){
+                    this.solicitacaoMessageCompra = "Você não está autenticado ou não tem permissão para ver essa informação.";
+                    this.$store.dispatch('logout')
+                }
+                else if (error ?.response ?.status === 404){
+                    this.solicitacaoMessageCompra = "Nenhum pedido pendente!";
+                }
+                console.log(error); 
+                })
+            .finally(() => {
+                    this.loadingAndamentos = false;
+                    this.loadingCompras = false;
+                })
+        },
+        downloadFile(e){
             this.error = false;
-            this.loading = true;   
-            this.getPedidosAsCSV()
+            const targetId = e.currentTarget.id
+            if (targetId === 'compras-demap') {
+                this.solicitacaoMessageCompra = null;
+                this.filename = 'compra_demap.pdf';
+                this.loadingCompras = true;
+            }
+            else if (targetId === 'andamentos') {
+                this.filename = 'compra_demap.pdf';
+                this.loadingAndamentos = true;
+            }
+            this.collectData(targetId);
         },
         goToCadastro(){
             this.drawer = false;
