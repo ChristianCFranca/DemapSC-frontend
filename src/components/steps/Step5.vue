@@ -13,7 +13,7 @@
         </v-dialog>
         <v-form v-model="valid">
             <div v-for="(it, idx) in inputItem.items" :key="idx">
-                <div v-if="it.aprovadoFiscal">
+                <div>
                     <v-row>
                         <v-col 
                         cols="12"
@@ -145,7 +145,7 @@
                             <v-row 
                             justify="center" 
                             class="mt-12" 
-                            v-else>
+                            v-if="it.almoxarifadoPossui && it.aprovadoFiscal">
                                 <v-col cols="12" justify="center" class="d-flex justify-center">
                                     <h2 class="font-weight-light"> Item aguardando retirada no</h2>
                                 </v-col>
@@ -176,7 +176,31 @@
                                     </div>
                                 </v-col>
                             </v-row>
-                            
+
+                            <v-row 
+                            no-gutters
+                            v-if="!it.aprovadoFiscal">
+                                <v-col cols="12" class="d-flex justify-center">
+                                    <p class="red--text text-body-1">
+                                        <v-icon class="red--text mb-1">mdi-cancel</v-icon>
+                                        CANCELADO
+                                    </p>
+                                </v-col>
+                                <v-col cols="12">
+                                    <p class="text-body-2">
+                                        Motivo:
+                                    </p>
+                                </v-col>
+                                <v-col cols="12" class="d-flex justify-center">
+                                    <v-textarea
+                                    v-model="it.motivoFiscal"
+                                    auto-grow
+                                    outlined
+                                    v-if="it.almoxarifadoPossui"
+                                    disabled></v-textarea>
+                                </v-col>
+                            </v-row>
+
                         </v-col>
                     </v-row>
                     <v-divider class="my-4"></v-divider>

@@ -13,7 +13,7 @@
         </v-dialog> -->
 
         <div v-for="(it, idx) in inputItem.items" :key="idx">
-            <div v-if="it.aprovadoFiscal">
+            <div>
                 <v-row>
                     <v-col 
                     cols="12"
@@ -95,7 +95,7 @@
                     cols="12"
                     sm="3"
                     md="3"
-                    v-if="cargoCorreto || !inputItem.active">
+                    v-if="(cargoCorreto || !inputItem.active) && it.aprovadoFiscal">
                         <v-row justify="center">
                             <v-col cols="12" class="d-flex justify-center">
                                 <v-switch 
@@ -120,6 +120,35 @@
 
                         </v-row>
                     </v-col>
+
+                    <v-col 
+                    cols="12"
+                    sm="3"
+                    md="3"
+                    v-else>
+                        <v-row no-gutters>
+                            <v-col cols="12" class="d-flex justify-center">
+                                <p class="red--text text-body-1">
+                                    <v-icon class="red--text mb-1">mdi-cancel</v-icon>
+                                    CANCELADO
+                                </p>
+                            </v-col>
+                            <v-col cols="12">
+                                <p class="text-body-2">
+                                    Motivo:
+                                </p>
+                            </v-col>
+                            <v-col cols="12" class="d-flex justify-center">
+                                <v-textarea
+                                v-model="it.motivoFiscal"
+                                auto-grow
+                                outlined
+                                v-if="it.almoxarifadoPossui"
+                                disabled></v-textarea>
+                            </v-col>
+                        </v-row>
+                    </v-col>
+
                 </v-row>
                 <v-divider class="my-4"></v-divider>
             </div>

@@ -94,18 +94,17 @@
                 <v-col 
                 cols="12"
                 sm="3"
-                md="3"
-                v-if="cargoCorreto || !inputItem.active">
+                md="3">
                     <v-row justify="center">
                         <v-switch 
                         v-model="it.aprovadoFiscal"
                         required
                         label="Aprovado" 
                         color="success"
-                        :disabled="!inputItem.active"></v-switch>
+                        :disabled="!inputItem.active || !cargoCorreto"></v-switch>
                     </v-row>
 
-                    <div v-if="it.aprovadoFiscal">
+                    <div v-if="it.aprovadoFiscal && cargoCorreto">
                         <h2 class="body-1 font-weight-bold">Na ausência do item no almoxarifado (DILOG), a compra deverá ser realizada por:</h2>
                         <v-col cols="12" align="center" class="d-flex justify-center">
                             <v-radio-group v-model="it.direcionamentoDeCompra" row>
@@ -131,7 +130,7 @@
                         clearable
                         outlined
                         v-if="!it.aprovadoFiscal"
-                        :disabled="!inputItem.active"
+                        :disabled="!inputItem.active || !cargoCorreto"
 
                     ></v-textarea>
 

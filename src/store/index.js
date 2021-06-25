@@ -176,7 +176,7 @@ export default new Vuex.Store({
     getMateriais: state => state.materiaisList,
     getMateriaisList: state => state.materiaisList.length === 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
     getCanUserDownload: (state, getters) => state.rolesThatCanDownload.includes(getters.getRole),
-    getPedidosCurrentUser: state => state.pedidos,//.filter(obj => obj['email'] === state.currentUser.email),
+    getPedidosCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
     getPedidosAtivos: (state, getters) => state.currentUser.role === "regular" ? 
     getters.getPedidosCurrentUser.filter(obj => obj['active'] && obj['statusStep'] !== 6) : 
     state.pedidos.filter(
