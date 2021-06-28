@@ -142,7 +142,7 @@
                                                     :items="listaDeMateriais"
                                                     :loading="isMateriaisLoading"
                                                     :disabled="isMateriaisLoading"
-                                                    @blur="mapMaterialParaPropriedades(pedido.items[item-1])"
+                                                    v-on:change="mapMaterialParaPropriedades(pedido.items[item-1])"
                                                     hide-no-data
                                                     hide-selected
                                                     :counter="100"
