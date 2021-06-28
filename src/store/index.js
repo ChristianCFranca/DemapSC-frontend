@@ -27,7 +27,7 @@ export default new Vuex.Store({
     materiaisList: [],
     pedidos: [],
     allRoles: ["admin", "fiscal", "assistente", "almoxarife", "regular"],
-    rolesThatCanDownload: ["admin", "fiscar", "assistente"],
+    rolesThatCanDownload: ["admin", "fiscal", "assistente"],
     stepsForRoles: {
       2: ["admin", "assistente", "regular"],
       3: ["admin", "fiscal", "regular"],
