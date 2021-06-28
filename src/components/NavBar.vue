@@ -259,7 +259,7 @@ export default {
                 this.loadingCompras = true;
             }
             else if (targetId === 'andamentos') {
-                this.filename = 'compra_demap.pdf';
+                this.filename = 'andamentos.csv';
                 this.loadingAndamentos = true;
             }
             this.collectData(targetId);
