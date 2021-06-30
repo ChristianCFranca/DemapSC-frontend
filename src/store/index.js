@@ -4,8 +4,8 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    // baseURL: '//localhost:8000',
-    baseURL: 'https://demapsm-backend.herokuapp.com',
+    baseURL: '//localhost:8000',
+    // baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
         Accept: 'application/json',
@@ -47,7 +47,7 @@ export default new Vuex.Store({
   mutations: {
     ENGAGE_TOKEN_COUNTDOWN(state) {
       const originalTokenTime = localStorage.getItem('tokenOriginalTime');
-      state.tokenRemainingSeconds = 30*60 - Math.trunc((new Date().getTime() - originalTokenTime)/1000); // 30 minutos menos o tempo passado
+      state.tokenRemainingSeconds = 24*60*60 - Math.trunc((new Date().getTime() - originalTokenTime)/1000); // 24*60 minutos menos o tempo passado
       setInterval(function () {
         if (state.tokenRemainingSeconds)
           state.tokenRemainingSeconds--;

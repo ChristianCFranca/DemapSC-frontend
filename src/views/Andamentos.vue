@@ -285,13 +285,13 @@ export default {
         snackbarReactError(message) {
             this.snackbarColor = "error";
             if (message?.data?.detail)
-                this.message = message.data.detail;
+                this.snackbarMessage = message.data.detail;
             else if (message?.data)
-                this.message = message.data;
+                this.snackbarMessage = message.data;
             else if(message)
-                this.message = message;
+                this.snackbarMessage = message;
             else
-                this.message = "Ocorreu um problema desconhecido";
+                this.snackbarMessage = "Ocorreu um problema desconhecido";
             this.snackbar = true;
             this.logTable();
         },

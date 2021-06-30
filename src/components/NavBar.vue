@@ -79,7 +79,7 @@
                 <v-list-item two-line>
                     <v-list-item-content>
                         <v-list-item-subtitle class="text-center">Tempo de Sessão Restante</v-list-item-subtitle>
-                        <v-list-item-title class="text-center text-h5 font-weight-light">{{ `${remainingMinutes}:${remainingSeconds}` }}</v-list-item-title>
+                        <v-list-item-title class="text-center text-h5 font-weight-light">{{ `${remainingHours}:${remainingMinutes}:${remainingSeconds}` }}</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
                 <v-divider class="mx-4 my-4"></v-divider>
@@ -274,8 +274,11 @@ export default {
         }
     },
     computed: {
+        remainingHours() {
+            return String(Math.trunc(this.$store.getters.getSessaoRestante/3600)).padStart(2, '0');
+        },
         remainingMinutes() {
-            return String(Math.trunc(this.$store.getters.getSessaoRestante/60)).padStart(2, '0');
+            return String(Math.trunc(this.$store.getters.getSessaoRestante/60%60)).padStart(2, '0');
         },
         remainingSeconds() {
             return String(this.$store.getters.getSessaoRestante%60).padStart(2, '0');
