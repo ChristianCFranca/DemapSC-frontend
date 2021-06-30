@@ -111,6 +111,7 @@
                                 <v-radio
                                     :label="`Engemil`"
                                     value="Engemil"
+                                    :disabled="!it.valorUnitario"
                                 ></v-radio>
                                 <v-radio
                                     :label="`Demap`"
