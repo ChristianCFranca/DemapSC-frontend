@@ -70,7 +70,7 @@ export default new Vuex.Store({
       state.materiaisList = materiais;
     },
     SET_TODOS_OS_PEDIDOS(state, pedidos){
-      state.pedidos = pedidos;
+      state.pedidos = pedidos.reverse();
     },
     USER_CLEAR_DATA() {
       localStorage.removeItem('user');
