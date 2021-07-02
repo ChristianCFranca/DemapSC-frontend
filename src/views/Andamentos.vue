@@ -158,6 +158,10 @@
                     </h1> 
                 </template>
 
+                <template v-slot:[`item._id`]="{ item }">
+                    {{ `**${item._id.slice(-4)}` }}
+                </template>
+
                 <template v-slot:[`item.valorGastoTotal`]="{ item }">
                     {{ getValorGastoTotal(item) }}
                 </template>
@@ -217,16 +221,17 @@ export default {
             loading: false,
             headers: [
                 { text: '', value: 'data-table-expand', sortable: false, groupable: false },
-                { text: "Número da OS", value: "os"},
-                { text: "Quantidade de Itens", value: "quantidade" },
+                { text: "N°", value: "number"},
+                { text: "Ordem de Serviço", value: "os"},
+                { text: "Qtde de Itens", value: "quantidade" },
                 { text: "Valor Estimado", value: "valorDaSolicitacao" },
-                { text: "Valor Gasto", value: "valorGastoTotal" },
-                { text: "Nome do Requisitante", value: "requisitante" },
+                { text: "Nome do Requisitante", value: "requisitante"},
                 { text: "Email do Requisitante", value: "email" },
                 { text: "Data do Pedido", value: "dataPedido" },
                 { text: "Horário do Pedido", value: "horarioPedido"},
                 { text: "Fase do Pedido", value: "statusStep" },
-                { text: "Status do Pedido", value: "status" }
+                { text: "Status do Pedido", value: "status" },
+                { text: "Identificador", value: "_id", }
             ],
             messageMapping: [
                 {concluido: "Aprovado pelo(a) assistente de fiscalização", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
