@@ -26,6 +26,12 @@ export default new Vuex.Store({
     },
     materiaisList: [],
     pedidos: [],
+    currentPedido: null,
+    snackbar: {
+      state: false,
+      message: "",
+      color: "success"
+    },
     allRoles: ["admin", "fiscal", "assistente", "almoxarife", "regular"],
     rolesThatCanDownload: ["admin", "fiscal", "assistente"],
     stepsForRoles: {
@@ -76,6 +82,22 @@ export default new Vuex.Store({
       localStorage.removeItem('user');
       localStorage.removeItem('tokenOriginalTime');
       location.reload(); // Força um refresh da página, destruindo o estado do vuex
+    },
+    SET_SNACKBAR(state, snackbarData) {
+      state.snackbar.state = true;
+      state.snackbar.message = snackbarData.message;
+      state.snackbar.color = snackbarData.color;
+    },
+    UNSET_SNACKBAR(state) {
+      state.snackbar.state = false;
+      state.snackbar.message = "";
+      state.snackbar.color = "";
+    },
+    SET_CURRENT_PEDIDO(state, pedido) {
+      state.currentPedido = pedido;
+    },
+    UNSET_CURRENT_PEDIDO(state) {
+      state.currentPedido = null;
     }
   },
   actions: {
@@ -167,12 +189,14 @@ export default new Vuex.Store({
     getIsAuthenticated: state => state.currentUser.token !== null,
     getPermissions: state => state.permissionsPerRole[state.currentUser.role],
     getCompleteName: state => state.currentUser.nome,
+    getCurrentPedido: state => state.currentPedido,
     getFirstLastName: state => `${state.currentUser.nome.split(' ')[0]} ${state.currentUser.nome.split(' ').slice(-1)[0]}`,
     getEmail: state => state.currentUser.email,
     getRole: state => state.currentUser.role,
     getAllRoles: state => state.allRoles,
     getAllUsers: (state, getters) => state.allUsers.length === 0 ? [] : 
     state.allUsers.filter(obj => state.permissionsPerRole[getters.getRole].includes(obj.role) && obj.username !== getters.getEmail),
+    getSnackbar: state => state.snackbar,
     getMateriais: state => state.materiaisList,
     getMateriaisList: state => state.materiaisList.length === 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
     getCanUserDownload: (state, getters) => state.rolesThatCanDownload.includes(getters.getRole),

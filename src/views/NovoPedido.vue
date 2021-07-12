@@ -419,6 +419,7 @@ export default {
                 aprovadoFiscal: true, motivoFiscal: null,
                 direcionamentoDeCompra: null, 
                 almoxarifadoPossui: true, infoDILOG: null, 
+                recebido: false, recebimento: null,
                 valorGasto: 0.0
             }
         },
