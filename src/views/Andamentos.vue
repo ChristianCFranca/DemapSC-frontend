@@ -126,7 +126,6 @@ export default {
             this.loading = true;
             this.$store.dispatch('getTodosOsPedidos')
             .then(() => {
-                this.loading = false;
                 this.getter = this.$store.getters.getPedidosAtivos;
                 })
             .catch(error => {
@@ -140,8 +139,10 @@ export default {
                     this.iconMessage = "mdi-emoticon-sad-outline";
                     this.$store.dispatch('logout')
                 }
-                this.loading = false; 
-                });
+                })
+            .finally(() => {
+                this.loading = false;
+            })
         },
         capitalize(value) {
             if (!value) return '';

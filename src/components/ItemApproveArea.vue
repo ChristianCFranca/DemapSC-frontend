@@ -28,6 +28,7 @@
                 color="blue darken-1"
                 class="white--text"
                 :loading="loadingBtnSend"
+                :disabled="!currentValidStep"
                 @click="send(true)">
                     {{ approveText }}
                 </v-btn>
@@ -66,7 +67,20 @@ export default {
     },
     methods: {
         send(confirm) {
-            console.log(confirm)
+            if (confirm) {
+                this.loadingBtnSend = true;
+                this.$store.dispatch('updateCurrentPedido')
+                .finally(() => {
+                    this.loadingBtnSend = false;
+                })
+            }
+            else {
+                this.loadingBtnCancel = false;
+                this.$store.dispatch('cancelCurrentPedido')
+                .finally(() => {
+                    this.loadingBtnCancel = false;
+                })
+            }
         }
     },
     computed: {
@@ -91,6 +105,14 @@ export default {
         },
         userCanApprove() {
             return this.$store.getters.getApprovalsForRoles[this.$store.getters.getCurrentPedido.statusStep].includes(this.$store.getters.getRole);
+        },
+        validStep2() {
+            return this.item.items.some(item => item.aprovadoAssistente)
+        },
+        currentValidStep() {
+            if (this.$store.getters.getCurrentPedido.statusStep === 2)
+                return this.validStep2
+            return true
         }
     }
 }

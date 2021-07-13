@@ -430,6 +430,9 @@ export default {
             this.$refs.form.reset();
             this.$refs.osForm.reset();
         },
+        resetPedidoProperties() {
+            this.pedido.valorDaSolicitacao = 0;
+        },
         checarEConstruirPedido() {
             this.error = false;
             this.success = false;
@@ -456,7 +459,6 @@ export default {
             .then(() => {
                 this.resetForm(); 
                 this.success = true;
-                this.loading = false;
                 this.pedido.items = [this.pedido.items[0]];
                 })
             .catch(error => {
@@ -468,8 +470,11 @@ export default {
                 console.log(error); 
                 this.errorMessage = "Ocorreu um erro ao enviar o seu pedido para o servidor. Atualize a página e tente novamente."
                 this.error = true;
+                this.resetPedidoProperties();
+                })
+            .finally(() => {
                 this.loading = false;
-                });
+            })
         },
         mapMaterialParaPropriedades(item) {
             if (this.listaDeMateriais.length <= 0) return

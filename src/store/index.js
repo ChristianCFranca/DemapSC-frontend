@@ -4,8 +4,8 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    // baseURL: '//localhost:8000',
-    baseURL: 'https://demapsm-backend.herokuapp.com',
+    baseURL: '//localhost:8000',
+    // baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
         Accept: 'application/json',
@@ -26,6 +26,7 @@ export default new Vuex.Store({
     },
     materiaisList: [],
     pedidos: [],
+    allUsers: [],
     currentPedido: null,
     snackbar: {
       state: false,
@@ -40,12 +41,12 @@ export default new Vuex.Store({
       4: ["admin", "almoxarife"],
       5: ["admin", "fiscal", "assistente", "regular"]
     },
-    stepsForRoles: {
-      2: ["admin", "assistente", "regular"],
-      3: ["admin", "fiscal", "regular"],
-      4: ["admin", "almoxarife", "regular"],
-      5: ["admin", "fiscal", "regular"],
-      6: ["admin", "fiscal", "assistente", "regular"]
+    showingForRoles: { // Regular não aparece pois ele pode ver tudo porém apenas dele
+      2: ["admin", "fiscal", "assistente"],
+      3: ["admin", "fiscal"],
+      4: ["admin", "almoxarife"],
+      5: ["admin", "fiscal"],
+      6: ["admin", "fiscal", "assistente"]
     },
     permissionsPerRole: {
       "admin": ["admin", "fiscal", "assistente", "almoxarife", "regular"],
@@ -53,8 +54,7 @@ export default new Vuex.Store({
       "assistente": ["regular"],
       "almoxarife": [],
       "regular": []
-    },
-    allUsers: []
+    }
   },
   mutations: {
     ENGAGE_TOKEN_COUNTDOWN(state) {
@@ -82,7 +82,8 @@ export default new Vuex.Store({
       state.materiaisList = materiais;
     },
     SET_TODOS_OS_PEDIDOS(state, pedidos){
-      state.pedidos = pedidos.reverse();
+      if (pedidos)
+        state.pedidos = pedidos.reverse();
     },
     USER_CLEAR_DATA() {
       localStorage.removeItem('user');
@@ -165,23 +166,57 @@ export default new Vuex.Store({
         return response
       })
     },
-    putPedidoExistente(_, {_id, pedidoExistente}) {
-      return apiClient.put(`/crud/pedidos/${_id}`, pedidoExistente)
-      .then(response => {
-        return response
+    updateCurrentPedido({ state, getters, commit, dispatch }) {
+      let {_id, ...pedido} = state.currentPedido;
+      const now = new Date().toLocaleString('pt-BR');
+
+      if (pedido.statusStep === 2) {
+        pedido.assistente = getters.getCompleteName;
+        pedido.emailAssistente = getters.getEmail;
+        pedido.dataAprovacaoAssistente = now.split(' ')[0];
+        pedido.horarioAprovacaoAssistente = now.split(' ')[1];
+        pedido.status = "Aguardando confirmação do(a) fiscal";
+        for (let i=0; i < pedido.items.length; i++){
+          pedido.items[i].aprovadoFiscal = pedido.items[i].aprovadoAssistente
+          pedido.items[i].motivoFiscal = pedido.items[i].motivoAssistente
+        }
+        let valorDaSolicitacao = 0;
+        for (let idx = 0; idx < pedido.items.length; idx++){
+          if (pedido.items[idx].valorTotal !== null && pedido.items[idx].aprovadoAssistente) // Tem que ter valor diferente de 0 e estar aprovado pelo assistente
+            valorDaSolicitacao += pedido.items[idx].valorTotal;
+        }
+        pedido.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
+      }
+      else if (pedido.statusStep === 3) {
+        console.log("step 3")
+      }
+      else if (pedido.statusStep === 4) {
+        console.log("step 4")
+      }
+      else if (pedido.statusStep === 5) {
+        console.log("step 5")
+      }
+      pedido.statusStep += 1;
+
+      apiClient.put(`/crud/pedidos/${_id}`, pedido)
+      .then(() => {
+        commit('SET_SNACKBAR', {message: "Pedido atualizado com sucesso", color: "success"})
+        dispatch('getTodosOsPedidos')
       })
+      .catch(error => {
+        console.log(error);
+        if (error?.response?.status === 401) {
+          commit('SET_SNACKBAR', {message: "Usuário não autenticado ou não possui permissão", color: "error"})
+          dispatch('logout')
+        }
+        else if (error?.response)
+          commit('SET_SNACKBAR', {message: error.response, color: "error"})
+        else
+          commit('SET_SNACKBAR', {message: "Erro de comunicação com o servidor", color: "error"})
+      });
     },
-    keyCheck(_, {key, cargo}) {
-      return apiClient.get(`/cargos/keycheck/?key=${key}&cargo=${cargo}`)
-      .then(response => {
-        return response
-      })
-    },
-    checkKeyBoth(_, key) {
-      return apiClient.get(`/cargos/keycheck_both/?key=${key}`)
-      .then(response => {
-        return response
-      })
+    cancelCurrentPedido() {
+      console.log("Cancelamento...")
     },
     collectData(_, rota) {
       return apiClient.get(`/collect-data/${rota}`, {responseType: 'arraybuffer'})
@@ -207,21 +242,21 @@ export default new Vuex.Store({
     getMateriais: state => state.materiaisList,
     getMateriaisList: state => state.materiaisList.length === 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
     getCanUserDownload: (state, getters) => state.rolesThatCanDownload.includes(getters.getRole),
-    getPedidosCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
+    getPedidosForCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
     getPedidosAtivos: (state, getters) => state.currentUser.role === "regular" ? 
-    getters.getPedidosCurrentUser.filter(obj => obj['active'] && obj['statusStep'] !== 6) : 
+    getters.getPedidosForCurrentUser.filter(obj => obj['active'] && obj['statusStep'] !== 6) : 
     state.pedidos.filter(
       obj => obj['active'] && 
       obj['statusStep'] !== 6 && 
-      state.stepsForRoles[obj['statusStep']].includes(state.currentUser.role)
+      state.showingForRoles[obj['statusStep']].includes(state.currentUser.role)
       ),
     getPedidosCancelados: (state, getters) => state.currentUser.role === "regular" ? 
-    getters.getPedidosCurrentUser.filter(obj => !obj['active']) : 
+    getters.getPedidosForCurrentUser.filter(obj => !obj['active']) : 
     state.pedidos.filter(
       obj => !obj['active']
       ),
     getPedidosConcluidos: (state, getters) => state.currentUser.role === "regular" ? 
-    getters.getPedidosCurrentUser.filter(obj => obj['statusStep'] === 6) : 
+    getters.getPedidosForCurrentUser.filter(obj => obj['statusStep'] === 6) : 
     state.pedidos.filter(
       obj => obj['statusStep'] === 6
       ),
