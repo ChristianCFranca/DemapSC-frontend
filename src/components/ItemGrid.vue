@@ -1,13 +1,13 @@
 <template>
     <div>
-        <v-container class="mx-3 my-3 text-center">
+        <div class="mx-3 my-3 text-center">
             <div class="font-weight-normal grey--text text-body-2">
                 Finalidade dos Materiais
             </div>
             <div class="font-weight-normal text-body-1">
                 {{ item.finalidade }}
             </div>
-        </v-container>
+        </div>
 
         <v-divider></v-divider>
 

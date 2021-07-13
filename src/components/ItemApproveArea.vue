@@ -4,8 +4,7 @@
         <v-col 
         cols="12" 
         xs="12" 
-        v-if="item.statusStep === 6"
-        >
+        v-if="item.statusStep === 6">
             <div>
                 <h1 class="font-weight-regular success--text">Solicitação finalizada com sucesso!</h1>
                 <v-icon
@@ -16,11 +15,11 @@
         </v-col>
 
         <v-row
-        v-else>
+        v-if="userCanApprove">
             <v-col 
             cols="12">
                 <h2 class="my-4">
-                    Aguardando aprovação do(a) {{ cargoAtual }}:
+                    Aguardando aprovação do(a) {{ cargoEmQuestao }}:
                 </h2>
             </v-col>
             <v-col 
@@ -29,8 +28,7 @@
                 color="blue darken-1"
                 class="white--text"
                 :loading="loadingBtnSend"
-                :disabled="!item.items.some(function(obj){return obj['aprovadoAssistente'] === true})"
-                @click="keyCheck(`send`)">
+                @click="send(true)">
                     {{ approveText }}
                 </v-btn>
             </v-col>
@@ -41,7 +39,7 @@
                 text
                 color="red"
                 :loading="loadingBtnCancel"
-                @click="keyCheck(`cancel`)">
+                @click="send(false)">
                     Cancelar Solicitação
                 </v-btn>
             </v-col>
@@ -66,8 +64,13 @@ export default {
             errorMessage: null
         }
     },
+    methods: {
+        send(confirm) {
+            console.log(confirm)
+        }
+    },
     computed: {
-        cargoAtual() {
+        cargoEmQuestao() {
             if (this.item.statusStep === 2) 
                 return `assistente de fiscalização`
             else if (this.item.statusStep === 3) 
@@ -85,6 +88,9 @@ export default {
         },
         item() {
             return this.$store.getters.getCurrentPedido;
+        },
+        userCanApprove() {
+            return this.$store.getters.getApprovalsForRoles[this.$store.getters.getCurrentPedido.statusStep].includes(this.$store.getters.getRole);
         }
     }
 }

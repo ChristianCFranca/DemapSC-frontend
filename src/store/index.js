@@ -34,6 +34,12 @@ export default new Vuex.Store({
     },
     allRoles: ["admin", "fiscal", "assistente", "almoxarife", "regular"],
     rolesThatCanDownload: ["admin", "fiscal", "assistente"],
+    approvalsForRoles: {
+      2: ["admin", "assistente"],
+      3: ["admin", "fiscal"],
+      4: ["admin", "almoxarife"],
+      5: ["admin", "fiscal", "assistente", "regular"]
+    },
     stepsForRoles: {
       2: ["admin", "assistente", "regular"],
       3: ["admin", "fiscal", "regular"],
@@ -190,6 +196,7 @@ export default new Vuex.Store({
     getPermissions: state => state.permissionsPerRole[state.currentUser.role],
     getCompleteName: state => state.currentUser.nome,
     getCurrentPedido: state => state.currentPedido,
+    getApprovalsForRoles: state => state.approvalsForRoles,
     getFirstLastName: state => `${state.currentUser.nome.split(' ')[0]} ${state.currentUser.nome.split(' ').slice(-1)[0]}`,
     getEmail: state => state.currentUser.email,
     getRole: state => state.currentUser.role,

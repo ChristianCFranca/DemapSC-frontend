@@ -473,7 +473,6 @@ export default {
         },
         mapMaterialParaPropriedades(item) {
             if (this.listaDeMateriais.length <= 0) return
-            console.log(item.nome)
             if (!item.nome) {
                 item.categoria = null;
                 item.valorUnitario = null;

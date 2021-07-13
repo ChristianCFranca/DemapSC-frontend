@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <div v-if="item.statusStep > 2">
         <p 
         class="text-h6"> 
             Aprovado Por: 
         </p>
-        <v-list-item v-if="item.statusStep > 2">
+        <v-list-item>
             <v-list-item-content>
                 <v-list-item-subtitle class="text-subtitle-1">
                     Assistente:
