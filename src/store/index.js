@@ -29,7 +29,7 @@ export default new Vuex.Store({
     allRoles: ["admin", "fiscal", "assistente", "almoxarife", "regular"],
     rolesThatCanDownload: ["admin", "fiscal", "assistente"],
     stepsForRoles: {
-      2: ["admin", "assistente", "regular"],
+      2: ["admin", "assistente", "fiscal", "regular"],
       3: ["admin", "fiscal", "regular"],
       4: ["admin", "almoxarife", "regular"],
       5: ["admin", "fiscal", "regular"],

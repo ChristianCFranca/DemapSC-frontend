@@ -166,7 +166,7 @@
 export default {
     data() {
         return {
-            expectedRoles: ['assistente', 'admin'],
+            expectedRoles: ['assistente', 'fiscal', 'admin'],
             error: false,
             errorMessage: "Chave inválida",
             key: '',
