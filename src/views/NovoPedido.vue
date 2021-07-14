@@ -370,6 +370,7 @@ export default {
                 emailRecebimento: null,
                 color: "orange",
                 active: true,
+                canceladoPor: null,
                 dataCancelamento: null,
                 horarioCancelamento: null,
                 dataFinalizacao: null,

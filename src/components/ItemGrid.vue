@@ -10,7 +10,7 @@
         </div>
 
         <v-divider></v-divider>
-
+    
         <div v-for="(it, idx) in item.items" :key="idx">
             <v-row>
                 <v-col 
@@ -28,11 +28,11 @@
                 cols="12"
                 sm="3"
                 md="3">
-                    <ItemInteractStep2 :it="it" v-if="item.statusStep === 2"/>
-                    <ItemInteractStep3 :it="it" v-if="item.statusStep === 3"/>
-                    <ItemInteractStep4 :it="it" v-if="item.statusStep === 4"/>
-                    <ItemInteractStep5 :it="it" v-if="item.statusStep === 5"/>
-                    <ItemInteractStep6 :it="it" v-if="item.statusStep === 6"/>
+                    <ItemInteractStep2 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 2"/>
+                    <ItemInteractStep3 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 3"/>
+                    <ItemInteractStep4 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 4"/>
+                    <ItemInteractStep5 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 5"/>
+                    <ItemInteractStep6 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 6"/>
                 </v-col>
             </v-row>
             <v-divider class="my-4"></v-divider>
@@ -44,17 +44,19 @@
             xs="12" 
             sm="6" 
             md="6" 
-            align="center">
-                <ItemApprovedBy/>
+            align="center"
+            align-self="center">
+                <ItemApprovedBy :item="item"/>
             </v-col>
+            <v-divider vertical class="my-3"></v-divider>
             <v-col
             cols="12"
             xs="12" 
             sm="6" 
             md="6" 
             align="center"
-            class="d-flex align-center">
-                <ItemApproveArea v-if="item.statusStep"/>
+            align-self="center">
+                <ItemApproveArea :userCanApprove="userCanApprove" :userCanCancel="userCanCancel" :item="item" v-if="item.statusStep"/>
             </v-col>
         </v-row>
 
@@ -74,6 +76,9 @@ import ItemApproveArea from './ItemApproveArea.vue'
 import ItemApprovedBy from './ItemApprovedBy.vue'
 
 export default {
+    props: {
+        item: Object
+    },
     components: {
         ItemInfo,
         ItemInteractStep2,
@@ -98,8 +103,11 @@ export default {
         cargoCorreto() {
             return this.expectedRoles !== undefined ? this.expectedRoles.includes(this.$store.getters.getRole) : false;
         },
-        item() {
-            return this.$store.getters.getCurrentPedido;
+        userCanApprove() {
+            return this.$store.getters.getApprovalsForRoles[this.item.statusStep].includes(this.$store.getters.getRole);
+        },
+        userCanCancel() {
+            return this.$store.getters.getCancelForRoles[this.item.statusStep].includes(this.$store.getters.getRole);
         }
     }
 }

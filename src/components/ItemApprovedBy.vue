@@ -51,13 +51,11 @@
 
 <script>
 export default {
+    props: {
+        item: Object
+    },
     data() {
         return {}
-    },
-    computed: {
-        item() {
-            return this.$store.getters.getCurrentPedido;
-        }
     }
 }
 </script>

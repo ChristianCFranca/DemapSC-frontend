@@ -3,9 +3,9 @@
 
         <v-tabs background-color="grey lighten-4">
             <v-spacer></v-spacer>
-            <v-tab class="blue--text" @click="getter=$store.getters.getPedidosAtivos">Ativos</v-tab>
-            <v-tab class="green--text" @click="getter=$store.getters.getPedidosConcluidos">Concluídos</v-tab>
-            <v-tab class="error--text" @click="getter=$store.getters.getPedidosCancelados">Cancelados</v-tab>
+            <v-tab class="blue--text" @click="concluidos=false;cancelados=false;ativos=true;">Ativos</v-tab>
+            <v-tab class="green--text" @click="cancelados=false;ativos=false;concluidos=true;">Concluídos</v-tab>
+            <v-tab class="error--text" @click="concluidos=false;ativos=false;cancelados=true;">Cancelados</v-tab>
             <v-spacer></v-spacer>
         </v-tabs>
 
@@ -42,7 +42,7 @@
                 
                 <template v-slot:expanded-item="{ headers, item }">
                     <td :colspan="headers.length">
-                        <ItemStepper :item="item"/>
+                        <ItemStepper :inputItem="item"/>
                     </td>
                 </template>
 
@@ -96,7 +96,9 @@ export default {
     },
     data() {
         return {
-            getter: [],
+            concluidos: false,
+            cancelados: false,
+            ativos: true,
             snackbar: false,
             snackbarMessage: '',
             snackbarColor: '',
@@ -126,7 +128,6 @@ export default {
             this.loading = true;
             this.$store.dispatch('getTodosOsPedidos')
             .then(() => {
-                this.getter = this.$store.getters.getPedidosAtivos;
                 })
             .catch(error => {
                 console.log(error);
@@ -198,7 +199,14 @@ export default {
     },
     computed: {
         pedidos() {
-            return this.getter;
+            if (this.ativos)
+                return this.$store.getters.getPedidosAtivos;
+            else if (this.concluidos)
+                return this.$store.getters.getPedidosConcluidos;
+            else if (this.cancelados)
+                return this.$store.getters.getPedidosCancelados;
+            else
+                return [];
         }
     }
 }

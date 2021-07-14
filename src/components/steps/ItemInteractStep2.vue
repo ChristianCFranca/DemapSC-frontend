@@ -2,7 +2,7 @@
     <div>
         <v-row 
         no-gutters
-        v-if="userCanApprove">
+        v-if="userCanApprove && itemActive">
             <v-col 
             cols="12"
             class="d-flex justify-center align-center">
@@ -26,13 +26,32 @@
                 ></v-textarea>
             </v-col>
         </v-row>
+        <v-row
+        v-else>
+            <v-col
+            cols="12">
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-subtitle
+                        class="text-body-2">
+                            Motivo do Assistente
+                        </v-list-item-subtitle>
+                        <p class="text-justify text-body-1">
+                            {{ it.motivoAssistente ? it.motivoAssistente : `Não informado` }}
+                        </p>
+                    </v-list-item-content>
+                </v-list-item>
+            </v-col>
+        </v-row>
     </div>
 </template>
 
 <script>
 export default {
     props: {
-        it: Object
+        it: Object,
+        userCanApprove: Boolean,
+        itemActive: Boolean
     },
     data() {
         return {
@@ -41,11 +60,6 @@ export default {
     methods: {
         showValue() {
             console.log(this.it.motivoAssistente)
-        }
-    },
-    computed: {
-        userCanApprove() {
-            return this.$store.getters.getApprovalsForRoles[this.$store.getters.getCurrentPedido.statusStep].includes(this.$store.getters.getRole);
         }
     }
 }

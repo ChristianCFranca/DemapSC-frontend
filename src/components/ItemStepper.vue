@@ -65,23 +65,23 @@
         <v-stepper-items>
 
             <v-stepper-content step="2">
-                <ItemGrid/>
+                <ItemGrid :item="item"/>
             </v-stepper-content>
 
             <v-stepper-content step="3">
-                <ItemGrid/>
+                <ItemGrid :item="item"/>
             </v-stepper-content>
 
             <v-stepper-content step="4">
-                <ItemGrid/>
+                <ItemGrid :item="item"/>
             </v-stepper-content>
 
             <v-stepper-content step="5">
-                <ItemGrid/>
+                <ItemGrid :item="item"/>
             </v-stepper-content>
 
             <v-stepper-content step="6">
-                <ItemGrid/>
+                <ItemGrid :item="item"/>
             </v-stepper-content>
             
         </v-stepper-items>
@@ -94,14 +94,14 @@ import ItemGrid from "@/components/ItemGrid.vue"
 
 export default {
     props: {
-        item: Object
+        inputItem: Object
     },
     components: {
         ItemGrid
     },
     created() {
         this.$store.commit('UNSET_CURRENT_PEDIDO')
-        this.$store.commit('SET_CURRENT_PEDIDO', this.item)
+        this.$store.commit('SET_CURRENT_PEDIDO', this.inputItem)
     },
     data() {
         return {
@@ -120,6 +120,16 @@ export default {
             else
                 return this.messageMapping[step-2].andamento;
         },
+    },
+    computed: {
+        item() {
+            return this.$store.getters.getCurrentPedido;
+        }
+    },
+    watch: {
+        inputItem() {
+            this.$store.commit('SET_CURRENT_PEDIDO', this.inputItem)
+        }
     }
 }
 </script>

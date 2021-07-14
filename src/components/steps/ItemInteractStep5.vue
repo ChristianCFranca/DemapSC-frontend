@@ -89,7 +89,8 @@
 <script>
 export default {
     props: {
-        it: Object
+        it: Object,
+        userCanApprove: Boolean
     },
     data() {
         return {

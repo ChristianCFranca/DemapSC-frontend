@@ -36,15 +36,22 @@ export default new Vuex.Store({
     allRoles: ["admin", "fiscal", "assistente", "almoxarife", "regular"],
     rolesThatCanDownload: ["admin", "fiscal", "assistente"],
     approvalsForRoles: {
-      2: ["admin", "assistente"],
+      2: ["admin", "assistente", "fiscal"],
       3: ["admin", "fiscal"],
       4: ["admin", "almoxarife"],
       5: ["admin", "fiscal", "assistente", "regular"]
     },
+    cancelForRoles: {
+      2: ["admin", "assistente", "fiscal"],
+      3: ["admin", "fiscal"],
+      4: ["admin", "almoxarife", "fiscal"],
+      5: ["admin", "fiscal"]
+    },
+    // Este é para a visualização da tabela, não das etapas.
     showingForRoles: { // Regular não aparece pois ele pode ver tudo porém apenas dele
       2: ["admin", "fiscal", "assistente"],
       3: ["admin", "fiscal"],
-      4: ["admin", "almoxarife"],
+      4: ["admin", "almoxarife", "fiscal"],
       5: ["admin", "fiscal"],
       6: ["admin", "fiscal", "assistente"]
     },
@@ -176,10 +183,8 @@ export default new Vuex.Store({
         pedido.dataAprovacaoAssistente = now.split(' ')[0];
         pedido.horarioAprovacaoAssistente = now.split(' ')[1];
         pedido.status = "Aguardando confirmação do(a) fiscal";
-        for (let i=0; i < pedido.items.length; i++){
+        for (let i=0; i < pedido.items.length; i++)
           pedido.items[i].aprovadoFiscal = pedido.items[i].aprovadoAssistente
-          pedido.items[i].motivoFiscal = pedido.items[i].motivoAssistente
-        }
         let valorDaSolicitacao = 0;
         for (let idx = 0; idx < pedido.items.length; idx++){
           if (pedido.items[idx].valorTotal !== null && pedido.items[idx].aprovadoAssistente) // Tem que ter valor diferente de 0 e estar aprovado pelo assistente
@@ -198,7 +203,7 @@ export default new Vuex.Store({
       }
       pedido.statusStep += 1;
 
-      apiClient.put(`/crud/pedidos/${_id}`, pedido)
+      return apiClient.put(`/crud/pedidos/${_id}`, pedido)
       .then(() => {
         commit('SET_SNACKBAR', {message: "Pedido atualizado com sucesso", color: "success"})
         dispatch('getTodosOsPedidos')
@@ -215,8 +220,37 @@ export default new Vuex.Store({
           commit('SET_SNACKBAR', {message: "Erro de comunicação com o servidor", color: "error"})
       });
     },
-    cancelCurrentPedido() {
-      console.log("Cancelamento...")
+    cancelCurrentPedido({ state, commit, dispatch, getters }) {
+      let {_id, ...pedido} = state.currentPedido;
+      const now = new Date().toLocaleString('pt-BR');
+
+      pedido.active = false;
+      pedido.color = "red";
+      pedido.status = `Solicitação cancelada`;
+      for (let idx = 0; idx < pedido.items.length; idx++) {
+          pedido.items[idx].aprovadoAssistente = false;
+          pedido.items[idx].aprovadoFiscal = false;
+      }
+      pedido.canceladoPor = getters.getCompleteName;
+      pedido.dataCancelamento = now.split(' ')[0];
+      pedido.horarioCancelamento = now.split(' ')[1];
+
+      return apiClient.put(`/crud/pedidos/${_id}`, pedido)
+      .then(() => {
+        commit('SET_SNACKBAR', {message: "Pedido cancelado com sucesso", color: "success"})
+        dispatch('getTodosOsPedidos')
+      })
+      .catch(error => {
+        console.log(error);
+        if (error?.response?.status === 401) {
+          commit('SET_SNACKBAR', {message: "Usuário não autenticado ou não possui permissão", color: "error"})
+          dispatch('logout')
+        }
+        else if (error?.response)
+          commit('SET_SNACKBAR', {message: error.response, color: "error"})
+        else
+          commit('SET_SNACKBAR', {message: "Erro de comunicação com o servidor", color: "error"})
+      });
     },
     collectData(_, rota) {
       return apiClient.get(`/collect-data/${rota}`, {responseType: 'arraybuffer'})
@@ -232,6 +266,7 @@ export default new Vuex.Store({
     getCompleteName: state => state.currentUser.nome,
     getCurrentPedido: state => state.currentPedido,
     getApprovalsForRoles: state => state.approvalsForRoles,
+    getCancelForRoles: state => state.cancelForRoles,
     getFirstLastName: state => `${state.currentUser.nome.split(' ')[0]} ${state.currentUser.nome.split(' ').slice(-1)[0]}`,
     getEmail: state => state.currentUser.email,
     getRole: state => state.currentUser.role,
