@@ -27,7 +27,7 @@
                 </v-col>
                 <v-col 
                 cols="12"
-                v-if="userCanApprove">
+                v-if="userCanApprove && item.statusStep <= 4">
                     <v-btn
                     color="blue darken-1"
                     class="white--text"
@@ -136,7 +136,8 @@ export default {
             return this.item.items.some(item => item.aprovadoAssistente)
         },
         validStep3() {
-            return this.item.items.every(item => item.direcionamentoDeCompra || !item.aprovadoFiscal)
+            return this.item.items.every(item => item.direcionamentoDeCompra || !item.aprovadoFiscal) &&
+            this.item.items.some(item => item.aprovadoFiscal)
         },
         currentValidStep() {
             if (this.item.statusStep === 2)

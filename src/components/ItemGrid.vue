@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="mx-3 mb-4 text-center">
+        <div class="text-center">
             <div class="font-weight-normal grey--text text-body-2">
                 Finalidade dos Materiais
             </div>
@@ -9,15 +9,15 @@
             </div>
         </div>
 
-        <v-divider></v-divider>
+        <v-divider class="my-3"></v-divider>
     
         <div v-for="(it, idx) in item.items" :key="idx">
-            <v-row>
+            <v-row :class="greyRow(it)">
                 <v-col 
                 cols="12"
                 sm="8"
                 md="8">
-                    <ItemInfo :it="it"/>
+                    <ItemInfo :it="it" :greyRow="greyRow(it)"/>
                 </v-col>
 
                 <v-col
@@ -31,11 +31,11 @@
                     <ItemInteractStep2 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 2"/>
                     <ItemInteractStep3 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 3"/>
                     <ItemInteractStep4 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 4"/>
-                    <ItemInteractStep5 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 5"/>
+                    <ItemInteractStep5 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" :idx="idx" v-if="item.statusStep === 5"/>
                     <ItemInteractStep6 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 6"/>
                 </v-col>
             </v-row>
-            <v-divider class="my-4"></v-divider>
+            <v-divider class="my-3"></v-divider>
         </div>
 
         <v-row>
@@ -97,6 +97,9 @@ export default {
     methods: {
         snackbarReact(valid) {
             this.$store.commit('SET_SNACKBAR', {message: valid ? "Tudo certo por aqui!" : "Deu um erro...", color: valid ? "success" : "error"})
+        },
+        greyRow(it) {
+            return !it.aprovadoFiscal && this.item.statusStep >= 4 && this.item.active ? `grey lighten-4` : ``
         }
     },
     computed: {

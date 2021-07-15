@@ -366,8 +366,6 @@ export default {
                 emailAlmoxarife: null,
                 dataAprovacaoAlmoxarife: null,
                 horarioAprovacaoAlmoxarife: null,
-                recebimento: null,
-                emailRecebimento: null,
                 color: "orange",
                 active: true,
                 canceladoPor: null,
@@ -420,7 +418,7 @@ export default {
                 aprovadoFiscal: true, motivoFiscal: null,
                 direcionamentoDeCompra: null, 
                 almoxarifadoPossui: true, infoDILOG: null, 
-                recebido: false, recebimento: null,
+                recebido: false, recebimento: null, emailRecebimento: null,
                 valorGasto: 0.0
             }
         },

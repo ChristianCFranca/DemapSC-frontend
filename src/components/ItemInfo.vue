@@ -4,7 +4,7 @@
         cols="12"
         sm="6"
         md="6">
-            <v-list>
+            <v-list :class="greyRow">
                 <v-list-item>
                     <v-list-item-content>
                         <v-list-item-subtitle>
@@ -35,7 +35,7 @@
         cols="12"
         sm="6"
         md="6">
-            <v-list>
+            <v-list :class="greyRow">
                 <v-list-item>
                     <v-list-item-content>
                         <v-list-item-subtitle>
@@ -80,6 +80,7 @@
 <script>
 export default {
     props: {
+        greyRow: String,
         it: Object
     },
     data() {

@@ -9,8 +9,7 @@
                 <v-switch 
                 v-model="it.aprovadoAssistente"
                 label="Aprovado" 
-                color="success"
-                @click="it.motivoAssistente = null"></v-switch>
+                color="success"></v-switch>
             </v-col>
             <v-col
             cols="12"
@@ -26,28 +25,19 @@
                 ></v-textarea>
             </v-col>
         </v-row>
-        <v-row
-        v-else>
-            <v-col
-            cols="12">
-                <v-list-item>
-                    <v-list-item-content>
-                        <v-list-item-subtitle
-                        class="text-body-2">
-                            Motivo do Assistente
-                        </v-list-item-subtitle>
-                        <p class="text-justify text-body-1">
-                            {{ it.motivoAssistente ? it.motivoAssistente : `Não informado` }}
-                        </p>
-                    </v-list-item-content>
-                </v-list-item>
-            </v-col>
-        </v-row>
+        <ItemInteractRefused 
+        :it="it"
+        v-if="!itemActive"/>
     </div>
 </template>
 
 <script>
+import ItemInteractRefused from './ItemInteractRefused.vue'
+
 export default {
+    components: {
+        ItemInteractRefused
+    },
     props: {
         it: Object,
         userCanApprove: Boolean,

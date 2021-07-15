@@ -37,7 +37,8 @@
                 v-model="it.aprovadoFiscal"
                 required
                 label="Aprovado" 
-                color="success">
+                color="success"
+                @click="it.direcionamentoDeCompra = null">
                 </v-switch>
             </v-col>
 
@@ -82,39 +83,19 @@
                 </h2> 
             </v-col>
         </v-row>
-        <v-row
-        v-else>
-            <v-col
-            cols="12">
-                <v-list-item>
-                    <v-list-item-content>
-                        <v-list-item-subtitle
-                        class="text-body-2">
-                            Motivo do Assistente
-                        </v-list-item-subtitle>
-                        <p class="text-justify text-body-1">
-                            {{ it.motivoAssistente ? it.motivoAssistente : `Não informado` }}
-                        </p>
-                    </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                    <v-list-item-content>
-                        <v-list-item-subtitle
-                        class="text-body-2">
-                            Motivo do Fiscal
-                        </v-list-item-subtitle>
-                        <p class="text-justify text-body-1">
-                            {{ it.motivoFiscal ? it.motivoFiscal : `Não informado` }}
-                        </p>
-                    </v-list-item-content>
-                </v-list-item>
-            </v-col>
-        </v-row>
+        <ItemInteractRefused 
+        :it="it"
+        v-if="!itemActive"/>
     </div>
 </template>
 
 <script>
+import ItemInteractRefused from './ItemInteractRefused.vue'
+
 export default {
+    components: {
+        ItemInteractRefused
+    },
     props: {
         it: Object,
         userCanApprove: Boolean,

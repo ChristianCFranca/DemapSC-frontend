@@ -193,19 +193,80 @@ export default new Vuex.Store({
         pedido.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
       }
       else if (pedido.statusStep === 3) {
-        console.log("step 3")
+        pedido.fiscal = getters.getCompleteName;
+        pedido.emailFiscal = getters.getEmail;
+        pedido.dataAprovacaoFiscal = now.split(' ')[0];
+        pedido.horarioAprovacaoFiscal = now.split(' ')[1];
+        pedido.status = "Aguardando confirmação da DILOG";
+        for (let i=0; i < pedido.items.length; i++){
+            if (pedido.items[i].aprovadoFiscal){
+                pedido.items[i].motivoFiscal = null;
+            }
+        }
+        let valorDaSolicitacao = 0;
+        for (let idx = 0; idx < pedido.items.length; idx++){
+            if (pedido.items[idx].valorTotal !== null && pedido.items[idx].aprovadoFiscal) // Tem que ter valor diferente de 0 e estar aprovado pelo fiscal
+                valorDaSolicitacao += pedido.items[idx].valorTotal;
+        }
+        pedido.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
       }
       else if (pedido.statusStep === 4) {
-        console.log("step 4")
-      }
-      else if (pedido.statusStep === 5) {
-        console.log("step 5")
+        pedido.almoxarife = getters.getCompleteName;
+        pedido.emailAlmoxarife = getters.getEmail;
+        pedido.dataAprovacaoAlmoxarife = now.split(' ')[0];
+        pedido.horarioAprovacaoAlmoxarife = now.split(' ')[1];
+        pedido.status = "Aguardando aquisição dos itens";
+        pedido.color = "teal darken-1";
       }
       pedido.statusStep += 1;
 
       return apiClient.put(`/crud/pedidos/${_id}`, pedido)
       .then(() => {
         commit('SET_SNACKBAR', {message: "Pedido atualizado com sucesso", color: "success"})
+        dispatch('getTodosOsPedidos')
+      })
+      .catch(error => {
+        console.log(error);
+        if (error?.response?.status === 401) {
+          commit('SET_SNACKBAR', {message: "Usuário não autenticado ou não possui permissão", color: "error"})
+          dispatch('logout')
+        }
+        else if (error?.response)
+          commit('SET_SNACKBAR', {message: error.response, color: "error"})
+        else
+          commit('SET_SNACKBAR', {message: "Erro de comunicação com o servidor", color: "error"})
+      });
+    },
+    finishCurrentPedido({ state, getters, commit, dispatch}, idx) {
+      let {_id, ...pedido} = state.currentPedido;
+      const now = new Date().toLocaleString('pt-BR');
+      let message = "Aquisição registrada com sucesso"
+
+      pedido.items[idx].recebido = true;
+      pedido.items[idx].recebimento = getters.getCompleteName;
+      pedido.items[idx].emailRecebimento = getters.getEmail;
+
+      if (pedido.items.every(item => item.recebido || !item.aprovadoFiscal)) {
+        pedido.dataFinalizacao = now.split(' ')[0];
+        pedido.horarioFinalizacao = now.split(' ')[1];
+        pedido.status = "Solicitação finalizada";
+        pedido.color = "success";
+        let valorGastoTotal = 0; // O v-text-currency ja valida como um float
+        for (let idx = 0; idx < pedido.items.length; idx++) {
+            if (pedido.items[idx].valorGasto !== null && // Tem que ter valor diferente de null
+                !pedido.items[idx].almoxarifadoPossui &&// Almoxarifado NÃO deve possuir
+                pedido.items[idx].aprovadoFiscal)  // Fiscal deve ter aprovado
+                valorGastoTotal += pedido.items[idx].valorGasto;
+        }
+        pedido.valorGastoTotal = valorGastoTotal; // Atualizamos o valor gasto total da proposta
+        pedido.statusStep += 1;
+
+        message = "Pedido finalizado com sucesso"
+      }
+
+      return apiClient.put(`/crud/pedidos/${_id}`, pedido)
+      .then(() => {
+        commit('SET_SNACKBAR', {message: message, color: "success"})
         dispatch('getTodosOsPedidos')
       })
       .catch(error => {
