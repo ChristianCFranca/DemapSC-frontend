@@ -2,21 +2,6 @@
     <div>
         <v-row 
         v-if="item.active">
-            <v-col 
-            cols="12" 
-            xs="12" 
-            v-if="item.statusStep === 6">
-                <div>
-                    <h1 class="font-weight-regular success--text">
-                        Solicitação finalizada com sucesso!
-                    </h1>
-                    <v-icon
-                    x-large
-                    color="success"
-                    >mdi-check-circle-outline</v-icon>
-                </div>
-            </v-col>
-
             <v-row
             v-if="userCanApprove || userCanCancel">
                 <v-col 
@@ -56,28 +41,6 @@
                     </h2>
                 </v-col>
             </v-row>
-        </v-row>
-
-        <v-row
-        v-else>
-            <v-col 
-            cols="12" 
-            xs="12">
-                <div>
-                    <h1 class="font-weight-regular red--text">
-                        Solicitação cancelada.
-                    </h1>
-                    <h2 class="font-weight-regular red--text">
-                        <span class="font-weight-bold">{{item.canceladoPor}}</span> em
-                        <span class="font-weight-bold">{{item.dataCancelamento}}</span> às 
-                        <span class="font-weight-bold">{{item.horarioCancelamento}}</span>
-                    </h2>
-                    <v-icon
-                    x-large
-                    color="red"
-                    >mdi-cancel</v-icon>
-                </div>
-            </v-col>
         </v-row>
     </div>
 </template>

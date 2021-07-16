@@ -32,7 +32,7 @@
                     <ItemInteractStep3 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 3"/>
                     <ItemInteractStep4 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 4"/>
                     <ItemInteractStep5 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" :idx="idx" v-if="item.statusStep === 5"/>
-                    <ItemInteractStep6 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 6"/>
+                    <ItemInteractStep6 :it="it" v-if="item.statusStep === 6"/>
                 </v-col>
             </v-row>
             <v-divider class="my-3"></v-divider>
@@ -56,12 +56,11 @@
             md="6" 
             align="center"
             align-self="center">
-                <ItemApproveArea :userCanApprove="userCanApprove" :userCanCancel="userCanCancel" :item="item" v-if="item.statusStep"/>
+                <ItemApproveArea :userCanApprove="userCanApprove" :userCanCancel="userCanCancel" :item="item" v-if="item.active && item.statusStep < 6"/>
+                <ItemCompletedArea :itemActive="item.active" :item="item" v-else/>
             </v-col>
         </v-row>
 
-        <v-btn @click="snackbarReact(true)" color="success">Success</v-btn>
-        <v-btn @click="snackbarReact(false)" color="error">Error</v-btn>
     </div>
 </template>
 
@@ -72,8 +71,9 @@ import ItemInteractStep3 from './steps/ItemInteractStep3.vue'
 import ItemInteractStep4 from './steps/ItemInteractStep4.vue'
 import ItemInteractStep5 from './steps/ItemInteractStep5.vue'
 import ItemInteractStep6 from './steps/ItemInteractStep6.vue'
-import ItemApproveArea from './ItemApproveArea.vue'
 import ItemApprovedBy from './ItemApprovedBy.vue'
+import ItemApproveArea from './ItemApproveArea.vue'
+import ItemCompletedArea from './ItemCompletedArea.vue'
 
 export default {
     props: {
@@ -87,6 +87,7 @@ export default {
         ItemInteractStep5,
         ItemInteractStep6,
         ItemApproveArea,
+        ItemCompletedArea,
         ItemApprovedBy
     },
     data() {
@@ -95,9 +96,6 @@ export default {
         }
     },
     methods: {
-        snackbarReact(valid) {
-            this.$store.commit('SET_SNACKBAR', {message: valid ? "Tudo certo por aqui!" : "Deu um erro...", color: valid ? "success" : "error"})
-        },
         greyRow(it) {
             return !it.aprovadoFiscal && this.item.statusStep >= 4 && this.item.active ? `grey lighten-4` : ``
         }

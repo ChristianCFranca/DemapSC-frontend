@@ -1,5 +1,6 @@
 <template>
-    <v-row>
+    <v-row
+    class="mt-3">
         <v-col cols="12" align-self="center">
             <div class="red--text text-body-1 text-center">
                 <v-icon class="red--text mb-1">mdi-cancel</v-icon>
