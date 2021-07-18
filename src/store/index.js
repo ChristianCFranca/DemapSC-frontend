@@ -174,7 +174,8 @@ export default new Vuex.Store({
       })
     },
     updateCurrentPedido({ state, getters, commit, dispatch }) {
-      let {_id, ...pedido} = state.currentPedido;
+      let currentPedido = JSON.parse(JSON.stringify(state.currentPedido)) // Deep copy
+      let {_id, ...pedido} = currentPedido;
       const now = new Date().toLocaleString('pt-BR');
 
       if (pedido.statusStep === 2) {
@@ -238,15 +239,19 @@ export default new Vuex.Store({
       });
     },
     finishCurrentPedido({ state, getters, commit, dispatch}, idx) {
-      let {_id, ...pedido} = state.currentPedido;
+      let currentPedido = JSON.parse(JSON.stringify(state.currentPedido)) // Deep copy
+      let {_id, ...pedido} = currentPedido;
+      let email = false;
       const now = new Date().toLocaleString('pt-BR');
       let message = "Aquisição registrada com sucesso"
-
+      console.log(state.currentPedido.items[idx].recebido)
       pedido.items[idx].recebido = true;
+      console.log(state.currentPedido.items[idx].recebido)
       pedido.items[idx].recebimento = getters.getCompleteName;
       pedido.items[idx].emailRecebimento = getters.getEmail;
 
       if (pedido.items.every(item => item.recebido || !item.aprovadoFiscal)) {
+        email = true;
         pedido.dataFinalizacao = now.split(' ')[0];
         pedido.horarioFinalizacao = now.split(' ')[1];
         pedido.status = "Solicitação finalizada";
@@ -264,7 +269,7 @@ export default new Vuex.Store({
         message = "Pedido finalizado com sucesso"
       }
 
-      return apiClient.put(`/crud/pedidos/${_id}`, pedido)
+      return apiClient.put(`/crud/pedidos/${_id}/?email=${email}`, pedido)
       .then(() => {
         commit('SET_SNACKBAR', {message: message, color: "success"})
         dispatch('getTodosOsPedidos')
@@ -282,7 +287,8 @@ export default new Vuex.Store({
       });
     },
     cancelCurrentPedido({ state, commit, dispatch, getters }) {
-      let {_id, ...pedido} = state.currentPedido;
+      let currentPedido = JSON.parse(JSON.stringify(state.currentPedido)) // Deep copy
+      let {_id, ...pedido} = currentPedido;
       const now = new Date().toLocaleString('pt-BR');
 
       pedido.active = false;

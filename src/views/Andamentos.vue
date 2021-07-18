@@ -80,6 +80,10 @@
                         {{ item.statusStep }}/6
                     </v-chip>
                 </template>
+
+                <template v-slot:[`item.status`]="{ item }">
+                        {{waitingItems(item)}}
+                </template>
             
             </v-data-table>
         </v-card>
@@ -111,13 +115,13 @@ export default {
             headers: [
                 { text: '', value: 'data-table-expand', sortable: false, groupable: false },
                 { text: "N°", value: "number"},
+                { text: "Etapa do Pedido", value: "statusStep" },
                 { text: "Ordem de Serviço", value: "os"},
-                { text: "Valor Estimado", value: "valorDaSolicitacao" },
                 { text: "Nome do Requisitante", value: "requisitante"},
                 { text: "Email do Requisitante", value: "email" },
                 { text: "Data do Pedido", value: "dataPedido" },
                 { text: "Horário do Pedido", value: "horarioPedido"},
-                { text: "Fase do Pedido", value: "statusStep" },
+                { text: "Valor Estimado", value: "valorDaSolicitacao" },
                 { text: "Status do Pedido", value: "status" },
                 { text: "Identificador", value: "_id", }
             ]
@@ -145,6 +149,12 @@ export default {
                 this.loading = false;
             })
         },
+        waitingItems(item) {
+            let text = `${item.status}`
+            if (item.statusStep === 5)
+                text += ` - ${item.items.reduce((acc, current) =>  acc + Boolean(current.recebido) ? 1 : 0, 0)} /  ${item.items.length}`
+            return text
+        },
         capitalize(value) {
             if (!value) return '';
             value = value.toString();
@@ -156,25 +166,6 @@ export default {
             } else {
                 return "green";
             }
-        },
-        snackbarReactSuccess(message) {
-            this.snackbarColor = "success";
-            this.snackbarMessage = message;
-            this.snackbar = true;
-            this.logTable();
-        },
-        snackbarReactError(message) {
-            this.snackbarColor = "error";
-            if (message?.data?.detail)
-                this.snackbarMessage = message.data.detail;
-            else if (message?.data)
-                this.snackbarMessage = message.data;
-            else if(message)
-                this.snackbarMessage = message;
-            else
-                this.snackbarMessage = "Ocorreu um problema desconhecido";
-            this.snackbar = true;
-            this.logTable();
         },
         getValorGastoTotal(item) {
             if (item.valorGastoTotal !== null && 
