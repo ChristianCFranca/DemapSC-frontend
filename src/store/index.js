@@ -35,7 +35,6 @@ export default new Vuex.Store({
     },
     allRoles: ["admin", "fiscal", "assistente", "almoxarife", "regular"],
     rolesThatCanDownload: ["admin", "fiscal", "assistente"],
-<<<<<<< HEAD
     approvalsForRoles: {
       2: ["admin", "assistente", "fiscal"],
       3: ["admin", "fiscal"],
@@ -55,14 +54,6 @@ export default new Vuex.Store({
       4: ["admin", "almoxarife", "fiscal"],
       5: ["admin", "fiscal"],
       6: ["admin", "fiscal", "assistente"]
-=======
-    stepsForRoles: {
-      2: ["admin", "assistente", "fiscal", "regular"],
-      3: ["admin", "fiscal", "regular"],
-      4: ["admin", "almoxarife", "regular"],
-      5: ["admin", "fiscal", "regular"],
-      6: ["admin", "fiscal", "assistente", "regular"]
->>>>>>> main
     },
     permissionsPerRole: {
       "admin": ["admin", "fiscal", "assistente", "almoxarife", "regular"],
