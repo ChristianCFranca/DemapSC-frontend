@@ -1,9 +1,22 @@
 <template>
     <div>
+        <v-dialog v-model="dialogDelete" max-width="600px">
+            <v-card>
+                <v-card-title class="headline">Tem certeza que deseja cancelar essa solicitação?</v-card-title>
+                <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="dialogDelete = !dialogDelete">Cancelar</v-btn>
+                <v-btn color="blue darken-1" text @click="send(false)" :loading="loadingBtnCancel">OK</v-btn>
+                <v-spacer></v-spacer>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
         <v-row 
         v-if="item.active">
             <v-row
-            v-if="userCanApprove || userCanCancel">
+            v-if="userCanApprove || userCanCancel"
+            class="mb-3">
                 <v-col 
                 cols="12">
                     <h2 class="my-4">
@@ -29,16 +42,9 @@
                     dark
                     text
                     color="red"
-                    :loading="loadingBtnCancel"
-                    @click="send(false)">
+                    @click="dialogDelete = true">
                         Cancelar Solicitação
                     </v-btn>
-                </v-col>
-                <v-col 
-                cols="12">
-                    <h2 class="font-weight-light red--text" v-if="error">
-                        {{errorMessage}}
-                    </h2>
                 </v-col>
             </v-row>
         </v-row>
@@ -57,7 +63,7 @@ export default {
             loadingBtnSend: false,
             loadingBtnCancel: false,
             error: false,
-            errorMessage: null
+            dialogDelete: false
         }
     },
     methods: {

@@ -4,8 +4,8 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    baseURL: '//localhost:8000',
-    // baseURL: 'https://demapsm-backend.herokuapp.com',
+    // baseURL: '//localhost:8000',
+    baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
         Accept: 'application/json',
@@ -174,8 +174,7 @@ export default new Vuex.Store({
       })
     },
     updateCurrentPedido({ state, getters, commit, dispatch }) {
-      let currentPedido = JSON.parse(JSON.stringify(state.currentPedido)) // Deep copy
-      let {_id, ...pedido} = currentPedido;
+      let {_id, ...pedido} = state.currentPedido;
       const now = new Date().toLocaleString('pt-BR');
 
       if (pedido.statusStep === 2) {
@@ -287,8 +286,7 @@ export default new Vuex.Store({
       });
     },
     cancelCurrentPedido({ state, commit, dispatch, getters }) {
-      let currentPedido = JSON.parse(JSON.stringify(state.currentPedido)) // Deep copy
-      let {_id, ...pedido} = currentPedido;
+      let {_id, ...pedido} = state.currentPedido;
       const now = new Date().toLocaleString('pt-BR');
 
       pedido.active = false;
