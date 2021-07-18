@@ -26,14 +26,43 @@ export default new Vuex.Store({
     },
     materiaisList: [],
     pedidos: [],
+    allUsers: [],
+    currentPedido: null,
+    snackbar: {
+      state: false,
+      message: "",
+      color: "success"
+    },
     allRoles: ["admin", "fiscal", "assistente", "almoxarife", "regular"],
     rolesThatCanDownload: ["admin", "fiscal", "assistente"],
+<<<<<<< HEAD
+    approvalsForRoles: {
+      2: ["admin", "assistente", "fiscal"],
+      3: ["admin", "fiscal"],
+      4: ["admin", "almoxarife"],
+      5: ["admin", "fiscal", "assistente", "regular"]
+    },
+    cancelForRoles: {
+      2: ["admin", "assistente", "fiscal"],
+      3: ["admin", "fiscal"],
+      4: ["admin", "almoxarife", "fiscal"],
+      5: ["admin", "fiscal"]
+    },
+    // Este é para a visualização da tabela, não das etapas.
+    showingForRoles: { // Regular não aparece pois ele pode ver tudo porém apenas dele
+      2: ["admin", "fiscal", "assistente"],
+      3: ["admin", "fiscal"],
+      4: ["admin", "almoxarife", "fiscal"],
+      5: ["admin", "fiscal"],
+      6: ["admin", "fiscal", "assistente"]
+=======
     stepsForRoles: {
       2: ["admin", "assistente", "fiscal", "regular"],
       3: ["admin", "fiscal", "regular"],
       4: ["admin", "almoxarife", "regular"],
       5: ["admin", "fiscal", "regular"],
       6: ["admin", "fiscal", "assistente", "regular"]
+>>>>>>> main
     },
     permissionsPerRole: {
       "admin": ["admin", "fiscal", "assistente", "almoxarife", "regular"],
@@ -41,8 +70,7 @@ export default new Vuex.Store({
       "assistente": ["regular"],
       "almoxarife": [],
       "regular": []
-    },
-    allUsers: []
+    }
   },
   mutations: {
     ENGAGE_TOKEN_COUNTDOWN(state) {
@@ -70,12 +98,29 @@ export default new Vuex.Store({
       state.materiaisList = materiais;
     },
     SET_TODOS_OS_PEDIDOS(state, pedidos){
-      state.pedidos = pedidos.reverse();
+      if (pedidos)
+        state.pedidos = pedidos.reverse();
     },
     USER_CLEAR_DATA() {
       localStorage.removeItem('user');
       localStorage.removeItem('tokenOriginalTime');
       location.reload(); // Força um refresh da página, destruindo o estado do vuex
+    },
+    SET_SNACKBAR(state, snackbarData) {
+      state.snackbar.state = true;
+      state.snackbar.message = snackbarData.message;
+      state.snackbar.color = snackbarData.color;
+    },
+    UNSET_SNACKBAR(state) {
+      state.snackbar.state = false;
+      state.snackbar.message = "";
+      state.snackbar.color = "";
+    },
+    SET_CURRENT_PEDIDO(state, pedido) {
+      state.currentPedido = pedido;
+    },
+    UNSET_CURRENT_PEDIDO(state) {
+      state.currentPedido = null;
     }
   },
   actions: {
@@ -137,23 +182,149 @@ export default new Vuex.Store({
         return response
       })
     },
-    putPedidoExistente(_, {_id, pedidoExistente}) {
-      return apiClient.put(`/crud/pedidos/${_id}`, pedidoExistente)
-      .then(response => {
-        return response
+    updateCurrentPedido({ state, getters, commit, dispatch }) {
+      let {_id, ...pedido} = state.currentPedido;
+      const now = new Date().toLocaleString('pt-BR');
+
+      if (pedido.statusStep === 2) {
+        pedido.assistente = getters.getCompleteName;
+        pedido.emailAssistente = getters.getEmail;
+        pedido.dataAprovacaoAssistente = now.split(' ')[0];
+        pedido.horarioAprovacaoAssistente = now.split(' ')[1];
+        pedido.status = "Aguardando confirmação do(a) fiscal";
+        for (let i=0; i < pedido.items.length; i++)
+          pedido.items[i].aprovadoFiscal = pedido.items[i].aprovadoAssistente
+        let valorDaSolicitacao = 0;
+        for (let idx = 0; idx < pedido.items.length; idx++){
+          if (pedido.items[idx].valorTotal !== null && pedido.items[idx].aprovadoAssistente) // Tem que ter valor diferente de 0 e estar aprovado pelo assistente
+            valorDaSolicitacao += pedido.items[idx].valorTotal;
+        }
+        pedido.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
+      }
+      else if (pedido.statusStep === 3) {
+        pedido.fiscal = getters.getCompleteName;
+        pedido.emailFiscal = getters.getEmail;
+        pedido.dataAprovacaoFiscal = now.split(' ')[0];
+        pedido.horarioAprovacaoFiscal = now.split(' ')[1];
+        pedido.status = "Aguardando confirmação da DILOG";
+        for (let i=0; i < pedido.items.length; i++){
+            if (pedido.items[i].aprovadoFiscal){
+                pedido.items[i].motivoFiscal = null;
+            }
+        }
+        let valorDaSolicitacao = 0;
+        for (let idx = 0; idx < pedido.items.length; idx++){
+            if (pedido.items[idx].valorTotal !== null && pedido.items[idx].aprovadoFiscal) // Tem que ter valor diferente de 0 e estar aprovado pelo fiscal
+                valorDaSolicitacao += pedido.items[idx].valorTotal;
+        }
+        pedido.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
+      }
+      else if (pedido.statusStep === 4) {
+        pedido.almoxarife = getters.getCompleteName;
+        pedido.emailAlmoxarife = getters.getEmail;
+        pedido.dataAprovacaoAlmoxarife = now.split(' ')[0];
+        pedido.horarioAprovacaoAlmoxarife = now.split(' ')[1];
+        pedido.status = "Aguardando aquisição dos itens";
+        pedido.color = "teal darken-1";
+      }
+      pedido.statusStep += 1;
+
+      return apiClient.put(`/crud/pedidos/${_id}`, pedido)
+      .then(() => {
+        commit('SET_SNACKBAR', {message: "Pedido atualizado com sucesso", color: "success"})
+        dispatch('getTodosOsPedidos')
       })
+      .catch(error => {
+        console.log(error);
+        if (error?.response?.status === 401) {
+          commit('SET_SNACKBAR', {message: "Usuário não autenticado ou não possui permissão", color: "error"})
+          dispatch('logout')
+        }
+        else if (error?.response)
+          commit('SET_SNACKBAR', {message: error.response, color: "error"})
+        else
+          commit('SET_SNACKBAR', {message: "Erro de comunicação com o servidor", color: "error"})
+      });
     },
-    keyCheck(_, {key, cargo}) {
-      return apiClient.get(`/cargos/keycheck/?key=${key}&cargo=${cargo}`)
-      .then(response => {
-        return response
+    finishCurrentPedido({ state, getters, commit, dispatch}, idx) {
+      let currentPedido = JSON.parse(JSON.stringify(state.currentPedido)) // Deep copy
+      let {_id, ...pedido} = currentPedido;
+      let email = false;
+      const now = new Date().toLocaleString('pt-BR');
+      let message = "Aquisição registrada com sucesso"
+      console.log(state.currentPedido.items[idx].recebido)
+      pedido.items[idx].recebido = true;
+      console.log(state.currentPedido.items[idx].recebido)
+      pedido.items[idx].recebimento = getters.getCompleteName;
+      pedido.items[idx].emailRecebimento = getters.getEmail;
+
+      if (pedido.items.every(item => item.recebido || !item.aprovadoFiscal)) {
+        email = true;
+        pedido.dataFinalizacao = now.split(' ')[0];
+        pedido.horarioFinalizacao = now.split(' ')[1];
+        pedido.status = "Solicitação finalizada";
+        pedido.color = "success";
+        let valorGastoTotal = 0; // O v-text-currency ja valida como um float
+        for (let idx = 0; idx < pedido.items.length; idx++) {
+            if (pedido.items[idx].valorGasto !== null && // Tem que ter valor diferente de null
+                !pedido.items[idx].almoxarifadoPossui &&// Almoxarifado NÃO deve possuir
+                pedido.items[idx].aprovadoFiscal)  // Fiscal deve ter aprovado
+                valorGastoTotal += pedido.items[idx].valorGasto;
+        }
+        pedido.valorGastoTotal = valorGastoTotal; // Atualizamos o valor gasto total da proposta
+        pedido.statusStep += 1;
+
+        message = "Pedido finalizado com sucesso"
+      }
+
+      return apiClient.put(`/crud/pedidos/${_id}/?email=${email}`, pedido)
+      .then(() => {
+        commit('SET_SNACKBAR', {message: message, color: "success"})
+        dispatch('getTodosOsPedidos')
       })
+      .catch(error => {
+        console.log(error);
+        if (error?.response?.status === 401) {
+          commit('SET_SNACKBAR', {message: "Usuário não autenticado ou não possui permissão", color: "error"})
+          dispatch('logout')
+        }
+        else if (error?.response)
+          commit('SET_SNACKBAR', {message: error.response, color: "error"})
+        else
+          commit('SET_SNACKBAR', {message: "Erro de comunicação com o servidor", color: "error"})
+      });
     },
-    checkKeyBoth(_, key) {
-      return apiClient.get(`/cargos/keycheck_both/?key=${key}`)
-      .then(response => {
-        return response
+    cancelCurrentPedido({ state, commit, dispatch, getters }) {
+      let {_id, ...pedido} = state.currentPedido;
+      const now = new Date().toLocaleString('pt-BR');
+
+      pedido.active = false;
+      pedido.color = "red";
+      pedido.status = `Solicitação cancelada`;
+      for (let idx = 0; idx < pedido.items.length; idx++) {
+          pedido.items[idx].aprovadoAssistente = false;
+          pedido.items[idx].aprovadoFiscal = false;
+      }
+      pedido.canceladoPor = getters.getCompleteName;
+      pedido.dataCancelamento = now.split(' ')[0];
+      pedido.horarioCancelamento = now.split(' ')[1];
+
+      return apiClient.put(`/crud/pedidos/${_id}`, pedido)
+      .then(() => {
+        commit('SET_SNACKBAR', {message: "Pedido cancelado com sucesso", color: "success"})
+        dispatch('getTodosOsPedidos')
       })
+      .catch(error => {
+        console.log(error);
+        if (error?.response?.status === 401) {
+          commit('SET_SNACKBAR', {message: "Usuário não autenticado ou não possui permissão", color: "error"})
+          dispatch('logout')
+        }
+        else if (error?.response)
+          commit('SET_SNACKBAR', {message: error.response, color: "error"})
+        else
+          commit('SET_SNACKBAR', {message: "Erro de comunicação com o servidor", color: "error"})
+      });
     },
     collectData(_, rota) {
       return apiClient.get(`/collect-data/${rota}`, {responseType: 'arraybuffer'})
@@ -167,30 +338,34 @@ export default new Vuex.Store({
     getIsAuthenticated: state => state.currentUser.token !== null,
     getPermissions: state => state.permissionsPerRole[state.currentUser.role],
     getCompleteName: state => state.currentUser.nome,
+    getCurrentPedido: state => state.currentPedido,
+    getApprovalsForRoles: state => state.approvalsForRoles,
+    getCancelForRoles: state => state.cancelForRoles,
     getFirstLastName: state => `${state.currentUser.nome.split(' ')[0]} ${state.currentUser.nome.split(' ').slice(-1)[0]}`,
     getEmail: state => state.currentUser.email,
     getRole: state => state.currentUser.role,
     getAllRoles: state => state.allRoles,
     getAllUsers: (state, getters) => state.allUsers.length === 0 ? [] : 
     state.allUsers.filter(obj => state.permissionsPerRole[getters.getRole].includes(obj.role) && obj.username !== getters.getEmail),
+    getSnackbar: state => state.snackbar,
     getMateriais: state => state.materiaisList,
     getMateriaisList: state => state.materiaisList.length === 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
     getCanUserDownload: (state, getters) => state.rolesThatCanDownload.includes(getters.getRole),
-    getPedidosCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
+    getPedidosForCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
     getPedidosAtivos: (state, getters) => state.currentUser.role === "regular" ? 
-    getters.getPedidosCurrentUser.filter(obj => obj['active'] && obj['statusStep'] !== 6) : 
+    getters.getPedidosForCurrentUser.filter(obj => obj['active'] && obj['statusStep'] !== 6) : 
     state.pedidos.filter(
       obj => obj['active'] && 
       obj['statusStep'] !== 6 && 
-      state.stepsForRoles[obj['statusStep']].includes(state.currentUser.role)
+      state.showingForRoles[obj['statusStep']].includes(state.currentUser.role)
       ),
     getPedidosCancelados: (state, getters) => state.currentUser.role === "regular" ? 
-    getters.getPedidosCurrentUser.filter(obj => !obj['active']) : 
+    getters.getPedidosForCurrentUser.filter(obj => !obj['active']) : 
     state.pedidos.filter(
       obj => !obj['active']
       ),
     getPedidosConcluidos: (state, getters) => state.currentUser.role === "regular" ? 
-    getters.getPedidosCurrentUser.filter(obj => obj['statusStep'] === 6) : 
+    getters.getPedidosForCurrentUser.filter(obj => obj['statusStep'] === 6) : 
     state.pedidos.filter(
       obj => obj['statusStep'] === 6
       ),

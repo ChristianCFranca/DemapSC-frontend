@@ -366,10 +366,9 @@ export default {
                 emailAlmoxarife: null,
                 dataAprovacaoAlmoxarife: null,
                 horarioAprovacaoAlmoxarife: null,
-                recebimento: null,
-                emailRecebimento: null,
                 color: "orange",
                 active: true,
+                canceladoPor: null,
                 dataCancelamento: null,
                 horarioCancelamento: null,
                 dataFinalizacao: null,
@@ -419,6 +418,7 @@ export default {
                 aprovadoFiscal: true, motivoFiscal: null,
                 direcionamentoDeCompra: null, 
                 almoxarifadoPossui: true, infoDILOG: null, 
+                recebido: false, recebimento: null, emailRecebimento: null,
                 valorGasto: 0.0
             }
         },
@@ -428,6 +428,9 @@ export default {
             this.success = false;
             this.$refs.form.reset();
             this.$refs.osForm.reset();
+        },
+        resetPedidoProperties() {
+            this.pedido.valorDaSolicitacao = 0;
         },
         checarEConstruirPedido() {
             this.error = false;
@@ -455,7 +458,6 @@ export default {
             .then(() => {
                 this.resetForm(); 
                 this.success = true;
-                this.loading = false;
                 this.pedido.items = [this.pedido.items[0]];
                 })
             .catch(error => {
@@ -467,12 +469,14 @@ export default {
                 console.log(error); 
                 this.errorMessage = "Ocorreu um erro ao enviar o seu pedido para o servidor. Atualize a página e tente novamente."
                 this.error = true;
+                this.resetPedidoProperties();
+                })
+            .finally(() => {
                 this.loading = false;
-                });
+            })
         },
         mapMaterialParaPropriedades(item) {
             if (this.listaDeMateriais.length <= 0) return
-            console.log(item.nome)
             if (!item.nome) {
                 item.categoria = null;
                 item.valorUnitario = null;
