@@ -1,29 +1,15 @@
 <template>
         <v-container fluid>
 
-        <v-tabs background-color="grey lighten-4">
-            <v-spacer></v-spacer>
-            <v-tab class="blue--text" @click="concluidos=false;cancelados=false;ativos=true;">Ativos</v-tab>
-            <v-tab class="green--text" @click="cancelados=false;ativos=false;concluidos=true;">Concluídos</v-tab>
-            <v-tab class="error--text" @click="concluidos=false;ativos=false;cancelados=true;">Cancelados</v-tab>
-            <v-spacer></v-spacer>
-        </v-tabs>
-
         <v-card class="my-4">
             <v-card-title>
-                Solicitações em Andamento
-
                 <v-spacer></v-spacer>
-
-                <v-text-field
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    label="Pesquisar"
-                    single-line
-                    hide-details
-                ></v-text-field>
-
+                Solicitações de Material
+                <v-spacer></v-spacer>
             </v-card-title>
+            <v-card-subtitle class="text-center" v-if="!$vuetify.breakpoint.xs" >
+                Use o botão FILTRAR para filtrar os materiais pendentes, ativos, concluídos e cancelados.
+            </v-card-subtitle>
 
             <v-data-table
             :headers="headers"
@@ -39,7 +25,74 @@
             single-expand
             loading-text="Carregando... Por favor aguarde"
             >
-                
+                <template v-slot:[`body.prepend`] v-if="!$vuetify.breakpoint.xs">
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                            <v-menu offset-y>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn
+                                    color="blue"
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    text
+                                    >
+                                        <v-icon left>
+                                            mdi-filter-menu-outline
+                                        </v-icon>
+                                        Filtrar
+                                    </v-btn>
+                                </template>
+                                <v-list>
+                                    <v-list-item link @click="pendentes=false;ativos=false;concluidos=false;cancelados=false;todos=true">
+                                        <v-list-item-title>Todos</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item link @click="todos=false;ativos=false;concluidos=false;cancelados=false;pendentes=true">
+                                        <v-list-item-title>Pendentes</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item link @click="todos=false;pendentes=false;concluidos=false;cancelados=false;ativos=true">
+                                        <v-list-item-title>Ativos</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item link @click="todos=false;ativos=false;pendentes=false;cancelados=false;concluidos=true">
+                                        <v-list-item-title>Concluídos</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item link @click="todos=false;ativos=false;concluidos=false;pendentes=false;cancelados=true">
+                                        <v-list-item-title>Cancelados</v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+                        </td>
+                        <td>
+                            <v-text-field v-model="searches.c1" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                        </td>
+                        <td>
+                            <v-text-field v-model="searches.c3" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                        </td>
+                        <td>
+                            <v-text-field v-model="searches.c4" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                        </td>
+                        <td>
+                            <v-text-field v-model="searches.c5" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                        </td>
+                        <td>
+                            <v-text-field v-model="searches.c6" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                        </td>
+                        <td>
+                            <v-text-field v-model="searches.c7" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                        </td>
+                        <td>
+                            <v-text-field v-model="searches.c8" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                        </td>
+                        <td>
+                            <v-text-field v-model="searches.c9" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                        </td>
+                        <td>
+                            <v-text-field v-model="searches.c10" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                        </td>
+                    </tr>
+                </template>
+
                 <template v-slot:expanded-item="{ headers, item }">
                     <td :colspan="headers.length">
                         <ItemStepper :inputItem="item"/>
@@ -72,13 +125,21 @@
                 </template>
 
                 <template v-slot:[`item.statusStep`]="{ item }">
-                    <v-chip
-                        :color="item.color"
-                        dark
-                        class="my-5"
-                    >
-                        {{ item.statusStep }}/6
-                    </v-chip>
+                    <v-row class="pl-5">
+                        <v-col cols="12">
+                            <v-chip
+                                :color="checkColor(item)"
+                                dark
+                                class="my-5">
+                                {{ item.statusStep }}/6
+                            </v-chip>
+                            <v-icon
+                            :color="checkColor(item)"
+                            v-if="checkApprovalNecessaryForUser(item)">
+                                mdi-exclamation
+                            </v-icon>
+                        </v-col>
+                    </v-row>
                 </template>
 
                 <template v-slot:[`item.status`]="{ item }">
@@ -100,9 +161,6 @@ export default {
     },
     data() {
         return {
-            concluidos: false,
-            cancelados: false,
-            ativos: true,
             snackbar: false,
             snackbarMessage: '',
             snackbarColor: '',
@@ -112,19 +170,23 @@ export default {
             search: '',
             page: 0,
             loading: false,
-            headers: [
-                { text: '', value: 'data-table-expand', sortable: false, groupable: false },
-                { text: "N°", value: "number"},
-                { text: "Etapa do Pedido", value: "statusStep" },
-                { text: "Ordem de Serviço", value: "os"},
-                { text: "Nome do Requisitante", value: "requisitante"},
-                { text: "Email do Requisitante", value: "email" },
-                { text: "Data do Pedido", value: "dataPedido" },
-                { text: "Horário do Pedido", value: "horarioPedido"},
-                { text: "Valor Estimado", value: "valorDaSolicitacao" },
-                { text: "Status do Pedido", value: "status" },
-                { text: "Identificador", value: "_id", }
-            ]
+            searches: {
+                c1: '',
+                c2: '',
+                c3: '',
+                c4: '',
+                c5: '',
+                c6: '',
+                c7: '',
+                c8: '',
+                c9: '',
+                c10: ''
+            },
+            todos: false,
+            pendentes: true,
+            ativos: false,
+            concluidos: false,
+            cancelados: false
         };
     },
     methods: {
@@ -183,18 +245,107 @@ export default {
             else{
                 return item.items.some(function(obj){return obj['valorTotal'] === null && obj['aprovadoFiscal']})
             }
+        },
+        checkApprovalNecessaryForUser(pedido) {
+            if (pedido.statusStep < 6 && pedido.active)
+                if (this.$store.getters.getPseudoApprovalsForRoles[pedido.statusStep].includes(this.$store.getters.getRole))
+                    if (this.$store.getters.getRole === "regular" || this.$store.getters.getRole === "assistente")
+                        return pedido.items.some(item => item.almoxarifadoPossui || item.direcionamentoDeCompra === "Engemil")
+                    else
+                        return true
+                else
+                    return false
+            return false
+        },
+        checkColor(pedido) {
+            if (pedido.statusStep === 6)
+                return `success`
+            else if (!pedido.active)
+                return `red`
+            else if (this.checkApprovalNecessaryForUser(pedido))
+                return `orange darken-1`
+            return `blue`
         }
     },
     mounted() {
         this.logTable();
     },
     computed: {
+        headers() {
+            return [
+                { text: '', value: 'data-table-expand', sortable: false },
+                { text: "Etapa do Pedido", value: "statusStep", 
+                    filter: value => {
+                        if (!this.searches.c2) return true
+                        return String(value).includes(this.searches.c2)
+                    } 
+                },
+                { text: "N°", value: "number", 
+                    filter: value => {
+                        if (!this.searches.c1) return true
+                        return String(value).includes(this.searches.c1)
+                    } 
+                },
+                { text: "Ordem de Serviço", value: "os", 
+                    filter: value => {
+                        if (!this.searches.c3) return true
+                        return String(value).includes(this.searches.c3)
+                    } 
+                },
+                { text: "Nome do Requisitante", value: "requisitante", 
+                    filter: value => {
+                        if (!this.searches.c4) return true
+                        return String(value).includes(this.searches.c4)
+                    } 
+                },
+                { text: "Email do Requisitante", value: "email", 
+                    filter: value => {
+                        if (!this.searches.c5) return true
+                        return String(value).includes(this.searches.c5)
+                    } 
+                },
+                { text: "Data do Pedido", value: "dataPedido", 
+                    filter: value => {
+                        if (!this.searches.c6) return true
+                        return String(value).includes(this.searches.c6)
+                    } 
+                },
+                { text: "Horário do Pedido", value: "horarioPedido", 
+                    filter: value => {
+                        if (!this.searches.c7) return true
+                        return String(value).includes(this.searches.c7)
+                    } 
+                },
+                { text: "Valor Estimado", value: "valorDaSolicitacao", 
+                    filter: value => {
+                        if (!this.searches.c8) return true
+                        return String(value).includes(this.searches.c8)
+                    } 
+                },
+                { text: "Status do Pedido", value: "status", 
+                    filter: value => {
+                        if (!this.searches.c9) return true
+                        return String(value).includes(this.searches.c9)
+                    } 
+                },
+                { text: "Identificador", value: "_id", 
+                    filter: value => {
+                        if (!this.searches.c10) return true
+                        return String(value).includes(this.searches.c10)
+                    } 
+                }
+            ]
+        },
         pedidos() {
+            if (this.todos)
+                return this.$store.getters.getPedidos;
+            if (this.pendentes)
+                return this.$store.getters.getPedidosPendentes;
             if (this.ativos)
                 return this.$store.getters.getPedidosAtivos;
-            else if (this.concluidos)
+            if (this.concluidos)
                 return this.$store.getters.getPedidosConcluidos;
-            else if (this.cancelados)
+            if (this.cancelados)
                 return this.$store.getters.getPedidosCancelados;
             else
                 return [];

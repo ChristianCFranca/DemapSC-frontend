@@ -41,19 +41,17 @@ export default new Vuex.Store({
       4: ["admin", "almoxarife"],
       5: ["admin", "fiscal", "assistente", "regular"]
     },
+    pseudoApprovalsForRoles: {
+      2: ["admin", "assistente"],
+      3: ["admin", "fiscal"],
+      4: ["admin", "almoxarife"],
+      5: ["admin", "fiscal", "regular"]
+    },
     cancelForRoles: {
       2: ["admin", "assistente", "fiscal"],
       3: ["admin", "fiscal"],
-      4: ["admin", "almoxarife", "fiscal"],
+      4: ["admin", "fiscal"],
       5: ["admin", "fiscal"]
-    },
-    // Este é para a visualização da tabela, não das etapas.
-    showingForRoles: { // Regular não aparece pois ele pode ver tudo porém apenas dele
-      2: ["admin", "fiscal", "assistente"],
-      3: ["admin", "fiscal"],
-      4: ["admin", "almoxarife", "fiscal"],
-      5: ["admin", "fiscal"],
-      6: ["admin", "fiscal", "assistente"]
     },
     permissionsPerRole: {
       "admin": ["admin", "fiscal", "assistente", "almoxarife", "regular"],
@@ -216,7 +214,6 @@ export default new Vuex.Store({
         pedido.dataAprovacaoAlmoxarife = now.split(' ')[0];
         pedido.horarioAprovacaoAlmoxarife = now.split(' ')[1];
         pedido.status = "Aguardando aquisição dos itens";
-        pedido.color = "teal darken-1";
       }
       pedido.statusStep += 1;
 
@@ -254,7 +251,6 @@ export default new Vuex.Store({
         pedido.dataFinalizacao = now.split(' ')[0];
         pedido.horarioFinalizacao = now.split(' ')[1];
         pedido.status = "Solicitação finalizada";
-        pedido.color = "success";
         let valorGastoTotal = 0; // O v-text-currency ja valida como um float
         for (let idx = 0; idx < pedido.items.length; idx++) {
             if (pedido.items[idx].valorGasto !== null && // Tem que ter valor diferente de null
@@ -290,7 +286,6 @@ export default new Vuex.Store({
       const now = new Date().toLocaleString('pt-BR');
 
       pedido.active = false;
-      pedido.color = "red";
       pedido.status = `Solicitação cancelada`;
       for (let idx = 0; idx < pedido.items.length; idx++) {
           pedido.items[idx].aprovadoAssistente = false;
@@ -331,6 +326,7 @@ export default new Vuex.Store({
     getCompleteName: state => state.currentUser.nome,
     getCurrentPedido: state => state.currentPedido,
     getApprovalsForRoles: state => state.approvalsForRoles,
+    getPseudoApprovalsForRoles: state => state.pseudoApprovalsForRoles,
     getCancelForRoles: state => state.cancelForRoles,
     getFirstLastName: state => `${state.currentUser.nome.split(' ')[0]} ${state.currentUser.nome.split(' ').slice(-1)[0]}`,
     getEmail: state => state.currentUser.email,
@@ -343,22 +339,18 @@ export default new Vuex.Store({
     getMateriaisList: state => state.materiaisList.length === 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
     getCanUserDownload: (state, getters) => state.rolesThatCanDownload.includes(getters.getRole),
     getPedidosForCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
-    getPedidosAtivos: (state, getters) => state.currentUser.role === "regular" ? 
-    getters.getPedidosForCurrentUser.filter(obj => obj['active'] && obj['statusStep'] !== 6) : 
-    state.pedidos.filter(
-      obj => obj['active'] && 
-      obj['statusStep'] !== 6 && 
-      state.showingForRoles[obj['statusStep']].includes(state.currentUser.role)
-      ),
-    getPedidosCancelados: (state, getters) => state.currentUser.role === "regular" ? 
-    getters.getPedidosForCurrentUser.filter(obj => !obj['active']) : 
-    state.pedidos.filter(
-      obj => !obj['active']
-      ),
-    getPedidosConcluidos: (state, getters) => state.currentUser.role === "regular" ? 
-    getters.getPedidosForCurrentUser.filter(obj => obj['statusStep'] === 6) : 
-    state.pedidos.filter(
-      obj => obj['statusStep'] === 6
-      ),
+    getPedidos: state => state.pedidos,
+    getPedidosAtivos: state => state.pedidos.filter(obj => obj.active && obj.statusStep !== 6),
+    getPedidosPendentes: (_, getters) => getters.getPedidosAtivos.filter(pedido => {
+      if (getters.getPseudoApprovalsForRoles[pedido.statusStep].includes(getters.getRole))
+        if (getters.getRole === "regular" || getters.getRole === "assistente")
+            return pedido.items.some(item => item.almoxarifadoPossui || item.direcionamentoDeCompra === "Engemil")
+        else
+            return true
+      else
+        return false
+    }),
+    getPedidosCancelados: state => state.pedidos.filter(obj => !obj['active']),
+    getPedidosConcluidos: state => state.pedidos.filter(obj => obj['statusStep'] === 6)
   }
 });

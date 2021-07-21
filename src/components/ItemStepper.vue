@@ -11,7 +11,7 @@
 
             <v-stepper-step step="2" 
             :complete="item.statusStep > 2" 
-            :color="item.statusStep > 2 ? 'success' : item.color"
+            :color="item.statusStep > 2 ? 'success' : `orange darken-1`"
             :rules="[() => (!item.active && item.statusStep === 2) ? false : true]">
                 <h4 class="text-center font-weight-regular">
                     {{ getMessage(2, item) }}
@@ -22,7 +22,7 @@
 
             <v-stepper-step step="3" 
             :complete="item.statusStep > 3" 
-            :color="item.statusStep > 3 ? 'success' : item.color"
+            :color="item.statusStep > 3 ? 'success' : `orange darken-1`"
             :rules="[() => (!item.active && item.statusStep === 3) ? false : true]">
                 <h4 class="text-center font-weight-regular">
                     {{ getMessage(3, item) }}
@@ -33,7 +33,7 @@
 
             <v-stepper-step step="4" 
             :complete="item.statusStep > 4" 
-            :color="item.statusStep > 4 ? 'success' : item.color"
+            :color="item.statusStep > 4 ? 'success' : `orange darken-1`"
             :rules="[() => (!item.active && item.statusStep === 4) ? false : true]">
                 <h4 class="text-center font-weight-regular">
                     {{ getMessage(4, item) }} 
@@ -44,7 +44,7 @@
 
             <v-stepper-step step="5" 
             :complete="item.statusStep > 5" 
-            :color="item.statusStep > 5 ? 'success' : item.color"
+            :color="item.statusStep > 5 ? 'success' : `orange darken-1`"
             :rules="[() => (!item.active && item.statusStep === 5) ? false : true]">
                 <h4 class="text-center font-weight-regular">
                     {{ getMessage(5, item) }}
@@ -55,7 +55,7 @@
 
             <v-stepper-step step="6" 
             :complete="item.statusStep === 6" 
-            :color="item.color">
+            color="success">
                 <h4 class="text-center font-weight-regular">
                     Solicitação finalizada
                 </h4> 
@@ -120,6 +120,14 @@ export default {
             else
                 return this.messageMapping[step-2].andamento;
         },
+        getColor(pedido) {
+            if (pedido.statusStep === 6)
+                return `success`
+            if (!pedido.active)
+                return `red`
+            else
+                return `orange darken-1`
+        }
     },
     computed: {
         item() {

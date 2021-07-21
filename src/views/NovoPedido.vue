@@ -366,7 +366,6 @@ export default {
                 emailAlmoxarife: null,
                 dataAprovacaoAlmoxarife: null,
                 horarioAprovacaoAlmoxarife: null,
-                color: "orange",
                 active: true,
                 canceladoPor: null,
                 dataCancelamento: null,
