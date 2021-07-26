@@ -3,18 +3,25 @@
 
         <v-card class="my-4">
             <v-card-title>
-                <v-spacer></v-spacer>
                 Solicitações de Material
                 <v-spacer></v-spacer>
+                <v-text-field
+                    v-model="search"
+                    outlined
+                    append-icon="mdi-magnify"
+                    label="Pesquisar por nome do item"
+                    clearable
+                    single-line
+                    hide-details
+                ></v-text-field>
             </v-card-title>
-            <v-card-subtitle class="text-center" v-if="!$vuetify.breakpoint.xs" >
-                Use o botão FILTRAR para filtrar os materiais pendentes, ativos, concluídos e cancelados.
+            <v-card-subtitle v-if="!$vuetify.breakpoint.xs" >
+                Use o botão FILTRAR para filtrar os pedidos pendentes, ativos, concluídos e cancelados.
             </v-card-subtitle>
 
             <v-data-table
             :headers="headers"
             :items="pedidos"
-            :search="search"
             :items-per-page="15"
             :expanded="expanded"
             item-key="_id"
@@ -337,18 +344,22 @@ export default {
             ]
         },
         pedidos() {
+            let pedidos = []
             if (this.todos)
-                return this.$store.getters.getPedidos;
-            if (this.pendentes)
-                return this.$store.getters.getPedidosPendentes;
-            if (this.ativos)
-                return this.$store.getters.getPedidosAtivos;
-            if (this.concluidos)
-                return this.$store.getters.getPedidosConcluidos;
-            if (this.cancelados)
-                return this.$store.getters.getPedidosCancelados;
-            else
-                return [];
+                pedidos = this.$store.getters.getPedidos;
+            else if (this.pendentes)
+                pedidos = this.$store.getters.getPedidosPendentes;
+            else if (this.ativos)
+                pedidos = this.$store.getters.getPedidosAtivos;
+            else if (this.concluidos)
+                pedidos = this.$store.getters.getPedidosConcluidos;
+            else if (this.cancelados)
+                pedidos = this.$store.getters.getPedidosCancelados;
+
+            if (this.search)
+                pedidos = pedidos.filter((pedido) => pedido.items.some(item => item.nome.toLowerCase().includes(this.search.toLowerCase())))
+
+            return pedidos
         }
     }
 }
