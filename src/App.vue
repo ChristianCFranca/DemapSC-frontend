@@ -1,5 +1,11 @@
 <template>
   <v-app>
+    <v-snackbar v-model="$store.getters.getSnackbar.state" :timeout="4000" top :color="$store.getters.getSnackbar.color">
+        {{ $store.getters.getSnackbar.message }}
+        <template v-slot:action="{ attrs }">
+            <v-btn color="white" v-bind="attrs" text @click="$store.commit('UNSET_SNACKBAR')">Close</v-btn>
+        </template>
+    </v-snackbar>
     <NavBar v-if="isAuthenticated"/>
     <v-main :class="isAuthenticated ? `grey lighten-4` : ``">
       <router-view></router-view>

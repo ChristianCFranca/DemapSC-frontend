@@ -42,7 +42,6 @@
                     :type="show3 ? `` : `password`"
                     @click:append="show3=!show3">
                     </v-text-field>
-                    <p class="text-h5 error--text text-center font-weight-light" v-if="error"> {{ errorMessage }}</p>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions class="justify-center">
@@ -70,7 +69,6 @@ export default {
     data() {
         return {
             error: false,
-            errorMessage: '',
             loading: false,
             show1: false,
             show2: false,
@@ -99,22 +97,19 @@ export default {
 
             this.$store.dispatch('changePassword', {passwordOld: this.passwordOld, passwordNew: this.passwordNew})
             .then(() => {
-                this.loading = false;
                 this.closeDialog();
-                alert("Senha alterada com sucesso!");
+                this.$store.commit('SET_SNACKBAR', {message: "Senha alterada com sucesso.", color: "success"});
             })
             .catch(error =>{
                 console.log(error);
-                if (error.response) {
-                    if (error.response.data.detail){
-                        this.errorMessage = error.response.data.detail;
-                    } else {
-                        this.errorMessage = error.response.data;
-                    }
+                if (error?.response?.data?.detail){
+                    this.$store.commit('SET_SNACKBAR', {message: error.response.data.detail, color: "error"});
                 } else {
-                    this.errorMessage = "Erro de comunicação com o servidor";
+                    this.$store.commit('SET_SNACKBAR', {message: "Não foi possível trocar a senha. Tente mais tarde", color: "error"});
                 }
                 this.error = true;
+            })
+            .finally(() => {
                 this.loading = false;
             })
         },

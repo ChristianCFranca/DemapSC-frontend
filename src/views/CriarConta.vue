@@ -99,9 +99,6 @@
                                 <p v-if="errorMessage !== null" class="text-h5 red--text text-center font-weight-light">
                                     {{ errorMessage }}
                                 </p>
-                                <p v-if="successMessage !== null" class="text-h5 success--text text-center font-weight-light">
-                                    {{ successMessage }}
-                                </p>
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
@@ -157,8 +154,7 @@ export default {
                 v => !!v || 'Campo obrigatório.',
                 v => v === this.newUser.password || 'Senhas não são iguais'
             ],
-            errorMessage: null,
-            successMessage: null
+            errorMessage: null
         }
     },
     methods: {
@@ -184,18 +180,19 @@ export default {
 
             this.$store.dispatch('register', newUserData)
             .then(() => {
-                this.loading = false;
-                this.successMessage = "Conta criada com sucesso!";
+                this.$store.commit('SET_SNACKBAR', {message: "Usuário criado com sucesso.", color: "success"})
                 this.resetForm();
             })
             .catch(error => {
-                this.loading = false;
-                if (error.response){
-                    this.errorMessage = error.response.data.detail;
+                if (error?.response?.data?.detail){
+                    this.$store.commit('SET_SNACKBAR', {message: error.response.data.detail, color: "error"})
                 }
                 else {
-                    this.errorMessage = "Houve problema de conexão com o servidor.";
+                    this.$store.commit('SET_SNACKBAR', {message: "Não foi possível concluir o cadastro. Tente mais tarde", color: "error"})
                 }
+            })
+            .finally(() => {
+                this.loading = false;
             })
         }
     }
