@@ -9,6 +9,11 @@
                     <h1 class="font-weight-regular success--text">
                         Solicitação finalizada com sucesso!
                     </h1>
+                    <h2 class="font-weight-regular success--text">
+                        em
+                        <span class="font-weight-bold">{{item.dataFinalizacao}}</span> às 
+                        <span class="font-weight-bold">{{item.horarioFinalizacao}}</span>
+                    </h2>
                     <v-icon
                     x-large
                     color="success"

@@ -220,7 +220,7 @@ export default {
         },
         waitingItems(item) {
             let text = `${item.status}`
-            if (item.statusStep === 5)
+            if (item.statusStep === 5 && item.active)
                 text += ` - ${item.items.reduce((acc, current) =>  acc + Boolean(current.recebido) ? 1 : 0, 0)} /  ${item.items.length}`
             return text
         },
