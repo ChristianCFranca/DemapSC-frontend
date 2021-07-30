@@ -108,11 +108,22 @@ export default {
             return this.item.items.every(item => item.direcionamentoDeCompra || !item.aprovadoFiscal) &&
             this.item.items.some(item => item.aprovadoFiscal)
         },
+        validStep4() {
+            return this.item.items.every(item => {
+                if (item.almoxarifadoPossui && item.infoDILOG) {
+                    if (item.infoDILOG.length > 200)
+                        return false
+                }
+                return true
+            })
+        },
         currentValidStep() {
             if (this.item.statusStep === 2)
                 return this.validStep2
             if (this.item.statusStep === 3)
                 return this.validStep3
+            if (this.item.statusStep === 4)
+                return this.validStep4
             return true
         }
     }
