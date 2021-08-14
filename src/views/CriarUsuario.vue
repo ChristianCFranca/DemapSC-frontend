@@ -79,17 +79,35 @@
                                         </v-col>
 
                                     </v-row>
-                                    <v-row justify="center">
-                                        <v-col cols="12" md="4">
+                                    <v-row>
+                                        <v-col cols="12" md="6">
+                                            <p class="text-subtitle-1">
+                                                Cargo:
+                                            </p>
                                             <v-select
                                             v-model="newUser.roleName"
                                             outlined
                                             required
                                             class="rounded-lg"
-                                            :rules="nonEmptyRyles"
+                                            :rules="nonEmptyRules"
                                             :items="$store.getters.getPermissions"
                                             label="Insira o cargo do novo usuário"
                                             ></v-select>
+                                        </v-col>
+                                        <v-col cols="12" xs="12" md="6">
+                                            <p class="text-subtitle-1">
+                                                Empresa:
+                                            </p>
+                                            <v-select
+                                            v-model="newUser.empresa"
+                                            :items="$store.getters.getAllEmpresasNames"
+                                            :rules="nonEmptyRules"
+                                            :required="requiredEmpresa"
+                                            :label="requiredEmpresa ? `Selecione a empresa do novo usuário` : `O cargo em questão não necessita de empresa`"
+                                            :disabled="!requiredEmpresa"
+                                            :loading="loadingEmpresas" 
+                                            outlined>
+                                            </v-select>
                                         </v-col>
                                     </v-row>
 
@@ -139,6 +157,7 @@ export default {
         return {
             valid: false,
             loading: false,
+            loadingEmpresas: false,
             show: false,
             showConfirm: false,
             newUser: {
@@ -147,7 +166,7 @@ export default {
                 password: null,
                 roleName: null,
             },
-            nonEmptyRyles: [
+            nonEmptyRules: [
                 v => !!v || 'Campo obrigatório.'
             ],
             nomeCompletoRules: [
@@ -170,16 +189,27 @@ export default {
             successMessage: null
         }
     },
+    mounted() {
+        this.loadingEmpresas = true;
+        this.$store.dispatch('getEmpresas')
+            .then(() => {})
+            .catch(error => {
+                console.log(error);
+                if (error.response){
+                    this.errorMessage = "Banco de dados indisponível.";
+                }
+                })
+            .finally(() => {
+                this.loadingEmpresas = false;
+            })
+    },
     methods: {
         resetForm() {
             this.errorMessage = null;
             this.$refs.form.reset();
         },
         criarConta() {
-            if (!this.valid) {
-                this.errorMessage = "Todos os campos são obrigatórios.";
-                return
-            }
+            if (!this.$refs.form.validate()) return
 
             this.errorMessage = null;
             this.loading = true;
@@ -212,6 +242,11 @@ export default {
                     this.errorMessage = "Houve problema de conexão com o servidor.";
             })
         }
+    },
+    computed: {
+        requiredEmpresa() {
+            return this.newUser.roleName !== "admin" && this.newUser.roleName !== "fiscal"
+        } 
     }
 }
 </script>

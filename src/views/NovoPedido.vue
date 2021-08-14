@@ -22,86 +22,107 @@
         <v-divider></v-divider>
         <v-card-text>
                 <v-container>
-                <v-row>
-                    <v-col
-                        cols="12"
-                        sm="4"
-                        md="4">
-
-                        <v-text-field
-                            v-model="pedido.requisitante"
-                            label="Nome do Requisitante*"
-                            required
-                            :counter="50"
-                            :rules="nonEmptyRules"
-                            clearable
-                            :disabled="true"
-                            outlined
-                        ></v-text-field>
-
-                    </v-col>
-                        
-
-                    <v-col
-                        cols="12"
-                        sm="4"
-                        md="4">
-
-                        <v-text-field
-                            v-model="pedido.email"
-                            label="Email do Requisitante*"
-                            required
-                            :counter="50"
-                            :rules="emailRules"
-                            clearable
-                            :disabled="true"
-                            outlined
-                        ></v-text-field>
-
-                    </v-col>
-
-                </v-row>
-
-                    
-                <v-form ref="osForm" v-model="valid">
-                <v-row>
-
-                    <v-col
-                        cols="12"
-                        sm="12"
-                        md="4">
+                <v-form ref="mainForm" v-model="valid">
+                    <v-row>
+                        <v-col
+                            cols="12"
+                            sm="4"
+                            md="4">
 
                             <v-text-field
-                                v-model="pedido.os"
-                                label="Número da Ordem de Serviço Associada*"
+                                v-model="pedido.requisitante"
+                                label="Nome do Requisitante*"
                                 required
+                                :counter="50"
+                                :rules="nonEmptyRules"
+                                clearable
+                                :disabled="true"
                                 outlined
-                                :counter="20"
+                            ></v-text-field>
+
+                        </v-col>
+                            
+
+                        <v-col
+                            cols="12"
+                            sm="4"
+                            md="4">
+
+                            <v-text-field
+                                v-model="pedido.email"
+                                label="Email do Requisitante*"
+                                required
+                                :counter="50"
+                                :rules="emailRules"
+                                clearable
+                                :disabled="true"
+                                outlined
+                            ></v-text-field>
+
+                        </v-col>
+
+                        <v-col
+                            cols="12"
+                            sm="4"
+                            md="4">
+
+                            <v-select
+                                v-model="pedido.empresa"
+                                label="Empresa associada ao pedido*"
+                                required
+                                :items="$store.getters.getCurrentUserEmpresas"
+                                :counter="50"
+                                :rules="nonEmptyRules"
+                                clearable
+                                :disabled="$store.getters.getCurrentUserEmpresas.length <= 1"
+                                :filled="$store.getters.getCurrentUserEmpresas.length > 1"
+                                outlined
+                            ></v-select>
+
+                        </v-col>
+
+                    </v-row>
+                </v-form>
+                    
+                <v-form ref="osForm" v-model="valid">
+                    <v-row>
+
+                        <v-col
+                            cols="12"
+                            sm="12"
+                            md="4">
+
+                                <v-text-field
+                                    v-model="pedido.os"
+                                    label="Número da Ordem de Serviço Associada*"
+                                    required
+                                    outlined
+                                    :counter="20"
+                                    :rules="nonEmptyRules"
+                                    clearable
+                                    filled
+                                ></v-text-field>
+
+                        </v-col>
+
+                        <v-col 
+                            cols="12"
+                            xs="12"
+                            md="8">
+                            <v-text-field
+                                v-model="pedido.finalidade"
+                                label="Finalidade dos Materiais*"
+                                required
+                                :counter="100"
                                 :rules="nonEmptyRules"
                                 clearable
                                 filled
+                                outlined
                             ></v-text-field>
 
-                    </v-col>
+                        </v-col>
 
-                    <v-col 
-                        cols="12"
-                        xs="12"
-                        md="8">
-                        <v-text-field
-                            v-model="pedido.finalidade"
-                            label="Finalidade dos Materiais*"
-                            required
-                            :counter="100"
-                            :rules="nonEmptyRules"
-                            clearable
-                            filled
-                            outlined
-                        ></v-text-field>
-
-                    </v-col>
-
-                </v-row>
+                    </v-row>
                 </v-form>
 
             <v-divider class="my-4"></v-divider>
@@ -372,7 +393,8 @@ export default {
                 horarioCancelamento: null,
                 dataFinalizacao: null,
                 horarioFinalizacao: null,
-                valorGastoTotal: null
+                valorGastoTotal: null,
+                empresa: this.$store.getters.getCurrentUserEmpresas.length <= 1 ? this.$store.getters.getCurrentUserEmpresas[0] : null
             },
             addDisable: false,
             remDisable: true,
@@ -427,6 +449,7 @@ export default {
             this.success = false;
             this.$refs.form.reset();
             this.$refs.osForm.reset();
+            this.$refs.mainForm.resetValidation();
         },
         resetPedidoProperties() {
             this.pedido.valorDaSolicitacao = 0;
@@ -435,7 +458,7 @@ export default {
             this.error = false;
             this.success = false;
 
-            if (!this.$refs.form.validate() || !this.$refs.osForm.validate()) {
+            if (!this.$refs.form.validate() || !this.$refs.osForm.validate() || !this.$refs.mainForm.validate()) {
                 this.errorMessage = "Certifique-se de que todos os campos com * foram devidamente preenchidos."
                 this.error = true;
                 return

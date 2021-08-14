@@ -92,8 +92,12 @@ export default {
                 return `fiscal`
             else if (this.item.statusStep === 4) 
                 return `DILOG`
-            else
-                return `fiscal ou da engemil de um ou mais itens correspondentes`
+            else {
+                if (this.$store.getters.getCurrentUserEmpresas)
+                    return `fiscal ou da ${this.$store.getters.getCurrentUserEmpresas} de um ou mais itens correspondentes`
+                else
+                    return `fiscal de um ou mais itens correspondentes`
+            }
         },
         approveText() {
             if (this.item.statusStep === 5) 

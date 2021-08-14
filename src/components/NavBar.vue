@@ -40,13 +40,22 @@
         temporary>
             <v-system-bar></v-system-bar>
             <v-list>
-                <v-list-item link>
+                <v-list-item>
                 <v-list-item-content>
                     <v-list-item-title class="title">
                     {{ $store.getters.getFirstLastName }}
                     </v-list-item-title>
                     <v-list-item-subtitle>{{ $store.getters.getEmail }}</v-list-item-subtitle>
-                    <div class="my-1 text-h6">| {{ $store.getters.getRole }}</div>
+                    <div class="my-1" v-if="$store.getters.getCurrentUserEmpresas">
+                        <div class="text-subtitle-2 grey--text text--darken-1">Empresas</div>
+                        <div v-for="empresa in $store.getters.getCurrentUserEmpresas" :key="empresa">
+                            <div class="font-weight-bold mt-1">{{empresa}}</div>
+                        </div>
+                    </div>
+                    <div class="mt-2" v-if="$store.getters.getCurrentUserEmpresas">
+                        <div class="text-subtitle-2 grey--text text--darken-1">Cargo</div>
+                        <div class="font-weight-bold">{{ $store.getters.getRole }}</div>
+                    </div>
                 </v-list-item-content>
                 </v-list-item>
                 <v-divider class="mx-4"></v-divider>
@@ -75,7 +84,7 @@
                     </v-list-item-icon>
                     <v-list-item-title>Usuários do Sistema</v-list-item-title>
                 </v-list-item>
-                <v-divider class="mx-4 my-4"></v-divider>
+                <v-divider class="mx-4 mb-4"></v-divider>
                 <v-list-item two-line>
                     <v-list-item-content>
                         <v-list-item-subtitle class="text-center">Tempo de Sessão Restante</v-list-item-subtitle>
