@@ -94,7 +94,7 @@ export default {
                 return `DILOG`
             else {
                 if (this.$store.getters.getCurrentUserEmpresas)
-                    return `fiscal ou da ${this.$store.getters.getCurrentUserEmpresas} de um ou mais itens correspondentes`
+                    return `fiscal ou da ${this.item.empresa} de um ou mais itens correspondentes`
                 else
                     return `fiscal de um ou mais itens correspondentes`
             }

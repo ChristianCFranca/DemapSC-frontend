@@ -48,9 +48,9 @@
                     <v-list-item-subtitle>{{ $store.getters.getEmail }}</v-list-item-subtitle>
                     <div class="my-1" v-if="$store.getters.getCurrentUserEmpresas">
                         <div class="text-subtitle-2 grey--text text--darken-1">Empresas</div>
-                        <div v-for="empresa in $store.getters.getCurrentUserEmpresas" :key="empresa">
-                            <div class="font-weight-bold mt-1">{{empresa}}</div>
-                        </div>
+                        <span class="font-weight-bold mt-1" v-for="(empresa, i) in $store.getters.getCurrentUserEmpresas" :key="empresa">
+                            {{empresa}}<span v-if="i + 1 < $store.getters.getCurrentUserEmpresas.length">,</span>
+                        </span>
                     </div>
                     <div class="mt-2" v-if="$store.getters.getCurrentUserEmpresas">
                         <div class="text-subtitle-2 grey--text text--darken-1">Cargo</div>

@@ -337,6 +337,7 @@ export default new Vuex.Store({
     getPermissions: state => state.permissionsPerRole[state.currentUser.role],
     getCompleteName: state => state.currentUser.nome,
     getCurrentUserEmpresas: state => state.currentUser.empresa,
+    getAllEmpresas: state => state.empresas,
     getAllEmpresasNames: state => state.empresas.map(value => value.nome),
     getCurrentPedido: state => state.currentPedido,
     getApprovalsForRoles: state => state.approvalsForRoles,
