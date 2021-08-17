@@ -82,9 +82,9 @@
                     :rules="cashRules"
                     required
                     validate-on-blur
-                    v-if="!it.almoxarifadoPossui"></v-currency-field>
+                    v-if="!it.almoxarifadoPossui && it.direcionamentoDeCompra === 'Demap'"></v-currency-field>
 
-                    <div v-else>
+                    <div v-if="it.almoxarifadoPossui">
                         <div class="text-body-2 font-weight-bold text-center">
                             Informações da DILOG:
                         </div>

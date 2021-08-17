@@ -62,7 +62,7 @@
                                 outlined>
                                 </v-text-field>
 
-                                <v-row no-gutter>
+                                <v-row>
                                     <v-col cols="12" xs="12" md="6">
                                         <p class="text-subtitle-1">
                                             Senha:
@@ -93,6 +93,26 @@
                                         :type="showConfirm ? `` : `password`"
                                         @click:append="showConfirm=!showConfirm">
                                         </v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-col cols="12" xs="12" md="6">
+                                        <p class="text-subtitle-1">
+                                            Empresa:
+                                        </p>
+                                        <v-select
+                                        v-model="newUser.empresa"
+                                        :items="empresas"
+                                        :rules="nonEmptyArray"
+                                        attach
+                                        chips
+                                        multiple
+                                        required
+                                        clearable
+                                        label="Selecione sua(s) empresa(s)"
+                                        :disabled="loadingEmpresas"
+                                        :loading="loadingEmpresas">
+                                        </v-select>
                                     </v-col>
                                 </v-row>
 
@@ -130,6 +150,7 @@ export default {
         return {
             valid: false,
             loading: false,
+            loadingEmpresas: false,
             show: false,
             showConfirm: false,
             newUser: {
@@ -137,6 +158,7 @@ export default {
                 username: null,
                 password: null,
                 roleName: 'regular',
+                empresa: null
             },
             nomeCompletoRules: [
                 v => !!v || 'Campo obrigatório.', 
@@ -154,8 +176,28 @@ export default {
                 v => !!v || 'Campo obrigatório.',
                 v => v === this.newUser.password || 'Senhas não são iguais'
             ],
+            nonEmptyRules: [
+                v => !!v || 'Campo obrigatório.'
+            ],
+            nonEmptyArray: [
+                v => (!!v && v?.length !== 0) || 'Campo obrigatório.'
+            ],
             errorMessage: null
         }
+    },
+    mounted() {
+        this.loadingEmpresas = true;
+        this.$store.dispatch('getEmpresas')
+            .then(() => {})
+            .catch(error => {
+                console.log(error);
+                if (error.response){
+                    this.errorMessage = "Banco de dados indisponível.";
+                }
+                })
+            .finally(() => {
+                this.loadingEmpresas = false;
+            })
     },
     methods: {
         resetForm() {
@@ -163,11 +205,8 @@ export default {
             this.$refs.form.reset();
         },
         criarConta() {
-            if (!this.valid) {
-                this.errorMessage = "Todos os campos são obrigatórios.";
-                return
-            }
-
+            if (!this.$refs.form.validate()) return
+            
             this.errorMessage = null;
             this.loading = true;
 
@@ -175,6 +214,7 @@ export default {
 
             newUserData.append('nomeCompleto', this.newUser.nomeCompleto);
             newUserData.append('username', this.newUser.username);
+            newUserData.append('empresa', this.newUser.empresa);
             newUserData.append('password', this.newUser.password);
             newUserData.append('roleName', this.newUser.roleName);
 
@@ -188,12 +228,17 @@ export default {
                     this.$store.commit('SET_SNACKBAR', {message: error.response.data.detail, color: "error"})
                 }
                 else {
-                    this.$store.commit('SET_SNACKBAR', {message: "Não foi possível concluir o cadastro. Tente mais tarde", color: "error"})
+                    this.$store.commit('SET_SNACKBAR', {message: "Não foi possível concluir o cadastro. Tente mais tarde.", color: "error"})
                 }
             })
             .finally(() => {
                 this.loading = false;
             })
+        }
+    },
+    computed: {
+        empresas() {
+            return this.$store.getters.getAllEmpresasNames;
         }
     }
 }

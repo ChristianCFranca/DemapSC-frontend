@@ -52,7 +52,7 @@
         cols="12" 
         class="text-center">
             <div
-            v-if="!it.almoxarifadoPossui">
+            v-if="!it.almoxarifadoPossui && it.direcionamentoDeCompra === 'Demap'">
                 <div 
                 class="text--subtitle-1 text-center success--text text--darken-3">
                     Valor total gasto

@@ -22,273 +22,298 @@
         <v-divider></v-divider>
         <v-card-text>
                 <v-container>
-                <v-row>
-                    <v-col
-                        cols="12"
-                        sm="4"
-                        md="4">
-
-                        <v-text-field
-                            v-model="pedido.requisitante"
-                            label="Nome do Requisitante*"
-                            required
-                            :counter="50"
-                            :rules="nonEmptyRules"
-                            clearable
-                            :disabled="true"
-                            outlined
-                        ></v-text-field>
-
-                    </v-col>
-                        
-
-                    <v-col
-                        cols="12"
-                        sm="4"
-                        md="4">
-
-                        <v-text-field
-                            v-model="pedido.email"
-                            label="Email do Requisitante*"
-                            required
-                            :counter="50"
-                            :rules="emailRules"
-                            clearable
-                            :disabled="true"
-                            outlined
-                        ></v-text-field>
-
-                    </v-col>
-
-                </v-row>
-
-                    
-                <v-form ref="osForm" v-model="valid">
-                <v-row>
-
-                    <v-col
-                        cols="12"
-                        sm="12"
-                        md="4">
+                
+                    <v-row>
+                        <v-col
+                            cols="12"
+                            sm="4"
+                            md="4">
 
                             <v-text-field
-                                v-model="pedido.os"
-                                label="Número da Ordem de Serviço Associada*"
+                                v-model="pedido.requisitante"
+                                label="Nome do Requisitante*"
                                 required
+                                :counter="50"
+                                :rules="nonEmptyRules"
+                                clearable
+                                :disabled="true"
                                 outlined
-                                :counter="20"
+                            ></v-text-field>
+
+                        </v-col>
+                            
+
+                        <v-col
+                            cols="12"
+                            sm="4"
+                            md="4">
+
+                            <v-text-field
+                                v-model="pedido.email"
+                                label="Email do Requisitante*"
+                                required
+                                :counter="50"
+                                :rules="emailRules"
+                                clearable
+                                :disabled="true"
+                                outlined
+                            ></v-text-field>
+
+                        </v-col>
+
+                        <v-col
+                            cols="12"
+                            sm="4"
+                            md="4">
+                            <v-form ref="mainForm" v-model="valid">
+                                <v-select
+                                    v-model="pedido.empresa"
+                                    label="Empresa associada ao pedido*"
+                                    required
+                                    :items="$store.getters.getCurrentUserEmpresas"
+                                    :counter="50"
+                                    :rules="nonEmptyRules"
+                                    clearable
+                                    filled
+                                    outlined
+                                ></v-select>
+                            </v-form>
+
+                        </v-col>
+
+                    </v-row>
+                    
+                <v-form ref="osForm" v-model="valid">
+                    <v-row>
+
+                        <v-col
+                            cols="12"
+                            sm="12"
+                            md="4">
+
+                                <v-text-field
+                                    v-model="pedido.os"
+                                    label="Número da Ordem de Serviço Associada*"
+                                    required
+                                    outlined
+                                    :counter="20"
+                                    :rules="nonEmptyRules"
+                                    clearable
+                                    filled
+                                ></v-text-field>
+
+                        </v-col>
+
+                        <v-col 
+                            cols="12"
+                            xs="12"
+                            md="8">
+                            <v-text-field
+                                v-model="pedido.finalidade"
+                                label="Finalidade dos Materiais*"
+                                required
+                                :counter="100"
                                 :rules="nonEmptyRules"
                                 clearable
                                 filled
+                                outlined
                             ></v-text-field>
 
-                    </v-col>
+                        </v-col>
 
-                    <v-col 
-                        cols="12"
-                        xs="12"
-                        md="8">
-                        <v-text-field
-                            v-model="pedido.finalidade"
-                            label="Finalidade dos Materiais*"
-                            required
-                            :counter="100"
-                            :rules="nonEmptyRules"
-                            clearable
-                            filled
-                            outlined
-                        ></v-text-field>
-
-                    </v-col>
-
-                </v-row>
+                    </v-row>
                 </v-form>
 
             <v-divider class="my-4"></v-divider>
             </v-container>
-
-            <v-form ref="form" v-model="valid">
-                <v-container>
-                    <v-row>
-                        <v-row v-for="item in pedido.items.length" :key="item">
-                            <v-col 
-                            cols="12" 
-                            sm="4"
-                            md="3"
-                            class="mx-4">
-                                <v-switch 
-                                v-model="pedido.items[item-1].notExists" 
-                                label="Item não existe na lista"
-                                @click="setCategoria(pedido.items[item-1])">
-                                </v-switch>
-                            </v-col>
-                            <v-col 
-                            cols="12">
-                                <v-row>
-                                    <v-col
-                                        cols="12"
-                                        sm="5"
-                                        md="5">
-                                        <v-row class="mx-1">
-                                            <v-col
-                                            cols="12"
-                                            sm="12"
-                                            md="12">
-                                                <v-autocomplete
-                                                    v-model="pedido.items[item-1].nome"
-                                                    :label="(listaDeMateriais.length > 0) ? `Nome do Item ${item}*` : `Carregando... por favor aguarde`"
-                                                    hint="Escolha um dos itens disponíveis."
-                                                    :rules="nonEmptyRules"
-                                                    :items="listaDeMateriais"
-                                                    :loading="isMateriaisLoading"
-                                                    :disabled="isMateriaisLoading"
-                                                    v-on:change="mapMaterialParaPropriedades(pedido.items[item-1])"
-                                                    hide-no-data
-                                                    hide-selected
-                                                    :counter="100"
-                                                    filled
-                                                    outlined
-                                                    clearable
-                                                    required
-                                                    persistent-hint
-                                                    v-if="!pedido.items[item-1].notExists"
-                                                ></v-autocomplete>
-
-                                                <v-text-field
-                                                    v-model="pedido.items[item-1].nome"
-                                                    :label="(listaDeMateriais.length > 0) ? `Nome do Item ${item}*` : `Carregando... por favor aguarde`"
-                                                    hint="Escreva o nome do item."
-                                                    :rules="nonEmptyRules"
-                                                    hide-no-data
-                                                    hide-selected
-                                                    :counter="100"
-                                                    clearable
-                                                    required
-                                                    persistent-hint
-                                                    v-else
-                                                ></v-text-field>
-
-                                            </v-col>
-
-                                            <v-col
-                                            cols="12"
-                                            sm="12"
-                                            md="8">
-
-                                                <v-text-field
-                                                    v-model="pedido.items[item-1].quantidade"
-                                                    :label="'Quantidade Item ' + item +'*'"
-                                                    hint="Insira a quantidade na medida apropriada (metros, unidades, etc)."
-                                                    required
-                                                    :counter="30"
-                                                    :rules="numericRules"
-                                                    clearable
-                                                    filled
-                                                    outlined
-                                                ></v-text-field>
-
-                                            </v-col>
-
-                                            <v-col
-                                            cols="12"
-                                            sm="12"
-                                            md="4">
-
-                                                <v-select
-                                                    v-model="pedido.items[item-1].unidade"
-                                                    label="Unidade*"
-                                                    required
-                                                    :items="unidadesDeMedida"
-                                                    :rules="nonEmptyRules"
-                                                    :disabled="pedido.items[item-1].categoria !== 'Outro' || pedido.items[item-1].categoria === null"
-                                                    clearable
-                                                    filled
-                                                    outlined
-                                                ></v-select>
-
-                                            </v-col>
-
-                                        </v-row>
-
-                                    </v-col>
-                                
-                                    <v-col
-                                        cols="12"
-                                        sm="2"
-                                        md="1">
-                                        <v-radio-group 
-                                        v-model="pedido.items[item-1].categoria">
-                                            <v-radio
-                                                :label="`Sob Demanda`"
-                                                value="Sob Demanda"
-                                                class="mb-6"
-                                                disabled
-                                            ></v-radio>
-                                            <v-radio
-                                                :label="`Fixo`"
-                                                value="Fixo"
-                                                class="mb-6"
-                                                disabled
-                                            ></v-radio>
-                                            <v-radio
-                                                :label="`Outro`"
-                                                value="Outro"
-                                                disabled
-                                            ></v-radio>
-                                        </v-radio-group>
-
-                                    </v-col>
-
-
-                                    <v-col
-                                        cols="12"
-                                        sm="5"
-                                        md="6">
-
-                                        <v-textarea
-                                            v-model="pedido.items[item-1].descricao"
-                                            :label="'Descrição do Item ' + item + ' (opcional)'"
-                                            height="165"
-                                            :counter="300"
-                                            clearable
-                                            filled
-                                            auto-grow
-                                            outlined
-                                        ></v-textarea>
-
-
-                                    </v-col>
-
-                                </v-row>
-                            </v-col>
-                        </v-row>
-                        <v-container>
-                            <v-row no-gutters>
-                                <v-col cols="12" align="center">
-                                    <v-btn 
-                                    depressed 
-                                    class="mt-4 mb-2" 
-                                    color="blue-grey lighten-4" 
-                                    @click="pedido.items.push(generateNewEmptyItem())" 
-                                    :disabled="pedido.items.length >= 5">
-                                    Adicionar Item
-                                    </v-btn>
+            <div v-if="pedido.empresa">
+                <v-form ref="form" v-model="valid">
+                    <v-container>
+                        <v-row>
+                            <v-row v-for="item in pedido.items.length" :key="item">
+                                <v-col 
+                                cols="12" 
+                                sm="4"
+                                md="3"
+                                class="mx-4">
+                                    <v-switch 
+                                    v-model="pedido.items[item-1].notExists"
+                                    :disabled="listaDeMateriais.length === 0"
+                                    label="Item não existe na lista"
+                                    @click="setCategoria(pedido.items[item-1])">
+                                    </v-switch>
                                 </v-col>
-                                <v-col cols="12" align="center">
-                                    <v-btn 
-                                    depressed 
-                                    color="blue-grey lighten-4" 
-                                    @click="pedido.items.pop()" 
-                                    :disabled="pedido.items.length <= 1">
-                                    Remover Item
-                                    </v-btn>
+                                <v-col 
+                                cols="12">
+                                    <v-row>
+                                        <v-col
+                                            cols="12"
+                                            sm="5"
+                                            md="5">
+                                            <v-row class="mx-1">
+                                                <v-col
+                                                cols="12"
+                                                sm="12"
+                                                md="12">
+                                                    <v-autocomplete
+                                                        v-model="pedido.items[item-1].nome"
+                                                        :label="isMateriaisLoading ? `Carregando... por favor aguarde` : `Nome do Item ${item}*`"
+                                                        hint="Escolha um dos itens disponíveis."
+                                                        :rules="nonEmptyRules"
+                                                        :items="listaDeMateriais"
+                                                        :loading="isMateriaisLoading"
+                                                        :disabled="isMateriaisLoading"
+                                                        v-on:change="mapMaterialParaPropriedades(pedido.items[item-1])"
+                                                        hide-no-data
+                                                        hide-selected
+                                                        :counter="200"
+                                                        filled
+                                                        outlined
+                                                        clearable
+                                                        required
+                                                        persistent-hint
+                                                        v-if="!pedido.items[item-1].notExists"
+                                                    ></v-autocomplete>
+
+                                                    <v-text-field
+                                                        v-model="pedido.items[item-1].nome"
+                                                        :label="isMateriaisLoading ? `Carregando... por favor aguarde` : `Nome do Item ${item}*`"
+                                                        hint="Escreva o nome do item."
+                                                        :rules="nonEmptyRules"
+                                                        hide-no-data
+                                                        hide-selected
+                                                        :counter="200"
+                                                        clearable
+                                                        required
+                                                        persistent-hint
+                                                        v-else
+                                                    ></v-text-field>
+
+                                                </v-col>
+
+                                                <v-col
+                                                cols="12"
+                                                sm="12"
+                                                md="8">
+
+                                                    <v-text-field
+                                                        v-model="pedido.items[item-1].quantidade"
+                                                        :label="'Quantidade Item ' + item +'*'"
+                                                        hint="Insira a quantidade na medida apropriada (metros, unidades, etc)."
+                                                        required
+                                                        :counter="30"
+                                                        :rules="numericRules"
+                                                        clearable
+                                                        filled
+                                                        outlined
+                                                    ></v-text-field>
+
+                                                </v-col>
+
+                                                <v-col
+                                                cols="12"
+                                                sm="12"
+                                                md="4">
+
+                                                    <v-select
+                                                        v-model="pedido.items[item-1].unidade"
+                                                        label="Unidade*"
+                                                        required
+                                                        :items="unidadesDeMedida"
+                                                        :rules="nonEmptyRules"
+                                                        :disabled="pedido.items[item-1].categoria !== 'Outro' || pedido.items[item-1].categoria === null"
+                                                        clearable
+                                                        filled
+                                                        outlined
+                                                    ></v-select>
+
+                                                </v-col>
+
+                                            </v-row>
+
+                                        </v-col>
+                                    
+                                        <v-col
+                                            cols="12"
+                                            sm="2"
+                                            md="1">
+                                            <v-radio-group 
+                                            v-model="pedido.items[item-1].categoria">
+                                                <v-radio
+                                                    :label="`Sob Demanda`"
+                                                    value="Sob Demanda"
+                                                    class="mb-6"
+                                                    disabled
+                                                ></v-radio>
+                                                <v-radio
+                                                    :label="`Fixo`"
+                                                    value="Fixo"
+                                                    class="mb-6"
+                                                    disabled
+                                                ></v-radio>
+                                                <v-radio
+                                                    :label="`Outro`"
+                                                    value="Outro"
+                                                    disabled
+                                                ></v-radio>
+                                            </v-radio-group>
+
+                                        </v-col>
+
+
+                                        <v-col
+                                            cols="12"
+                                            sm="5"
+                                            md="6">
+
+                                            <v-textarea
+                                                v-model="pedido.items[item-1].descricao"
+                                                :label="'Descrição do Item ' + item + ' (opcional)'"
+                                                height="165"
+                                                :counter="300"
+                                                clearable
+                                                filled
+                                                auto-grow
+                                                outlined
+                                            ></v-textarea>
+
+
+                                        </v-col>
+
+                                    </v-row>
                                 </v-col>
                             </v-row>
+                            <v-container>
+                                <v-row no-gutters>
+                                    <v-col cols="12" align="center">
+                                        <v-btn 
+                                        depressed 
+                                        class="mt-4 mb-2" 
+                                        color="blue-grey lighten-4" 
+                                        @click="pedido.items.push(generateNewEmptyItem())" 
+                                        :disabled="pedido.items.length >= 5">
+                                        Adicionar Item
+                                        </v-btn>
+                                    </v-col>
+                                    <v-col cols="12" align="center">
+                                        <v-btn 
+                                        depressed 
+                                        color="blue-grey lighten-4" 
+                                        @click="pedido.items.pop()" 
+                                        :disabled="pedido.items.length <= 1">
+                                        Remover Item
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
 
-                        </v-container>
-                    </v-row>
-                </v-container>
-            </v-form>
+                            </v-container>
+                        </v-row>
+                    </v-container>
+                </v-form>
+            </div>
+            <div v-else class="text-center text-h5 mb-4">
+                Selecione a empresa associada ao pedido para liberar o preenchimento dos itens...
+            </div>
         * indica campo obrigatório
         </v-card-text>
 
@@ -328,7 +353,7 @@ export default {
         return {
             unidadesDeMedida: [
                 "unid.", // Unidades
-                "km", "m", "cm", "mm", "pol.", // Comprimento
+                "km", "m", "cm", "mm", "pol.", "h", // Comprimento
                 "km²", "m²", "cm²", "mm²", "pol.²", // Área
                 "litros", "ml", "km³", "m³", "cm³", "mm³", "pol.³", // Volume
                 "g", "kg", "ton.", // Massa
@@ -372,8 +397,10 @@ export default {
                 horarioCancelamento: null,
                 dataFinalizacao: null,
                 horarioFinalizacao: null,
-                valorGastoTotal: null
+                valorGastoTotal: null,
+                empresa: null
             },
+            shouldNotExist: false,
             addDisable: false,
             remDisable: true,
             nonEmptyRules: [v => !!v || "Campo obrigatório."],
@@ -382,37 +409,13 @@ export default {
         }
     },
     mounted() {
-        if (this.$store.getters.getMateriaisList.length > 0) // Já carregou os materiais
-            return
-
-        this.isMateriaisLoading = true;
-        this.disableSend = true;
-
-        // Lazily load input items
-        this.$store.dispatch('getMateriais')
-        .then(() => {
-            this.disableSend = false;
-            this.isMateriaisLoading = false;
-        })
-        .catch(error => {
-            console.log(error);
-            if (error?.response?.status === 401) {
-                this.errorMateriaisMessage = "Você não está autenticado ou não tem permissão para requisitar materiais.";
-                this.errorGetMateriais = true;
-                this.isMateriaisLoading = false;
-                this.$store.dispatch('logout');
-            } else {
-                this.errorMateriaisMessage = "Ocorreu um erro na busca dos materiais disponíveis. Recarregue a página e tente novamente.";
-                this.errorGetMateriais = true;
-                this.isMateriaisLoading = false;
-            }
-        })
+        this.logItemsForEmpresa();
     },
     methods: {
         generateNewEmptyItem() {
             return {
-                notExists: false,
-                nome: null, quantidade: null, descricao: null, categoria: null, unidade: null, valorUnitario: null, valorTotal: null,
+                notExists: this.shouldNotExist,
+                nome: null, quantidade: null, descricao: null, categoria: this.shouldNotExist ? "Outro" : null, unidade: null, valorUnitario: null, valorTotal: null,
                 aprovadoAssistente: true, motivoAssistente: null,
                 aprovadoFiscal: true, motivoFiscal: null,
                 direcionamentoDeCompra: null, 
@@ -422,11 +425,16 @@ export default {
             }
         },
         resetForm() {
+            this.pedido.empresa = null;
             this.error = false;
             this.errorDueToValid = false;
             this.success = false;
-            this.$refs.form.reset();
-            this.$refs.osForm.reset();
+            if (this.$refs.mainForm)
+                this.$refs.mainForm.resetValidation();
+            if (this.$refs.osForm)
+                this.$refs.osForm.reset();
+            if (this.$refs.form)
+                this.$refs.form.reset();
         },
         resetPedidoProperties() {
             this.pedido.valorDaSolicitacao = 0;
@@ -435,7 +443,7 @@ export default {
             this.error = false;
             this.success = false;
 
-            if (!this.$refs.form.validate() || !this.$refs.osForm.validate()) {
+            if (!this.$refs.mainForm.validate() || !this.$refs.osForm.validate() || !this.$refs.form.validate()) {
                 this.errorMessage = "Certifique-se de que todos os campos com * foram devidamente preenchidos."
                 this.error = true;
                 return
@@ -505,6 +513,45 @@ export default {
                 return
             }
             item.categoria = null;
+        },
+        setForNonExistingItems() {
+            if (this.listaDeMateriais.length === 0) {
+                this.shouldNotExist = true;
+                this.pedido.items.forEach(item => {
+                    item.notExists = true;
+                    item.categoria = "Outro";
+                })
+            }
+        },
+        logItemsForEmpresa() {
+            if (this.pedido.empresa) {
+                this.shouldNotExist = false;
+                this.isMateriaisLoading = true;
+                this.disableSend = true;
+
+                // Lazily load input items
+                this.$store.dispatch('getMateriais', this.pedido.empresa)
+                .then(() => {
+                    this.pedido.items = new Array(this.generateNewEmptyItem())
+                    this.disableSend = false;
+                    this.isMateriaisLoading = false;
+                    this.setForNonExistingItems();
+                })
+                .catch(error => {
+                    console.log(error);
+                    if (error?.response?.status === 401) {
+                        this.errorMateriaisMessage = "Você não está autenticado ou não tem permissão para requisitar materiais.";
+                        this.errorGetMateriais = true;
+                        this.$store.dispatch('logout');
+                    } else {
+                        this.errorMateriaisMessage = "Ocorreu um erro na busca dos materiais disponíveis. Recarregue a página e tente novamente.";
+                        this.errorGetMateriais = true;
+                    }
+                })
+                .finally(() => {
+                    this.isMateriaisLoading = false;
+                })
+            }
         }
         
     },
@@ -516,6 +563,9 @@ export default {
     watch: {
         'pedido.items.length'() {
             this.pedido.quantidade = this.pedido.items.length;
+        },
+        'pedido.empresa'() {
+            this.logItemsForEmpresa();
         }
     }
 

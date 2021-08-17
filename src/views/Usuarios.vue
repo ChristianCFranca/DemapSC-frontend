@@ -57,6 +57,22 @@
                             cols="12"
                             sm="12"
                             md="12">
+                                <v-select
+                                v-model="editedItem.empresa"
+                                :items="$store.getters.getAllEmpresasNames"
+                                attach
+                                chips
+                                multiple
+                                required
+                                :loading="loadingEmpresas"
+                                outlined>
+                                </v-select>
+                            </v-col>
+
+                            <v-col
+                            cols="12"
+                            sm="12"
+                            md="12">
                                 <v-text-field
                                 hint="Digite a nova senha"
                                 outlined
@@ -127,6 +143,10 @@
             class="elevation-1"
             :search="search">
                         
+                <template v-slot:[`item.empresa`]="{ item }">
+                    {{item.empresa.join(', ')}}
+                </template>
+
                 <template v-slot:[`item.actions`]="{ item }">
                     <v-icon
                     small
@@ -160,6 +180,7 @@ export default {
     data() {
         return {
             show: false,
+            loadingEmpresas: false,
             search: '',
             loading: false,
             loadingDelete: false,
@@ -175,6 +196,7 @@ export default {
                 { text: 'Nome', align: 'start', value: 'nome_completo' },
                 { text: 'E-mail', value: 'username' },
                 { text: 'Cargo', value: 'role' },
+                { text: 'Empresas', value: 'empresa' },
                 { text: 'Ações', value: 'actions', sortable: false },
             ],
             editedItem: {
@@ -197,6 +219,7 @@ export default {
             this.editedItem.username = item.username;
             this.editedItem.nome_completo = item.nome_completo;
             this.editedItem.role = item.role;
+            this.editedItem.empresa = item.empresa;
             this.dialog = true;
         },
         deleteItem(item) {
@@ -305,6 +328,17 @@ export default {
         }
     },
     mounted() {
+        this.loadingEmpresas = true;
+        this.$store.dispatch('getEmpresas')
+        .then(() => {})
+        .catch(error => {
+            console.log(error);
+            if (error.response)
+                this.$store.commit('SET_SNACKBAR', {message: "Houve problema de conexão com o servidor.", color: "error"});
+            })
+        .finally(() => {
+            this.loadingEmpresas = false;
+        })
         this.setUsers()
     },
     computed: {

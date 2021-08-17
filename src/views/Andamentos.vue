@@ -71,7 +71,7 @@
                             </v-menu>
                         </td>
                         <td>
-                            <v-text-field v-model="searches.c1" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                            <v-text-field v-model="searches.c2" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
                         </td>
                         <td>
                             <v-text-field v-model="searches.c3" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
@@ -96,6 +96,9 @@
                         </td>
                         <td>
                             <v-text-field v-model="searches.c10" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                        </td>
+                        <td>
+                            <v-text-field v-model="searches.c11" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
                         </td>
                     </tr>
                 </template>
@@ -187,7 +190,8 @@ export default {
                 c7: '',
                 c8: '',
                 c9: '',
-                c10: ''
+                c10: '',
+                c11: ''
             },
             todos: false,
             pendentes: true,
@@ -281,64 +285,65 @@ export default {
         headers() {
             return [
                 { text: '', value: 'data-table-expand', sortable: false },
-                { text: "Etapa do Pedido", value: "statusStep", 
+                { text: "Etapa do Pedido", value: "statusStep"},
+                { text: "N°", value: "number", 
                     filter: value => {
                         if (!this.searches.c2) return true
                         return String(value).includes(this.searches.c2)
                     } 
                 },
-                { text: "N°", value: "number", 
-                    filter: value => {
-                        if (!this.searches.c1) return true
-                        return String(value).includes(this.searches.c1)
-                    } 
-                },
-                { text: "Ordem de Serviço", value: "os", 
+                { text: "Empresa", value: "empresa", 
                     filter: value => {
                         if (!this.searches.c3) return true
                         return String(value).includes(this.searches.c3)
                     } 
                 },
-                { text: "Nome do Requisitante", value: "requisitante", 
+                { text: "Ordem de Serviço", value: "os", 
                     filter: value => {
                         if (!this.searches.c4) return true
                         return String(value).includes(this.searches.c4)
                     } 
                 },
-                { text: "Email do Requisitante", value: "email", 
+                { text: "Nome do Requisitante", value: "requisitante", 
                     filter: value => {
                         if (!this.searches.c5) return true
                         return String(value).includes(this.searches.c5)
                     } 
                 },
-                { text: "Data do Pedido", value: "dataPedido", 
+                { text: "Email do Requisitante", value: "email", 
                     filter: value => {
                         if (!this.searches.c6) return true
                         return String(value).includes(this.searches.c6)
                     } 
                 },
-                { text: "Horário do Pedido", value: "horarioPedido", 
+                { text: "Data do Pedido", value: "dataPedido", 
                     filter: value => {
                         if (!this.searches.c7) return true
                         return String(value).includes(this.searches.c7)
                     } 
                 },
-                { text: "Valor Estimado", value: "valorDaSolicitacao", 
+                { text: "Horário do Pedido", value: "horarioPedido", 
                     filter: value => {
                         if (!this.searches.c8) return true
                         return String(value).includes(this.searches.c8)
                     } 
                 },
-                { text: "Status do Pedido", value: "status", 
+                { text: "Valor Estimado", value: "valorDaSolicitacao", 
                     filter: value => {
                         if (!this.searches.c9) return true
                         return String(value).includes(this.searches.c9)
                     } 
                 },
-                { text: "Identificador", value: "_id", 
+                { text: "Status do Pedido", value: "status", 
                     filter: value => {
                         if (!this.searches.c10) return true
                         return String(value).includes(this.searches.c10)
+                    } 
+                },
+                { text: "Identificador", value: "_id", 
+                    filter: value => {
+                        if (!this.searches.c11) return true
+                        return String(value).includes(this.searches.c11)
                     } 
                 }
             ]

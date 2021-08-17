@@ -4,8 +4,8 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    // baseURL: '//localhost:8000',
-    baseURL: 'https://demapsm-backend.herokuapp.com',
+    baseURL: '//localhost:8000',
+    // baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
         Accept: 'application/json',
@@ -21,9 +21,11 @@ export default new Vuex.Store({
     currentUser: {
       nome: null,
       role: null,
+      empresa: null,
       email: null,
       token: null,
     },
+    empresas: [],
     materiaisList: [],
     pedidos: [],
     allUsers: [],
@@ -73,6 +75,9 @@ export default new Vuex.Store({
     SET_AUTHENTICATION_DATA(state, userData) {
       state.currentUser.nome = userData.nome_completo;
       state.currentUser.role = userData.role;
+      if (userData.empresa) {
+        state.currentUser.empresa = userData.empresa;
+      }
       state.currentUser.email = userData.username;
       state.currentUser.token = userData.access_token;
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${userData.access_token}`;
@@ -107,6 +112,9 @@ export default new Vuex.Store({
     },
     SET_CURRENT_PEDIDO(state, pedido) {
       state.currentPedido = pedido;
+    },
+    SET_EMPRESAS(state, empresas) {
+      state.empresas = empresas;
     },
     UNSET_CURRENT_PEDIDO(state) {
       state.currentPedido = null;
@@ -152,14 +160,20 @@ export default new Vuex.Store({
         commit('SET_ALL_USERS', response.data)
       })
     },
-    getMateriais({ commit }) {
-      return apiClient.get('/crud/materiais/')
+    getMateriais({ commit }, empresa) {
+      return apiClient.get(`/crud/materiais/?empresa=${empresa}`)
       .then(response => {
         commit('SET_MATERIAIS', response.data)
       })
     },
-    getTodosOsPedidos({ commit }) {
-      return apiClient.get('/crud/pedidos/')
+    getEmpresas({ commit }) {
+      return apiClient.get('/empresas/')
+      .then(response => {
+        commit('SET_EMPRESAS', response.data)
+      })
+    },
+    getTodosOsPedidos({ commit, getters }) {
+      return apiClient.get(`/crud/pedidos/${getters.getCurrentUserEmpresas ? `?empresa=${getters.getCurrentUserEmpresas}` : ``}`)
       .then(response => {
         commit('SET_TODOS_OS_PEDIDOS', response.data)
         return response
@@ -240,9 +254,7 @@ export default new Vuex.Store({
       let email = false;
       const now = new Date().toLocaleString('pt-BR');
       let message = "Aquisição registrada com sucesso"
-      console.log(state.currentPedido.items[idx].recebido)
       pedido.items[idx].recebido = true;
-      console.log(state.currentPedido.items[idx].recebido)
       pedido.items[idx].recebimento = getters.getCompleteName;
       pedido.items[idx].emailRecebimento = getters.getEmail;
 
@@ -324,6 +336,9 @@ export default new Vuex.Store({
     getIsAuthenticated: state => state.currentUser.token !== null,
     getPermissions: state => state.permissionsPerRole[state.currentUser.role],
     getCompleteName: state => state.currentUser.nome,
+    getCurrentUserEmpresas: state => state.currentUser.empresa,
+    getAllEmpresas: state => state.empresas,
+    getAllEmpresasNames: state => state.empresas.map(value => value.nome),
     getCurrentPedido: state => state.currentPedido,
     getApprovalsForRoles: state => state.approvalsForRoles,
     getPseudoApprovalsForRoles: state => state.pseudoApprovalsForRoles,
