@@ -144,7 +144,7 @@
             :search="search">
                         
                 <template v-slot:[`item.empresa`]="{ item }">
-                    {{item.empresa.join(', ')}}
+                    {{item.empresa ? item.empresa.join(', ') : ''}}
                 </template>
 
                 <template v-slot:[`item.actions`]="{ item }">
