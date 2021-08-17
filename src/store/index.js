@@ -160,8 +160,8 @@ export default new Vuex.Store({
         commit('SET_ALL_USERS', response.data)
       })
     },
-    getMateriais({ commit }) {
-      return apiClient.get('/crud/materiais/')
+    getMateriais({ commit }, empresa) {
+      return apiClient.get(`/crud/materiais/?empresa=${empresa}`)
       .then(response => {
         commit('SET_MATERIAIS', response.data)
       })

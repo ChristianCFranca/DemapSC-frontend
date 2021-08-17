@@ -101,22 +101,17 @@
                                             <v-select
                                             v-model="newUser.empresa"
                                             :items="$store.getters.getAllEmpresasNames"
-                                            :rules="nonEmptyRules"
-                                            :required="requiredEmpresa"
-                                            :label="requiredEmpresa ? `Selecione a empresa do novo usuário` : `O cargo em questão não necessita de empresa`"
-                                            :disabled="!requiredEmpresa"
-                                            :loading="loadingEmpresas" 
-                                            outlined>
+                                            :rules="nonEmptyArray"
+                                            attach
+                                            chips
+                                            multiple
+                                            required
+                                            :label="`Selecione a empresa do novo usuário`"
+                                            :loading="loadingEmpresas">
                                             </v-select>
                                         </v-col>
                                     </v-row>
 
-                                    <p v-if="errorMessage !== null" class="text-h5 red--text text-center font-weight-light">
-                                        {{ errorMessage }}
-                                    </p>
-                                    <p v-if="successMessage !== null" class="text-h5 success--text text-center font-weight-light">
-                                        {{ successMessage }}
-                                    </p>
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
@@ -178,75 +173,66 @@ export default {
                 v => /.+@([a-zA-Z0-9]]?)+/.test(v) || 'E-mail deve ser válido.', 
                 v => /.+@(.?)+bcb.gov.br/.test(v) || 'Domínio deve finalizar com bcb.gov.br'
             ],
+            nonEmptyArray: [
+                v => (!!v && v?.length !== 0) || 'Campo obrigatório.'
+            ],
             passwordRules: [
                 v => !!v || 'Campo obrigatório.'
             ],
             passwordSameRules: [
                 v => !!v || 'Campo obrigatório.',
                 v => v === this.newUser.password || 'Senhas não são iguais'
-            ],
-            errorMessage: null,
-            successMessage: null
+            ]
         }
     },
     mounted() {
         this.loadingEmpresas = true;
         this.$store.dispatch('getEmpresas')
-            .then(() => {})
-            .catch(error => {
-                console.log(error);
-                if (error.response){
-                    this.errorMessage = "Banco de dados indisponível.";
-                }
-                })
-            .finally(() => {
-                this.loadingEmpresas = false;
+        .then(() => {})
+        .catch(error => {
+            console.log(error);
+            if (error.response)
+                this.$store.commit('SET_SNACKBAR', {message: "Houve problema de conexão com o servidor.", color: "error"});
             })
+        .finally(() => {
+            this.loadingEmpresas = false;
+        })
     },
     methods: {
         resetForm() {
-            this.errorMessage = null;
             this.$refs.form.reset();
         },
         criarConta() {
             if (!this.$refs.form.validate()) return
 
-            this.errorMessage = null;
             this.loading = true;
 
             let newUserData = new FormData();
 
             newUserData.append('nomeCompleto', this.newUser.nomeCompleto);
             newUserData.append('username', this.newUser.username);
+            newUserData.append('empresa', this.newUser.empresa);
             newUserData.append('password', this.newUser.password);
             newUserData.append('roleName', this.newUser.roleName);
 
             this.$store.dispatch('register', newUserData)
             .then(() => {
-                this.loading = false;
-                this.successMessage = "Usuário cadastrado com sucesso!";
+                this.$store.commit('SET_SNACKBAR', {message: "Usuário criado com sucesso.", color: "success"})
                 this.resetForm();
             })
             .catch(error => {
-                this.loading = false;
                 if (error ?.response ?.status === 401){
-                    this.errorMessage = "Você não está autenticado ou não possui permissão para fazer isso.";
+                    this.$store.commit('SET_SNACKBAR', {message: "Usuário não está autenticado.", color: "error"});
                     this.$store.distpach('logout')
-                    .then(() => {
-                        this.$router.push({name: 'login'})
-                    })
-                }
-                else if (error ?.response ?.data ?.detail)
-                    this.errorMessage = error.response.data.detail;
+                } else if (error ?.response ?.data ?.detail)
+                    this.$store.commit('SET_SNACKBAR', {message: error.response.data.detail, color: "error"});
                 else
-                    this.errorMessage = "Houve problema de conexão com o servidor.";
+                    this.$store.commit('SET_SNACKBAR', {message: "Houve problema de conexão com o servidor.", color: "error"});
+            })
+            .finally(() => {
+                this.loading = false;
             })
         }
-    },
-    computed: {
-        requiredEmpresa() {
-            return this.newUser.roleName !== "admin" && this.newUser.roleName !== "fiscal"
-        } 
     }
 }
 </script>
