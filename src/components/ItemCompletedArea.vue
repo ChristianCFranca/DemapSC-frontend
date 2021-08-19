@@ -25,19 +25,26 @@
             cols="12" 
             xs="12"
             v-else>
-                <div>
-                    <h1 class="font-weight-regular red--text">
-                        Solicitação cancelada.
-                    </h1>
-                    <h2 class="font-weight-regular red--text">
-                        <span class="font-weight-bold">{{item.canceladoPor}}</span> em
-                        <span class="font-weight-bold">{{item.dataCancelamento}}</span> às 
-                        <span class="font-weight-bold">{{item.horarioCancelamento}}</span>
-                    </h2>
-                    <v-icon
-                    x-large
-                    color="red"
-                    >mdi-cancel</v-icon>
+                <h1 class="font-weight-regular red--text">
+                    Solicitação cancelada.
+                </h1>
+                <h2 class="font-weight-regular red--text">
+                    <span class="font-weight-bold">{{item.canceladoPor}}</span> em
+                    <span class="font-weight-bold">{{item.dataCancelamento}}</span> às 
+                    <span class="font-weight-bold">{{item.horarioCancelamento}}</span>
+                </h2>
+                <v-icon
+                x-large
+                color="red"
+                >mdi-cancel</v-icon>
+                <div class="text-body-2 font-weight-light red--text mt-4">
+                    <v-row>
+                        <v-spacer></v-spacer>
+                        <v-col cols="6">
+                        <span class="font-weight-bold">Motivo:</span> {{item.motivoCancelamento ? item.motivoCancelamento : `Não informado`}}
+                        </v-col>
+                        <v-spacer></v-spacer>
+                    </v-row>
                 </div>
             </v-col>
         </v-row>

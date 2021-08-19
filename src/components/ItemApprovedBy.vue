@@ -18,7 +18,7 @@
                 </p>
             </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="item.statusStep > 3">
+        <v-list-item v-if="item.fiscal">
             <v-list-item-content>
                 <v-list-item-subtitle class="text-subtitle-1">
                     Fiscal:
@@ -32,7 +32,7 @@
                 </p>
             </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="item.statusStep > 4">
+        <v-list-item v-if="item.almoxarife">
             <v-list-item-content>
                 <v-list-item-subtitle class="text-subtitle-1">
                     Almoxarife:

@@ -395,6 +395,7 @@ export default {
                 canceladoPor: null,
                 dataCancelamento: null,
                 horarioCancelamento: null,
+                motivoCancelamento: null,
                 dataFinalizacao: null,
                 horarioFinalizacao: null,
                 valorGastoTotal: null,

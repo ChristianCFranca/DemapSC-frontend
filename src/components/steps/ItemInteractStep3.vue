@@ -2,7 +2,7 @@
     <div>
         <v-row 
         no-gutters
-        v-if="userCanApprove && itemActive">
+        v-if="userCanApprove && itemActive && it.categoria!=='Fixo'">
             <v-col 
             cols="12"
             class="d-flex justify-center">
@@ -81,6 +81,29 @@
                 v-if="errorDirecionamento && (it.direcionamentoDeCompra===undefined || it.direcionamentoDeCompra===null)">
                     {{errorMessageDirecionamento}}
                 </h2> 
+            </v-col>
+        </v-row>
+        <v-row 
+        no-gutters
+        v-if="userCanApprove && it.aprovadoAssistente && itemActive && it.categoria==='Fixo'">
+            <v-col 
+            cols="12"
+            class="d-flex justify-center">
+                <div class="text-h6 font-weight-regular">
+                    Este item é de categoria <span class="font-weight-bold">'Fixo'</span>.
+                </div>
+            </v-col>
+            <v-col 
+            cols="12"
+            class="d-flex justify-center my-4">
+                <v-divider></v-divider>
+            </v-col>
+            <v-col 
+            cols="12"
+            class="d-flex justify-center">
+                <div class="text-body-2 font-weight-regular text-center">
+                    Itens da categoria 'fixo' devem ser providenciados diretamente pela contratada. Não há necessidade de aprovação e direcionamento neste caso.
+                </div>
             </v-col>
         </v-row>
         <ItemInteractRefused 

@@ -5,6 +5,7 @@
         v-if="!it.aprovadoFiscal"/>
         <ItemInteractCompleted
         :it="it"
+        :empresa="empresa"
         v-else
         />
     </div>
@@ -20,7 +21,8 @@ export default {
         ItemInteractCompleted
     },
     props: {
-        it: Object
+        it: Object,
+        empresa: String,
     },
     data() {
         return {

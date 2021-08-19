@@ -31,8 +31,8 @@
                     <ItemInteractStep2 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 2"/>
                     <ItemInteractStep3 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 3"/>
                     <ItemInteractStep4 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 4"/>
-                    <ItemInteractStep5 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" :idx="idx" v-if="item.statusStep === 5"/>
-                    <ItemInteractStep6 :it="it" v-if="item.statusStep === 6"/>
+                    <ItemInteractStep5 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" :empresa="item.empresa" :idx="idx" v-if="item.statusStep === 5"/>
+                    <ItemInteractStep6 :it="it" :empresa="item.empresa" v-if="item.statusStep === 6"/>
                 </v-col>
             </v-row>
             <v-divider class="my-3"></v-divider>

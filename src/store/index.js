@@ -4,8 +4,8 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    // baseURL: '//localhost:8000',
-    baseURL: 'https://demapsm-backend.herokuapp.com',
+    baseURL: '//localhost:8000',
+    // baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
         Accept: 'application/json',
@@ -203,6 +203,10 @@ export default new Vuex.Store({
             valorDaSolicitacao += pedido.items[idx].valorTotal;
         }
         pedido.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
+        if (pedido.items.every(item => !item.aprovadoAssistente || item.categoria === 'Fixo')) { // Corrige para itens fixos
+          pedido.status = "Aguardando aquisição dos itens";
+          pedido.statusStep = 4;
+        }
       }
       else if (pedido.statusStep === 3) {
         pedido.fiscal = getters.getCompleteName;
@@ -221,6 +225,10 @@ export default new Vuex.Store({
                 valorDaSolicitacao += pedido.items[idx].valorTotal;
         }
         pedido.valorDaSolicitacao = valorDaSolicitacao; // Atualizamos o valor total da proposta
+        if (pedido.items.every(item => !item.aprovadoFiscal || item.categoria === 'Fixo')) { // Corrige para itens fixos
+          pedido.status = "Aguardando aquisição dos itens";
+          pedido.statusStep = 4;
+        }
       }
       else if (pedido.statusStep === 4) {
         pedido.almoxarife = getters.getCompleteName;

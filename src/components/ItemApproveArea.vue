@@ -3,6 +3,17 @@
         <v-dialog v-model="dialogDelete" max-width="600px">
             <v-card>
                 <v-card-title class="headline">Tem certeza que deseja cancelar essa solicitação?</v-card-title>
+                <v-card-text>
+                    <v-textarea
+                    v-model="item.motivoCancelamento"
+                    label="Conte o motivo (opcional) ..."
+                    outlined
+                    required
+                    counter="200"
+                    auto-grow>
+                    </v-textarea>
+                </v-card-text>
+                <v-divider></v-divider>
                 <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="dialogDelete = !dialogDelete">Cancelar</v-btn>
@@ -76,6 +87,7 @@ export default {
                 })
             }
             else {
+                if (this.item.motivoCancelamento) if (this.item.motivoCancelamento.length > 200) return
                 this.loadingBtnCancel = true;
                 this.$store.dispatch('cancelCurrentPedido')
                 .finally(() => {
@@ -109,7 +121,7 @@ export default {
             return this.item.items.some(item => item.aprovadoAssistente)
         },
         validStep3() {
-            return this.item.items.every(item => item.direcionamentoDeCompra || !item.aprovadoFiscal) &&
+            return this.item.items.every(item => item.direcionamentoDeCompra || !item.aprovadoFiscal || item.categoria === 'Fixo') &&
             this.item.items.some(item => item.aprovadoFiscal)
         },
         validStep4() {
@@ -129,6 +141,11 @@ export default {
             if (this.item.statusStep === 4)
                 return this.validStep4
             return true
+        }
+    },
+    watch: {
+        dialogDelete() {
+            this.item.motivoCancelamento = null;
         }
     }
 }

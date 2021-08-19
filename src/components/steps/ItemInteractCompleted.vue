@@ -15,8 +15,9 @@
         cols="12" 
         justify="center" 
         class="d-flex justify-center">
-            <h2 class="font-weight-light" v-if="!it.almoxarifadoPossui">Compra do item realizada por</h2>
-            <h2 class="font-weight-light" v-else>Item retirado no</h2>
+            <h2 class="font-weight-light" v-if="!it.almoxarifadoPossui && it.categoria !== 'Fixo'">Compra do item realizada por</h2>
+            <h2 class="font-weight-light" v-if="it.almoxarifadoPossui && it.categoria !== 'Fixo'">Item retirado no</h2>
+            <h2 class="font-weight-light" v-if="it.categoria === 'Fixo'">Item fixo obtido pela</h2>
         </v-col>
 
         <v-col
@@ -28,8 +29,7 @@
             class="mb-4" 
             color="success darken-2" 
             outlined
-            v-if="!it.almoxarifadoPossui"
-            >
+            v-if="!it.almoxarifadoPossui && it.categoria !== 'Fixo'">
                 <h1 class="success--text text--darken-2 font-weight-light">
                     {{ it.direcionamentoDeCompra }}
                 </h1>
@@ -40,10 +40,20 @@
             class="mb-4" 
             color="success darken-2" 
             outlined
-            v-else
-            >
+            v-if="it.almoxarifadoPossui && it.categoria !== 'Fixo'">
                 <h1 class="success--text text--darken-2 font-weight-light">
                     Almoxarifado
+                </h1>
+            </v-chip>
+
+            <v-chip 
+            large 
+            class="mb-4" 
+            color="success darken-2" 
+            outlined
+            v-if="it.categoria === 'Fixo'">
+                <h1 class="success--text text--darken-2 font-weight-light">
+                    {{empresa}}
                 </h1>
             </v-chip>
         </v-col>
@@ -86,10 +96,8 @@
 <script>
 export default {
     props: {
-        it: Object
-    },
-    setup() {
-        
-    },
+        it: Object,
+        empresa: String
+    }
 }
 </script>
