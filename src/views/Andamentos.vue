@@ -143,11 +143,11 @@
                                 class="my-5">
                                 {{ item.statusStep }}/6
                             </v-chip>
-                            <v-icon
+                            <!-- <v-icon
                             :color="checkColor(item)"
                             v-if="checkApprovalNecessaryForUser(item)">
                                 mdi-exclamation
-                            </v-icon>
+                            </v-icon> -->
                         </v-col>
                     </v-row>
                 </template>
