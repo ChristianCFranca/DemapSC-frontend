@@ -193,8 +193,8 @@ export default {
                 c10: '',
                 c11: ''
             },
-            todos: false,
-            pendentes: true,
+            todos: true,
+            pendentes: false,
             ativos: false,
             concluidos: false,
             cancelados: false
