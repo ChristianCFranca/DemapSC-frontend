@@ -51,8 +51,8 @@
                     v-model="it.direcionamentoDeCompra" 
                     row>
                         <v-radio
-                            :label="`Engemil`"
-                            value="Engemil"
+                            :label="empresa"
+                            :value="empresa"
                             :disabled="!it.valorUnitario"
                         ></v-radio>
                         <v-radio
@@ -121,6 +121,7 @@ export default {
     },
     props: {
         it: Object,
+        empresa: String,
         userCanApprove: Boolean,
         itemActive: Boolean
     },

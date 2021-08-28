@@ -1,10 +1,11 @@
 <template>
-    <div v-if="item.statusStep > 2">
+    <div 
+    v-if="item.assistente || item.fiscal || item.almoxarife">
         <p 
         class="text-h6"> 
             Aprovado Por: 
         </p>
-        <v-list-item>
+        <v-list-item v-if="item.assistente">
             <v-list-item-content>
                 <v-list-item-subtitle class="text-subtitle-1">
                     Assistente:
@@ -46,6 +47,11 @@
                 </p>
             </v-list-item-content>
         </v-list-item>
+    </div>
+    <div 
+    class="font-weight-light text-h5"
+    v-else>
+        Aguardando confirmações...
     </div>
 </template>
 

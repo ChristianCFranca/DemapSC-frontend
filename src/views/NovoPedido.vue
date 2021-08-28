@@ -377,7 +377,7 @@ export default {
                 dataPedido: null,
                 horarioPedido: null,
                 quantidade: 1,
-                status: "Aguardando confirmação do(a) assistente de fiscalização",
+                status: null,
                 statusStep: 2,
                 assistente: null,
                 emailAssistente: null,
@@ -457,6 +457,15 @@ export default {
                     this.items[idx].valorTotal = Math.round(Number(item.valorUnitario) * Number(item.quantidade) * 100) / 100;
                     this.valorDaSolicitacao += this.items[idx].valorTotal;
             }, this.pedido);
+
+            if (this.$store.getters.getNeedAssistant[this.pedido.empresa]) {
+                this.pedido.statusStep = 2;
+                this.pedido.status = "Aguardando confirmação do(a) assistente de fiscalização";
+            }
+            else {
+                this.pedido.statusStep = 3;
+                this.pedido.status = "Aguardando confirmação do(a) fiscal";
+            }
 
             this.sendPedido()
         },

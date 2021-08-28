@@ -280,6 +280,16 @@ export default {
     },
     mounted() {
         this.logTable();
+        this.$store.dispatch('getEmpresas')
+        .then(() => {})
+        .catch(error => {
+            console.log(error);
+            if (error.response)
+                this.$store.commit('SET_SNACKBAR', {message: "Houve problema de conexão com o servidor.", color: "error"});
+            })
+        .finally(() => {
+            this.loadingEmpresas = false;
+        })
     },
     computed: {
         headers() {

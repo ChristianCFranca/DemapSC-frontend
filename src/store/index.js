@@ -4,7 +4,7 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    // baseURL: '//localhost:8000',
+    // baseURL: '//localhost:8080',
     baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
@@ -26,6 +26,7 @@ export default new Vuex.Store({
       token: null,
     },
     empresas: [],
+    empresasNeedAssistant: {},
     materiaisList: [],
     pedidos: [],
     allUsers: [],
@@ -115,6 +116,9 @@ export default new Vuex.Store({
     },
     SET_EMPRESAS(state, empresas) {
       state.empresas = empresas;
+      state.empresas.forEach(function (empresa) {
+        state.empresasNeedAssistant[empresa.nome] = empresa.requer_assistente;
+      })
     },
     UNSET_CURRENT_PEDIDO(state) {
       state.currentPedido = null;
@@ -347,6 +351,7 @@ export default new Vuex.Store({
     getCurrentUserEmpresas: state => state.currentUser.empresa,
     getAllEmpresas: state => state.empresas,
     getAllEmpresasNames: state => state.empresas.map(value => value.nome),
+    getNeedAssistant: state => state.empresasNeedAssistant,
     getCurrentPedido: state => state.currentPedido,
     getApprovalsForRoles: state => state.approvalsForRoles,
     getPseudoApprovalsForRoles: state => state.pseudoApprovalsForRoles,

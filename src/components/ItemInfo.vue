@@ -41,8 +41,11 @@
                         <v-list-item-subtitle>
                             Descrição
                         </v-list-item-subtitle>
-                        <p class="text-justify body-1">
+                        <p class="text-justify body-1" v-if="it.descricao">
                             {{ it.descricao }}
+                        </p>
+                        <p class="text-justify body-1 grey--text" v-else>
+                            Nenhuma descrição informada.
                         </p>
                     </v-list-item-content>
                 </v-list-item>
@@ -53,7 +56,7 @@
                                 <v-list-item-subtitle>
                                     Valor unitário de referência
                                 </v-list-item-subtitle>
-                                <p :class="`font-weight-light text-h5 ${(it.valorUnitario === null) ? `red--text` : ``}`">
+                                <p :class="`font-weight-light text-h5`">
                                     {{ getValorMonetario(it.valorUnitario) }}
                                 </p>
                             </v-list-item-content>

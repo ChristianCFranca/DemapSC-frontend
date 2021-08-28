@@ -15,21 +15,17 @@
             <v-row :class="greyRow(it)">
                 <v-col 
                 cols="12"
-                sm="8"
-                md="8">
+                sm="9"
+                md="9">
                     <ItemInfo :it="it" :greyRow="greyRow(it)"/>
                 </v-col>
-
-                <v-col
-                cols="1"
-                ></v-col>
 
                 <v-col 
                 cols="12"
                 sm="3"
                 md="3">
                     <ItemInteractStep2 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 2"/>
-                    <ItemInteractStep3 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 3"/>
+                    <ItemInteractStep3 :itemActive="item.active" :empresa="item.empresa" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 3"/>
                     <ItemInteractStep4 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" v-if="item.statusStep === 4"/>
                     <ItemInteractStep5 :itemActive="item.active" :userCanApprove="userCanApprove" :it="it" :empresa="item.empresa" :idx="idx" v-if="item.statusStep === 5"/>
                     <ItemInteractStep6 :it="it" :empresa="item.empresa" v-if="item.statusStep === 6"/>

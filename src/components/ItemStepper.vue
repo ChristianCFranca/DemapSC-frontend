@@ -106,7 +106,7 @@ export default {
     data() {
         return {
             messageMapping: [
-                {concluido: "Aprovado pelo(a) assistente de fiscalização", andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
+                {concluido: this.$store.getters.getNeedAssistant[this.inputItem.empresa] ? `Aprovado pelo(a) assistente de fiscalização`:`Empresa não requer assistente de fiscalização` ,andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
                 {concluido: "Aprovado pelo(a) fiscal", andamento: "Aguardando confirmação do(a) fiscal"},
                 {concluido: "Confirmado pela DILOG", andamento: "Aguardando confirmação da DILOG"},
                 {concluido: "Item(s) obtido(s)", andamento: "Aguardando aquisição do(s) item(s)"}

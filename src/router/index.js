@@ -60,6 +60,9 @@ router.beforeEach((to, from, next) => {
       if (to.name !== 'criar-conta') next({name: 'login'})
       else next()
     }
+    else if (store.getters.getIsAuthenticated && to.name === 'login') {
+      next({name: 'andamentos'})
+    }
     else next()
   }, 1)
 });
