@@ -4,7 +4,7 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    // baseURL: '//localhost:8080',
+    // baseURL: '//localhost:8000',
     baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
@@ -185,6 +185,12 @@ export default new Vuex.Store({
     },
     postNovoPedido(_, novoPedido) {
       return apiClient.post('/crud/pedidos/', novoPedido)
+      .then(response => {
+        return response
+      })
+    },
+    getPedidoPDFs(_, pdfs_ids) {
+      return apiClient.post('/collect-data/pdfs', pdfs_ids)
       .then(response => {
         return response
       })

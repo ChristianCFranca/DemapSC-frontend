@@ -1,6 +1,71 @@
 <template>
     <v-stepper alt-labels class="my-4" :value="item.statusStep">
+        <div 
+        class="text-center my-4"
+        v-if="pdfs_ids">
+            <v-row 
+            align-content="center" 
+            justify="center"
+            class="font-weight-light text-body-1">
+                <v-col
+                cols="12"
+                sm="4"
+                md="2"
+                v-if="pdfs_ids.demap">
+                    Demap:
+                    <a :href="pdfs_ids.demap">Download</a>
+                </v-col>
+                <v-col
+                cols="12"
+                sm="4"
+                md="2"
+                v-if="pdfs_ids.almoxarife">
+                    Almoxarife:
+                    <a :href="pdfs_ids.almoxarife">Download</a>
+                </v-col>
+                <v-col
+                cols="12"
+                sm="4"
+                md="2"
+                v-if="pdfs_ids.empresa">
+                    {{inputItem.empresa}}:
+                    <a :href="pdfs_ids.empresa">Download</a>
+                </v-col>
+            </v-row>
+            <v-row
+            align-content="center" 
+            justify="center"
+            class="font-weight-light text-body-1">
+                <v-col
+                cols="12"
+                sm="12"
+                md="6">
+                    Tempo restante para download:
+                    <v-progress-circular 
+                    :value="remaining * 3.33"
+                    color="#3F51B5">
+                        {{remaining}}
+                    </v-progress-circular>
+                </v-col>
+            </v-row>
+        </div>
+        <div class="text-center my-4" v-else>
+            <v-btn 
+            class="white--text" 
+            color="#3F51B5"
+            :disabled="!userCanDownloadPDFs()"
+            @click="collectPDFsIds()"
+            :loading="loading_pdfs">
+                Download dos PDFs
+            </v-btn>
+            <div 
+            class="font-weight-light grey--text mt-1"
+            v-if="!userCanDownloadPDFs()">
+                Este pedido ainda não está mapeado diretamente com os pdfs
+            </div>
+        </div>
         <v-stepper-header>
+            <v-divider></v-divider>
             <v-stepper-step step="1" 
             :complete="item.statusStep > 1" 
             color="success">
@@ -105,6 +170,10 @@ export default {
     },
     data() {
         return {
+            intervalId: null,
+            remaining: null,
+            loading_pdfs: false,
+            pdfs_ids: null,
             messageMapping: [
                 {concluido: this.$store.getters.getNeedAssistant[this.inputItem.empresa] ? `Aprovado pelo(a) assistente de fiscalização`:`Empresa não requer assistente de fiscalização` ,andamento: "Aguardando confirmação do(a) assistente de fiscalização"},
                 {concluido: "Aprovado pelo(a) fiscal", andamento: "Aguardando confirmação do(a) fiscal"},
@@ -127,6 +196,28 @@ export default {
                 return `red`
             else
                 return `orange darken-1`
+        },
+        userCanDownloadPDFs() {
+            if (this.$store.getters.getRole === 'fiscal' || this.$store.getters.getRole === 'admin')
+                return Boolean(this.inputItem.pdfs_ids)
+        },
+        collectPDFsIds() {
+            this.loading_pdfs = true;
+            this.$store.dispatch('getPedidoPDFs', this.inputItem.pdfs_ids)
+            .then(response => {
+                this.pdfs_ids = response.data
+            })
+            .catch(error => {
+                console.log(error)
+                this.$store.commit('SET_SNACKBAR', {message: "Ocorreu um erro desconhecido.", color: "error"})
+            })
+            .finally(() => {
+                this.loading_pdfs = false;
+                this.remaining = 30;
+                this.intervalId = setInterval(function () {
+                    this.remaining -= 1;
+                    }.bind(this), 1000);
+            })
         }
     },
     computed: {
@@ -137,7 +228,18 @@ export default {
     watch: {
         inputItem() {
             this.$store.commit('SET_CURRENT_PEDIDO', this.inputItem)
+        },
+        remaining() {
+            if (this.remaining <= 0) {
+                clearInterval(this.intervalId)
+                this.pdfs_ids = null;
+                this.remaining = 30;
+            }
         }
+    },
+    beforeDestroy() {
+        if (this.intervalId)
+            clearInterval(this.intervalId)
     }
 }
 </script>

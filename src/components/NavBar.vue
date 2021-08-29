@@ -168,22 +168,6 @@
                     <p v-if="solicitacaoMessageCompra" class="warning--text">{{solicitacaoMessageCompra}}</p>
                 </div>
                 <v-divider></v-divider>
-                <div>
-                    <v-card-title class="justify-center">Baixar andamentos</v-card-title>
-                    <h2 class="font-weight-light red--text mb-3" v-if="error">{{errorMessage}}</h2> 
-                    <v-card-actions class="justify-center pb-8">
-                        <v-btn 
-                        large
-                        outlined
-                        id="andamentos"
-                        color="blue darken-3"
-                        @click="downloadFile"
-                        :loading="loadingAndamentos">
-                            <v-icon large left>mdi-download</v-icon>
-                            Andamentos
-                        </v-btn>
-                    </v-card-actions>
-                </div>
                 </v-card>
             </v-menu>
         </div>
@@ -208,7 +192,6 @@ export default {
             key: null,
             filename: null,
             loadingCompras: false,
-            loadingAndamentos: false,
             solicitacaoMessageCompra: null,
             dialogTrocarSenha: false,
             dialogSair: false
@@ -243,19 +226,18 @@ export default {
                 this.forceFileDownload(response)
                 })
             .catch(error => {
+                console.log(error); 
                 if (!error.response)
-                    this.solicitacaoMessageCompra = "Banco de dados indisponível.";
+                    this.$store.commit('SET_SNACKBAR', {message: "Banco de dados indisponível.", color: "error"});
                 else if (error ?.response ?.status === 401){
-                    this.solicitacaoMessageCompra = "Você não está autenticado ou não tem permissão para ver essa informação.";
-                    this.$store.dispatch('logout')
+                    this.$store.commit('SET_SNACKBAR', {message: "Você não está autenticado ou não tem permissão para ver essa informação.", color: "error"});
+                    this.$store.dispatch('logout');
                 }
                 else if (error ?.response ?.status === 404){
-                    this.solicitacaoMessageCompra = "Nenhum pedido pendente!";
+                    this.$store.commit('SET_SNACKBAR', {message: "Nenhum pedido pendente!", color: "warning"});
                 }
-                console.log(error); 
                 })
             .finally(() => {
-                    this.loadingAndamentos = false;
                     this.loadingCompras = false;
                 })
         },
@@ -266,12 +248,11 @@ export default {
                 this.solicitacaoMessageCompra = null;
                 this.filename = 'compra_demap.pdf';
                 this.loadingCompras = true;
+                this.collectData(targetId);
             }
-            else if (targetId === 'andamentos') {
-                this.filename = 'andamentos.csv';
-                this.loadingAndamentos = true;
+            else {
+                console.log("Botão sem especificação")
             }
-            this.collectData(targetId);
         },
         goToCadastro(){
             this.drawer = false;

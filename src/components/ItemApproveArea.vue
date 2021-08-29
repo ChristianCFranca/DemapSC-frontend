@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="mx-2">
         <v-dialog v-model="dialogDelete" max-width="600px">
             <v-card>
                 <v-card-title class="headline">Tem certeza que deseja cancelar essa solicitação?</v-card-title>
