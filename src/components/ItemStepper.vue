@@ -1,67 +1,69 @@
 <template>
     <v-stepper alt-labels class="my-4" :value="item.statusStep">
-        <div 
-        class="text-center my-4"
-        v-if="pdfs_ids">
-            <v-row 
-            align-content="center" 
-            justify="center"
-            class="font-weight-light text-body-1">
-                <v-col
-                cols="12"
-                sm="4"
-                md="2"
-                v-if="pdfs_ids.demap">
-                    Demap:
-                    <a :href="pdfs_ids.demap">Download</a>
-                </v-col>
-                <v-col
-                cols="12"
-                sm="4"
-                md="2"
-                v-if="pdfs_ids.almoxarife">
-                    Almoxarife:
-                    <a :href="pdfs_ids.almoxarife">Download</a>
-                </v-col>
-                <v-col
-                cols="12"
-                sm="4"
-                md="2"
-                v-if="pdfs_ids.empresa">
-                    {{inputItem.empresa}}:
-                    <a :href="pdfs_ids.empresa">Download</a>
-                </v-col>
-            </v-row>
-            <v-row
-            align-content="center" 
-            justify="center"
-            class="font-weight-light text-body-1">
-                <v-col
-                cols="12"
-                sm="12"
-                md="6">
-                    Tempo restante para download:
-                    <v-progress-circular 
-                    :value="remaining * 3.33"
-                    color="#3F51B5">
-                        {{remaining}}
-                    </v-progress-circular>
-                </v-col>
-            </v-row>
-        </div>
-        <div class="text-center my-4" v-else>
-            <v-btn 
-            class="white--text" 
-            color="#3F51B5"
-            :disabled="!userCanDownloadPDFs()"
-            @click="collectPDFsIds()"
-            :loading="loading_pdfs">
-                Download dos PDFs
-            </v-btn>
+        <div v-if="inputItem.statusStep >= 5">
             <div 
-            class="font-weight-light grey--text mt-1"
-            v-if="!userCanDownloadPDFs()">
-                Este pedido ainda não está mapeado diretamente com os pdfs
+            class="text-center my-4"
+            v-if="pdfs_ids">
+                <v-row 
+                align-content="center" 
+                justify="center"
+                class="font-weight-light text-body-1">
+                    <v-col
+                    cols="12"
+                    sm="4"
+                    md="2"
+                    v-if="pdfs_ids.demap">
+                        Demap:
+                        <a :href="pdfs_ids.demap">Download</a>
+                    </v-col>
+                    <v-col
+                    cols="12"
+                    sm="4"
+                    md="2"
+                    v-if="pdfs_ids.almoxarife">
+                        Almoxarife:
+                        <a :href="pdfs_ids.almoxarife">Download</a>
+                    </v-col>
+                    <v-col
+                    cols="12"
+                    sm="4"
+                    md="2"
+                    v-if="pdfs_ids.empresa">
+                        {{inputItem.empresa}}:
+                        <a :href="pdfs_ids.empresa">Download</a>
+                    </v-col>
+                </v-row>
+                <v-row
+                align-content="center" 
+                justify="center"
+                class="font-weight-light text-body-1">
+                    <v-col
+                    cols="12"
+                    sm="12"
+                    md="6">
+                        Tempo restante para download:
+                        <v-progress-circular 
+                        :value="remaining * 3.33"
+                        color="#3F51B5">
+                            {{remaining}}
+                        </v-progress-circular>
+                    </v-col>
+                </v-row>
+            </div>
+            <div class="text-center my-4" v-else>
+                <v-btn 
+                class="white--text" 
+                color="#3F51B5"
+                :disabled="!userCanDownloadPDFs()"
+                @click="collectPDFsIds()"
+                :loading="loading_pdfs">
+                    Download dos PDFs
+                </v-btn>
+                <div 
+                class="font-weight-light grey--text mt-1"
+                v-if="!userCanDownloadPDFs()">
+                    Este pedido ainda não está mapeado diretamente com os pdfs
+                </div>
             </div>
         </div>
         <v-stepper-header>
