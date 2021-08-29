@@ -1,6 +1,6 @@
 <template>
     <v-stepper alt-labels class="my-4" :value="item.statusStep">
-        <div v-if="inputItem.statusStep >= 5">
+        <div v-if="userCanVisualizeDownload()">
             <div 
             class="text-center my-4"
             v-if="pdfs_ids">
@@ -199,9 +199,11 @@ export default {
             else
                 return `orange darken-1`
         },
+        userCanVisualizeDownload() {
+            return this.inputItem.statusStep >= 5 && (this.$store.getters.getRole === 'fiscal' || this.$store.getters.getRole === 'admin')
+        },
         userCanDownloadPDFs() {
-            if (this.$store.getters.getRole === 'fiscal' || this.$store.getters.getRole === 'admin')
-                return Boolean(this.inputItem.pdfs_ids)
+            return Boolean(this.inputItem.pdfs_ids)
         },
         collectPDFsIds() {
             this.loading_pdfs = true;
