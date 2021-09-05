@@ -97,9 +97,6 @@
                         <td>
                             <v-text-field v-model="searches.c10" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
                         </td>
-                        <td>
-                            <v-text-field v-model="searches.c11" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
-                        </td>
                     </tr>
                 </template>
 
@@ -190,8 +187,7 @@ export default {
                 c7: '',
                 c8: '',
                 c9: '',
-                c10: '',
-                c11: ''
+                c10: ''
             },
             todos: true,
             pendentes: false,
@@ -299,61 +295,55 @@ export default {
                 { text: "N°", value: "number", 
                     filter: value => {
                         if (!this.searches.c2) return true
-                        return String(value).includes(this.searches.c2)
+                        return String(value).toLowerCase().includes(this.searches.c2.toLowerCase())
                     } 
                 },
                 { text: "Empresa", value: "empresa", 
                     filter: value => {
                         if (!this.searches.c3) return true
-                        return String(value).includes(this.searches.c3)
+                        return String(value).toLowerCase().includes(this.searches.c3.toLowerCase())
                     } 
                 },
                 { text: "Ordem de Serviço", value: "os", 
                     filter: value => {
                         if (!this.searches.c4) return true
-                        return String(value).includes(this.searches.c4)
+                        return String(value).toLowerCase().includes(this.searches.c4.toLowerCase())
                     } 
                 },
                 { text: "Nome do Requisitante", value: "requisitante", 
                     filter: value => {
                         if (!this.searches.c5) return true
-                        return String(value).includes(this.searches.c5)
+                        return String(value).toLowerCase().includes(this.searches.c5.toLowerCase())
                     } 
                 },
                 { text: "Email do Requisitante", value: "email", 
                     filter: value => {
                         if (!this.searches.c6) return true
-                        return String(value).includes(this.searches.c6)
+                        return String(value).toLowerCase().includes(this.searches.c6.toLowerCase())
                     } 
                 },
                 { text: "Data do Pedido", value: "dataPedido", 
                     filter: value => {
                         if (!this.searches.c7) return true
-                        return String(value).includes(this.searches.c7)
+                        return String(value).toLowerCase().includes(this.searches.c7.toLowerCase())
                     } 
                 },
                 { text: "Horário do Pedido", value: "horarioPedido", 
                     filter: value => {
                         if (!this.searches.c8) return true
-                        return String(value).includes(this.searches.c8)
-                    } 
-                },
-                { text: "Valor Estimado", value: "valorDaSolicitacao", 
-                    filter: value => {
-                        if (!this.searches.c9) return true
-                        return String(value).includes(this.searches.c9)
+                        return String(value).toLowerCase().includes(this.searches.c8.toLowerCase())
                     } 
                 },
                 { text: "Status do Pedido", value: "status", 
                     filter: value => {
-                        if (!this.searches.c10) return true
-                        return String(value).includes(this.searches.c10)
+                        if (!this.searches.c9) return true
+                        return String(value).toLowerCase().includes(this.searches.c9.toLowerCase())
                     } 
                 },
                 { text: "Identificador", value: "_id", 
                     filter: value => {
-                        if (!this.searches.c11) return true
-                        return String(value).includes(this.searches.c11)
+                        if (!this.searches.c10) return true
+                        return String(value).toLowerCase().includes(this.searches.c10.toLowerCase())
                     } 
                 }
             ]

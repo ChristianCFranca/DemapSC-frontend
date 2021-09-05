@@ -2,26 +2,26 @@
     <v-card class="ma-12">
 
         <v-alert
-            dense
-            text
-            type="success"
-            v-if="success"
-            >
+        dense
+        text
+        type="success"
+        v-if="success"
+        >
             Seu pedido foi realizado com sucesso. Acesse a guia <strong>ANDAMENTOS</strong> para saber mais.
         </v-alert>
         <v-alert
-            dense
-            outlined
-            type="error"
-            v-if="error"
-            >
+        dense
+        outlined
+        type="error"
+        v-if="error"
+        >
             {{ errorMessage }}
         </v-alert>
 
         <v-card-title> Solicitação de Aquisição de Material não Codificado </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-                <v-container>
+                <v-container fluid>
                 
                     <v-row>
                         <v-col
@@ -128,7 +128,7 @@
             </v-container>
             <div v-if="pedido.empresa">
                 <v-form ref="form" v-model="valid">
-                    <v-container>
+                    <v-container fluid>
                         <v-row>
                             <v-row v-for="item in pedido.items.length" :key="item">
                                 <v-col 
@@ -234,9 +234,10 @@
                                         </v-col>
                                     
                                         <v-col
-                                            cols="12"
-                                            sm="2"
-                                            md="1">
+                                        cols="12"
+                                        sm="2"
+                                        md="2"
+                                        class="d-flex justify-center">
                                             <v-radio-group 
                                             v-model="pedido.items[item-1].categoria">
                                                 <v-radio
@@ -263,8 +264,8 @@
 
                                         <v-col
                                             cols="12"
-                                            sm="5"
-                                            md="6">
+                                            sm="12"
+                                            md="5">
 
                                             <v-textarea
                                                 v-model="pedido.items[item-1].descricao"
