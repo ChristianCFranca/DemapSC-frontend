@@ -260,8 +260,10 @@ export default new Vuex.Store({
           commit('SET_SNACKBAR', {message: "Usuário não autenticado ou não possui permissão", color: "error"})
           dispatch('logout')
         }
-        else if (error?.response)
-          commit('SET_SNACKBAR', {message: error.response, color: "error"})
+        else if (error?.response?.data?.detail)
+          commit('SET_SNACKBAR', {message: error.response.data.detail, color: "error"})
+        else if (error?.response?.data)
+          commit('SET_SNACKBAR', {message: error.response.data, color: "error"})
         else
           commit('SET_SNACKBAR', {message: "Erro de comunicação com o servidor", color: "error"})
       });
