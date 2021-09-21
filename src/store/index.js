@@ -93,8 +93,9 @@ export default new Vuex.Store({
       state.materiaisList = materiais;
     },
     SET_TODOS_OS_PEDIDOS(state, pedidos){
+      // Ordenação por data
       if (pedidos)
-        state.pedidos = pedidos.reverse();
+        state.pedidos = pedidos.sort((a, b) => new Date(b.dataPedido.split('/').reverse().join('-')) - new Date(a.dataPedido.split('/').reverse().join('-')));
     },
     USER_CLEAR_DATA() {
       localStorage.removeItem('user');
@@ -377,18 +378,7 @@ export default new Vuex.Store({
     getPedidosForCurrentUser: state => state.pedidos.filter(obj => obj['email'] === state.currentUser.email),
     getPedidos: state => state.pedidos,
     getPedidosAtivos: state => state.pedidos.filter(obj => obj.active && obj.statusStep !== 6),
-    getPedidosPendentes: (_, getters) => getters.getPedidosAtivos.filter(pedido => pedido.statusStep == 5)
-    // getters.getPedidosAtivos.filter(pedido => {
-    //   if (getters.getPseudoApprovalsForRoles[pedido.statusStep].includes(getters.getRole))
-    //     if (getters.getRole === "regular" || getters.getRole === "assistente")
-    //         return pedido.items.some(item => item.almoxarifadoPossui || item.direcionamentoDeCompra === "Engemil")
-    //     else
-    //         return true
-    //   else
-    //     return false
-    //   }
-    // )
-    ,
+    getPedidosPendentes: (_, getters) => getters.getPedidosAtivos.filter(pedido => getters.getPseudoApprovalsForRoles[pedido.statusStep].includes(getters.getRole)),
     getPedidosCancelados: state => state.pedidos.filter(obj => !obj['active']),
     getPedidosConcluidos: state => state.pedidos.filter(obj => obj['statusStep'] === 6)
   }
