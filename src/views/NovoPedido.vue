@@ -278,7 +278,10 @@
                                                 outlined
                                             ></v-textarea>
 
-
+                                            <v-switch
+                                            v-model="pedido.items[item-1].existeNoAlmoxarife"
+                                            label="Deseja informar o almoxarifado que a existência desse item já foi confirmada?">
+                                            </v-switch>
                                         </v-col>
 
                                     </v-row>
@@ -421,7 +424,7 @@ export default {
                 aprovadoAssistente: true, motivoAssistente: null,
                 aprovadoFiscal: true, motivoFiscal: null,
                 direcionamentoDeCompra: null, 
-                almoxarifadoPossui: true, infoDILOG: null, 
+                existeNoAlmoxarife: false, almoxarifadoPossui: true, infoDILOG: null, 
                 recebido: false, recebimento: null, emailRecebimento: null,
                 valorGasto: 0.0
             }
@@ -484,7 +487,7 @@ export default {
                     this.error = true;
                     this.$store.dispatch('logout')
                 }
-                console.log(error); 
+                console.log(error.response.data); 
                 this.errorMessage = "Ocorreu um erro ao enviar o seu pedido para o servidor. Atualize a página e tente novamente."
                 this.error = true;
                 this.resetPedidoProperties();

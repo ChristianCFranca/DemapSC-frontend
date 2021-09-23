@@ -2,7 +2,18 @@
     <div>
         <v-row 
         justify="center"
+        no-gutters
         v-if="userCanApprove && it.aprovadoFiscal && itemActive && it.categoria !=='Fixo'">
+            <v-col cols="12" class="d-flex justify-center" v-if="it.existeNoAlmoxarife">
+                <v-row no-gutters>
+                    <v-col cols="12" class="text-h5 orange--text d-flex justify-center">
+                        <v-icon left color="orange">mdi-alert</v-icon> Atenção! <br>
+                    </v-col>
+                    <v-col cols="12" class="text-body-1 orange--text text-center" align-self="center">
+                        O usuário confirmou que esse item está presente no almoxarifado. Neste caso é sugerida a aprovação do item.
+                    </v-col>
+                </v-row>
+            </v-col>
             <v-col cols="12" class="d-flex justify-center">
                 <v-switch 
                 inset
