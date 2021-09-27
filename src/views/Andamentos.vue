@@ -204,6 +204,8 @@ export default {
                 })
             .catch(error => {
                 console.log(error);
+                this.solicitacaoMessage = "Erro ao comunicar-se com o banco de dados";
+                this.iconMessage = "mdi-emoticon-sad-outline";
                 if (error.response){
                     this.solicitacaoMessage = "Banco de dados indisponível.";
                     this.iconMessage = "mdi-emoticon-sad-outline";

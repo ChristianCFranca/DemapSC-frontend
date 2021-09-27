@@ -84,6 +84,12 @@
                     </v-list-item-icon>
                     <v-list-item-title>Usuários do Sistema</v-list-item-title>
                 </v-list-item>
+                <v-list-item link v-if="$store.getters.getRole === 'admin'" @click="goToFaturamentos()">
+                    <v-list-item-icon>
+                    <v-icon>mdi-cash-multiple</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Faturamentos</v-list-item-title>
+                </v-list-item>
                 <v-divider class="mx-4 mb-4"></v-divider>
                 <v-list-item two-line>
                     <v-list-item-content>
@@ -261,6 +267,10 @@ export default {
         goToUsuarios(){
             this.drawer = false;
             this.$router.push({name: 'usuarios'})
+        },
+        goToFaturamentos(){
+            this.drawer = false;
+            this.$router.push({name: 'faturamentos'})
         }
     },
     computed: {

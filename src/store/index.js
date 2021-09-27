@@ -350,6 +350,12 @@ export default new Vuex.Store({
       .then(response => {
         return response
       })
+    },
+    getFaturamento(_, faturamentoInfo) {
+      return apiClient.post(`/faturamentos`, faturamentoInfo)
+      .then(response => {
+        return response
+      })
     }
   },
   getters: {

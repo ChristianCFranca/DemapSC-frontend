@@ -7,6 +7,7 @@ import Login from '../views/Login.vue'
 import CriarConta from '../views/CriarConta.vue'
 import CriarUsuario from '../views/CriarUsuario.vue'
 import Usuarios from '../views/Usuarios.vue'
+import Faturamentos from '../views/Faturamentos.vue'
 
 Vue.use(VueRouter)
 
@@ -45,6 +46,11 @@ const routes = [
     path: '/usuarios',
     name: 'usuarios',
     component: Usuarios
+  },
+  {
+    path: '/faturamentos',
+    name: 'faturamentos',
+    component: Faturamentos
   }
 ]
 
