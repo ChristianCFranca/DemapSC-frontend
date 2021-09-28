@@ -1,6 +1,6 @@
 <template>
-    <div class="fill-height">
-        <v-container fluid class="pb-14 fill-height" v-if="$store.getters.getPermissions.length !== 0">
+    <div>
+        <v-container fluid class="mt-14 fill-height" v-if="$store.getters.getPermissions.length !== 0">
             <v-row class="d-flex justify-center">
                 <v-col 
                 cols="12"
@@ -28,9 +28,9 @@
                                             v-model="faturamentoInfo.empresa"
                                             :items="$store.getters.getAllEmpresasNames"
                                             attach
-                                            chips
                                             required
                                             outlined
+                                            :rules="nonEmptyRules"
                                             :label="`Selecione a empresa o qual quer o faturamento`"
                                             :disabled="loadingEmpresas"
                                             :loading="loadingEmpresas">
@@ -44,9 +44,9 @@
                                             v-model="faturamentoInfo.mes"
                                             :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
                                             attach
-                                            chips
                                             required
                                             outlined
+                                            :rules="nonEmptyRules"
                                             :label="`Selecione o mês para a fatura`">
                                             </v-select>
                                         </v-col>
@@ -57,25 +57,27 @@
                                             <v-select
                                             v-model="faturamentoInfo.ano"
                                             :items="[2021, 2022, 2023, 2024, 2025, 2026]"
+                                            :rules="nonEmptyRules"
                                             attach
-                                            chips
                                             required
                                             outlined
                                             :label="`Selecione o ano para a fatura`">
                                             </v-select>
+                                        </v-col>
+                                        
+                                        <v-col cols="12" class="text-h6 mb-4 font-weight-light d-flex justify-center" v-if="downloadURL">
+                                            <a :href="downloadURL">Link para download</a>
                                         </v-col>
                                     </v-row>
 
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-
                                     <v-btn
                                     text
                                     color="blue"
                                     large
                                     @click="resetForm">Limpar</v-btn>
-
                                     <v-btn
                                     text
                                     color="blue"
@@ -83,8 +85,8 @@
                                     large
                                     :loading="loading"
                                     @click="gerarFaturamento()">Gerar</v-btn>
-
                                 </v-card-actions>
+                                
                         </v-card>
                     </v-form>
                 </v-col>
@@ -94,13 +96,6 @@
             <v-row class="d-flex justify-center">
                 <p class="text-h3 mb-4 font-weight-light">
                     Você não possui permissão para obter faturamentos. <v-icon x-large>mdi-emoticon-sad-outline</v-icon>
-                </p>
-            </v-row>
-        </v-container>
-        <v-container fluid class="pb-14 fill-height" v-if="downloadURL">
-            <v-row class="d-flex justify-center">
-                <p class="text-h3 mb-4 font-weight-light">
-                    <a :href="downloadURL"></a>
                 </p>
             </v-row>
         </v-container>
@@ -119,7 +114,10 @@ export default {
             loadingEmpresas: false,
             downloadURL: null,
             loading: false,
-            valid: false
+            valid: false,
+            nonEmptyRules: [
+                v => !!v || 'Campo obrigatório.'
+            ],
         }
     },
     mounted() {
@@ -142,18 +140,21 @@ export default {
         gerarFaturamento() {
             if (!this.$refs.form.validate()) return
 
+            this.downloadURL = null;
             this.loading = true;
 
             this.$store.dispatch('getFaturamento', this.faturamentoInfo)
-            .then(data => {
+            .then(response => {
                 this.$store.commit('SET_SNACKBAR', {message: "Faturamento obtido com sucesso.", color: "success"});
-                this.downloadURL = data.download_url;
-                this.resetForm();
+                this.downloadURL = response.data;
             })
             .catch(error => {
                 if (error ?.response ?.status === 401) {
                     this.$store.commit('SET_SNACKBAR', {message: "Usuário não está autenticado.", color: "error"});
                     this.$store.distpach('logout')
+                } else if (error ?.response ?.status === 302) {
+                    this.$store.commit('SET_SNACKBAR', {message: "Faturamento já encontrado no sistema.", color: "success"});
+                    this.downloadURL = error.response.data;
                 } else if (error ?.response ?.data ?.detail)
                     this.$store.commit('SET_SNACKBAR', {message: error.response.data.detail, color: "error"});
                 else
