@@ -52,19 +52,22 @@
                                     </v-btn>
                                 </template>
                                 <v-list>
-                                    <v-list-item link @click="pendentes=false;ativos=false;concluidos=false;cancelados=false;todos=true">
+                                    <v-list-item link @click="pendentes=false;pendentesSimiao=false;ativos=false;concluidos=false;cancelados=false;todos=true">
                                         <v-list-item-title>Todos</v-list-item-title>
                                     </v-list-item>
-                                    <v-list-item link @click="todos=false;ativos=false;concluidos=false;cancelados=false;pendentes=true">
+                                    <v-list-item link @click="todos=false;ativos=false;concluidos=false;cancelados=false;pendentes=false;pendentesSimiao=true">
+                                        <v-list-item-title>Pendentes Simião</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item link @click="todos=false;pendentesSimiao=false;ativos=false;concluidos=false;cancelados=false;pendentes=true">
                                         <v-list-item-title>Pendentes</v-list-item-title>
                                     </v-list-item>
-                                    <v-list-item link @click="todos=false;pendentes=false;concluidos=false;cancelados=false;ativos=true">
+                                    <v-list-item link @click="todos=false;pendentesSimiao=false;pendentes=false;concluidos=false;cancelados=false;ativos=true">
                                         <v-list-item-title>Ativos</v-list-item-title>
                                     </v-list-item>
-                                    <v-list-item link @click="todos=false;ativos=false;pendentes=false;cancelados=false;concluidos=true">
+                                    <v-list-item link @click="todos=false;pendentesSimiao=false;ativos=false;pendentes=false;cancelados=false;concluidos=true">
                                         <v-list-item-title>Concluídos</v-list-item-title>
                                     </v-list-item>
-                                    <v-list-item link @click="todos=false;ativos=false;concluidos=false;pendentes=false;cancelados=true">
+                                    <v-list-item link @click="todos=false;pendentesSimiao=false;ativos=false;concluidos=false;pendentes=false;cancelados=true">
                                         <v-list-item-title>Cancelados</v-list-item-title>
                                     </v-list-item>
                                 </v-list>
@@ -191,6 +194,7 @@ export default {
             },
             todos: true,
             pendentes: false,
+            pendentesSimiao: false,
             ativos: false,
             concluidos: false,
             cancelados: false
@@ -356,6 +360,8 @@ export default {
                 pedidos = this.$store.getters.getPedidos;
             else if (this.pendentes)
                 pedidos = this.$store.getters.getPedidosPendentes;
+            else if (this.pendentesSimiao)
+                pedidos = this.$store.getters.getPedidosPendentesSimiao;
             else if (this.ativos)
                 pedidos = this.$store.getters.getPedidosAtivos;
             else if (this.concluidos)
