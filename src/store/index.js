@@ -385,7 +385,7 @@ export default new Vuex.Store({
     getPedidos: state => state.pedidos,
     getPedidosAtivos: state => state.pedidos.filter(obj => obj.active && obj.statusStep !== 6),
     getPedidosPendentes: (_, getters) => getters.getPedidosAtivos.filter(pedido => getters.getPseudoApprovalsForRoles[pedido.statusStep].includes(getters.getRole)),
-    getPedidosPendentesSimiao: (_, getters) => getters.getPedidosAtivos.filter(pedido => pedido.statusStep === 5 && pedido.active && pedido.items.some(item => item.direcionamentoDeCompra === "Demap" && !item.almoxarifadoPossui)),
+    getPedidosPendentesSimiao: (_, getters) => getters.getPedidosAtivos.filter(pedido => pedido.statusStep === 5 && pedido.active && pedido.items.some(item => item.direcionamentoDeCompra === "Demap" && !item.almoxarifadoPossui && !item.recebido)),
     getPedidosCancelados: state => state.pedidos.filter(obj => !obj['active']),
     getPedidosConcluidos: state => state.pedidos.filter(obj => obj['statusStep'] === 6)
   }
