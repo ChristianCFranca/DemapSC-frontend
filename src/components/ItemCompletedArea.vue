@@ -41,7 +41,7 @@
                     <v-row>
                         <v-spacer></v-spacer>
                         <v-col cols="6">
-                        <span class="font-weight-bold">Motivo:</span> {{item.motivoCancelamento ? item.motivoCancelamento : `Não informado`}}
+                        <span class="font-weight-bold">Motivo: {{item.motivoCancelamento ? item.motivoCancelamento : `Não informado`}}</span>
                         </v-col>
                         <v-spacer></v-spacer>
                     </v-row>
