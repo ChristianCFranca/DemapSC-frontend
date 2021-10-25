@@ -95,7 +95,7 @@ export default new Vuex.Store({
     SET_TODOS_OS_PEDIDOS(state, pedidos){
       // Ordenação por data
       if (pedidos)
-        state.pedidos = pedidos.sort((a, b) => a.number - b.number));
+        state.pedidos = pedidos.sort((a, b) => a.number - b.number);
     },
     USER_CLEAR_DATA() {
       localStorage.removeItem('user');
