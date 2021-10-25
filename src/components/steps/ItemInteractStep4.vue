@@ -10,7 +10,7 @@
                         <v-icon left color="orange">mdi-alert</v-icon> Atenção! <br>
                     </v-col>
                     <v-col cols="12" class="text-body-1 orange--text text-center" align-self="center">
-                        O usuário confirmou que esse item está presente no almoxarifado. Neste caso é sugerida a aprovação do item.
+                        O usuário confirmou que esse item está presente no almoxarifado. Neste caso é sugerido manter a opção como "Possui em estoque".
                     </v-col>
                 </v-row>
             </v-col>
