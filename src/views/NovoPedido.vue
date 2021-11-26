@@ -356,7 +356,7 @@ export default {
     data() {
         return {
             unidadesDeMedida: [
-                "unid.", // Unidades
+                "unid.", "cento(s)", "conj.", "par(es)", // Unidades
                 "km", "m", "cm", "mm", "pol.", "h", // Comprimento
                 "km²", "m²", "cm²", "mm²", "pol.²", // Área
                 "litros", "ml", "km³", "m³", "cm³", "mm³", "pol.³", // Volume
