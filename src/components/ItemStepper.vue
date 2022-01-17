@@ -200,7 +200,7 @@ export default {
                 return `orange darken-1`
         },
         userCanVisualizeDownload() {
-            return this.inputItem.statusStep >= 5 && (this.$store.getters.getRole === 'fiscal' || this.$store.getters.getRole === 'admin')
+            return this.inputItem.statusStep >= 5
         },
         userCanDownloadPDFs() {
             return Boolean(this.inputItem.pdfs_ids)
