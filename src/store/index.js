@@ -4,7 +4,7 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    // baseURL: 'http://127.0.0.1:8000',
+    //baseURL: 'http://127.0.0.1:8000',
     baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
@@ -199,7 +199,7 @@ export default new Vuex.Store({
     updateCurrentPedido({ state, getters, commit, dispatch }) {
       let {_id, ...pedido} = state.currentPedido;
       const now = new Date().toLocaleString('pt-BR');
-
+      console.log("Heloooooouuu")
       if (pedido.statusStep === 2) {
         pedido.assistente = getters.getCompleteName;
         pedido.emailAssistente = getters.getEmail;
@@ -249,15 +249,14 @@ export default new Vuex.Store({
         pedido.status = "Aguardando aquisição dos itens";
       }
       pedido.statusStep += 1;
-
       return apiClient.put(`/crud/pedidos/${_id}`, pedido)
       .then(() => {
         commit('SET_SNACKBAR', {message: "Pedido atualizado com sucesso", color: "success"})
-        pedido._id = _id
         state.currentPedido = {_id: _id, ...pedido}
         //dispatch('getTodosOsPedidos')
       })
       .catch(error => {
+        console.log("Deu ruim")
         console.log(error);
         if (error?.response?.status === 401) {
           commit('SET_SNACKBAR', {message: "Usuário não autenticado ou não possui permissão", color: "error"})
@@ -298,11 +297,11 @@ export default new Vuex.Store({
 
         message = "Pedido finalizado com sucesso"
       }
-
-      return apiClient.put(`/crud/pedidos/${_id}/?email=${email}`, pedido)
+      return apiClient.put(`/crud/pedidos/${_id}?email=${email}`, pedido)
       .then(() => {
         commit('SET_SNACKBAR', {message: message, color: "success"})
-        dispatch('getTodosOsPedidos')
+        state.currentPedido = {_id: _id, ...pedido}
+        //dispatch('getTodosOsPedidos')
       })
       .catch(error => {
         console.log(error);
