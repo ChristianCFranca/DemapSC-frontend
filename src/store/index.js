@@ -4,7 +4,7 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    // baseURL: '//localhost:8000',
+    // baseURL: 'http://127.0.0.1:8000',
     baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
@@ -253,7 +253,9 @@ export default new Vuex.Store({
       return apiClient.put(`/crud/pedidos/${_id}`, pedido)
       .then(() => {
         commit('SET_SNACKBAR', {message: "Pedido atualizado com sucesso", color: "success"})
-        dispatch('getTodosOsPedidos')
+        pedido._id = _id
+        state.currentPedido = {_id: _id, ...pedido}
+        //dispatch('getTodosOsPedidos')
       })
       .catch(error => {
         console.log(error);

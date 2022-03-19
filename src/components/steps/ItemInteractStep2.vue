@@ -48,9 +48,6 @@ export default {
         }
     },
     methods: {
-        showValue() {
-            console.log(this.it.motivoAssistente)
-        }
     }
 }
 </script>
