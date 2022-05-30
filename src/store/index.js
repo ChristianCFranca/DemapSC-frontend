@@ -4,7 +4,7 @@ import axios from 'axios';
 import router from '../router';
 
 const apiClient = axios.create({
-    // baseURL: 'http://127.0.0.1:8000',
+    //baseURL: 'http://127.0.0.1:8000',
     baseURL: 'https://demapsm-backend.herokuapp.com',
     withCredentials: true,
     headers: {
@@ -203,8 +203,29 @@ export default new Vuex.Store({
         return response
       })
     },
-    updateCurrentPedido({ state, getters, commit, dispatch }) {
-      let {_id, ...pedido} = state.currentPedido;
+    reupdatePedidoPDFs({ getters, dispatch }) {
+      let pedido = getters.getCurrentPedido;
+      return apiClient.put(`/collect-data/redo-pdfs/${pedido['_id']}`, pedido)
+      .then(response => {
+        console.log(response.data)
+        dispatch('getTodosOsPedidos')
+        return response
+      });
+    },
+    updateCurrentPedidoDireto({ commit, getters }, temp_idx) {
+      let quantidade_temp = temp_idx.temp;
+      let idx = temp_idx.idx;
+      let {_id, ...pedido} = getters.getCurrentPedido;
+
+      pedido['items'][idx]['quantidade'] = quantidade_temp;
+
+      return apiClient.put(`/crud/pedidos/direct/${_id}`, pedido)
+      .then(() => {
+        commit('UPDATE_CURRENT_PEDIDO_BY_ID', {_id: _id, pedido: pedido})
+      });
+    },
+    updateCurrentPedido({ getters, commit, dispatch }) {
+      let {_id, ...pedido} = getters.getCurrentPedido;
       const now = new Date().toLocaleString('pt-BR');
       if (pedido.statusStep === 2) {
         pedido.assistente = getters.getCompleteName;
@@ -318,8 +339,8 @@ export default new Vuex.Store({
           commit('SET_SNACKBAR', {message: "Erro de comunicação com o servidor", color: "error"})
       });
     },
-    cancelCurrentPedido({ state, commit, dispatch, getters }) {
-      let {_id, ...pedido} = state.currentPedido;
+    cancelCurrentPedido({ commit, dispatch, getters }) {
+      let {_id, ...pedido} = getters.getCurrentPedido;
       const now = new Date().toLocaleString('pt-BR');
 
       pedido.active = false;

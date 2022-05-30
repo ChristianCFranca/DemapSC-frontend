@@ -17,7 +17,7 @@
                 cols="12"
                 sm="9"
                 md="9">
-                    <ItemInfo :it="it" :greyRow="greyRow(it)"/>
+                    <ItemInfo :it="it" :idx="idx" :greyRow="greyRow(it)"/>
                 </v-col>
 
                 <v-col 

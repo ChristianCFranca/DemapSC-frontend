@@ -135,49 +135,6 @@
                 <v-spacer></v-spacer>
             </v-tabs>
         </template>
-        <div class="text-center">
-            <v-menu 
-            transition="slide-y-transition"
-            :close-on-content-click="false"
-            :nudge-width="200"
-            offest-y>
-
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn 
-                    v-bind="attrs"
-                    v-on="on"
-                    icon
-                    :disabled="!$store.getters.getCanUserDownload">
-                        <v-icon>mdi-dots-vertical</v-icon>
-                    </v-btn>
-                </template>
-
-                <v-card 
-                class="text-center px-4" 
-                color="grey lighten-5"
-                max-width="350">
-                <div>
-                    <v-card-title class="justify-center">Baixar compras para o Demap</v-card-title>
-                    <h2 class="font-weight-light red--text mb-3" v-if="error">{{errorMessage}}</h2> 
-                    <v-card-actions class="justify-center pb-8">
-                        <v-btn 
-                        large
-                        outlined
-                        id="compras-demap"
-                        color="blue darken-3"
-                        @click="downloadFile"
-                        :loading="loadingCompras">
-                            <v-icon large left>mdi-download</v-icon>
-                            Compras Demap
-                        </v-btn>
-                    </v-card-actions>
-                    <p v-if="solicitacaoMessageCompra" class="warning--text">{{solicitacaoMessageCompra}}</p>
-                </div>
-                <v-divider></v-divider>
-                </v-card>
-            </v-menu>
-        </div>
-
         </v-app-bar>
     </div>
 </template>
@@ -208,14 +165,6 @@ export default {
             this.$store.commit('ENGAGE_TOKEN_COUNTDOWN')
     },
     methods: {
-        forceFileDownload(response) {
-            const url = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = url
-            link.setAttribute('download', this.filename)
-            document.body.appendChild(link)
-            link.click()
-        },
         logout() {
             this.logoutLoading = true;
             console.log("entrei")
@@ -225,40 +174,6 @@ export default {
             .catch(() => {
                 alert("Ocorreu um erro no logout.")
             })
-        },
-        collectData(rota) {
-            this.$store.dispatch('collectData', rota)
-            .then(response => {
-                this.forceFileDownload(response)
-                })
-            .catch(error => {
-                console.log(error); 
-                if (!error.response)
-                    this.$store.commit('SET_SNACKBAR', {message: "Banco de dados indisponível.", color: "error"});
-                else if (error ?.response ?.status === 401){
-                    this.$store.commit('SET_SNACKBAR', {message: "Você não está autenticado ou não tem permissão para ver essa informação.", color: "error"});
-                    this.$store.dispatch('logout');
-                }
-                else if (error ?.response ?.status === 404){
-                    this.$store.commit('SET_SNACKBAR', {message: "Nenhum pedido pendente!", color: "warning"});
-                }
-                })
-            .finally(() => {
-                    this.loadingCompras = false;
-                })
-        },
-        downloadFile(e){
-            this.error = false;
-            const targetId = e.currentTarget.id
-            if (targetId === 'compras-demap') {
-                this.solicitacaoMessageCompra = null;
-                this.filename = 'compra_demap.pdf';
-                this.loadingCompras = true;
-                this.collectData(targetId);
-            }
-            else {
-                console.log("Botão sem especificação")
-            }
         },
         goToCadastro(){
             this.drawer = false;

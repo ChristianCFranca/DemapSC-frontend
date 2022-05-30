@@ -65,6 +65,15 @@
                     Este pedido ainda não está mapeado diretamente com os pdfs
                 </div>
             </div>
+            <div class="text-center my-4" v-if="$store.getters.getRole === 'admin'">
+                <v-btn 
+                color="#3F51B5"
+                @click="DispatchPDFsAgain()"
+                :loading="loading_pdfs"
+                outlined>
+                    Recadastrar PDFs
+                </v-btn>
+            </div>
         </div>
         <v-stepper-header>
             <v-divider></v-divider>
@@ -221,6 +230,22 @@ export default {
                 this.intervalId = setInterval(function () {
                     this.remaining -= 1;
                     }.bind(this), 1000);
+            })
+        },
+        DispatchPDFsAgain() {
+            this.loading_pdfs = true;
+
+            this.$store.dispatch('reupdatePedidoPDFs')
+            .then(response => {
+                this.$store.commit('SET_SNACKBAR', {message: `IDs dos PDFs do pedido ${this.item['number']} alterados com sucesso`, color: "success"});
+                this.item['pdfs_ids'] = response.data['pdfs_ids'];
+            })
+            .catch(error => {
+                console.log(error);
+                this.$store.commit('SET_SNACKBAR', {message: "Ocorreu um erro na tentativa de atualizar os IDs dos PDFs.", color: "error"});
+            })
+            .finally(() => {
+                this.loading_pdfs = false;
             })
         }
     },

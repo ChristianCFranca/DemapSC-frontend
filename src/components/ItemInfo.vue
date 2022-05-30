@@ -25,7 +25,35 @@
                             Quantidade
                         </v-list-item-subtitle>
                         <v-list-item-title>
-                            {{ `${it.quantidade} ${it.unidade}`}}
+                            <span v-if="!engageEdit">
+                                {{ `${it.quantidade} ${it.unidade}`}}
+                            </span>
+                            <span v-else>
+                                <v-text-field 
+                                outlined
+                                v-model="temp">
+                                </v-text-field>
+                            </span>
+                            <v-btn 
+                            v-if="$store.getters.getRole === 'admin'"
+                            icon
+                            @click="engageEdit = !engageEdit; temp = it.quantidade">
+                                <v-icon small v-if="!engageEdit">
+                                    mdi-pencil
+                                </v-icon>
+                                <v-icon v-else>
+                                    mdi-close-circle
+                                </v-icon>
+                            </v-btn>
+                            <v-btn 
+                            v-if="$store.getters.getRole === 'admin' && engageEdit"
+                            icon
+                            :loading="loading"
+                            @click="updateCurrentPedido()">
+                                <v-icon>
+                                    mdi-check-bold
+                                </v-icon>
+                            </v-btn>
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
@@ -84,11 +112,14 @@
 export default {
     props: {
         greyRow: String,
-        it: Object
+        it: Object,
+        idx: Number
     },
     data() {
         return {
-            
+            engageEdit: false,
+            temp: 0,
+            loading: false
         }
     },
     methods: {
@@ -98,6 +129,22 @@ export default {
             } else{
                 return `Item não cadastrado!`
             }
+        },
+        updateCurrentPedido() {
+            this.loading = true;
+            this.$store.dispatch('updateCurrentPedidoDireto', {temp: this.temp, idx: this.idx})
+            .then(() => {
+                this.it.valorUnitario = this.temp;
+                this.$store.commit('SET_SNACKBAR', {message: "Quantidade do item alterada com sucesso", color: "success"})
+            })
+            .catch(error => {
+                console.log(error)
+                this.$store.commit('SET_SNACKBAR', {message: "Ocorreu um erro na tentativa de alterar a quantidade.", color: "error"})
+            })
+            .finally(() => {
+                this.loading = false;
+                this.engageEdit = false;
+            })
         }
     }
 }
