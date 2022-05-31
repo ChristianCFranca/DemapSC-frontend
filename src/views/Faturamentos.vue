@@ -152,9 +152,6 @@ export default {
                 if (error ?.response ?.status === 401) {
                     this.$store.commit('SET_SNACKBAR', {message: "Usuário não está autenticado.", color: "error"});
                     this.$store.distpach('logout')
-                } else if (error ?.response ?.status === 302) {
-                    this.$store.commit('SET_SNACKBAR', {message: "Faturamento já encontrado no sistema.", color: "success"});
-                    this.downloadURL = error.response.data;
                 } else if (error ?.response ?.data ?.detail)
                     this.$store.commit('SET_SNACKBAR', {message: error.response.data.detail, color: "error"});
                 else
