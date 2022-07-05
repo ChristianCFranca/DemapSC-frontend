@@ -27,7 +27,6 @@
                     :items="['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']"
                     :rules="nonEmptyRules"
                     clearable
-                    :disabled="$store.getters.getRole !== 'admin'"
                     outlined>
                     </v-select>
                 </v-col>
@@ -40,7 +39,6 @@
                     :items="['2021', '2022', '2023', '2024', '2025']"
                     :rules="nonEmptyRules"
                     clearable
-                    :disabled="$store.getters.getRole !== 'admin'"
                     outlined>
                     </v-select>
                 </v-col>
