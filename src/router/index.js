@@ -8,6 +8,7 @@ import CriarConta from '../views/CriarConta.vue'
 import CriarUsuario from '../views/CriarUsuario.vue'
 import Usuarios from '../views/Usuarios.vue'
 import Faturamentos from '../views/Faturamentos.vue'
+import Quantitativos from '../views/Quantitativos.vue'
 
 Vue.use(VueRouter)
 
@@ -31,6 +32,11 @@ const routes = [
     path: '/andamentos',
     name: 'andamentos',
     component: Andamentos
+  },
+  {
+    path: '/quantitativos',
+    name: 'quantitativos',
+    component: Quantitativos
   },
   {
     path: '/criarconta',

@@ -130,6 +130,7 @@
         <template v-slot:extension>
             <v-tabs>
                 <v-spacer></v-spacer>
+                <v-tab route to="/quantitativos" v-if="isValidForQuantitativos">Quantitativos</v-tab>
                 <v-tab route to="/novo-pedido">Nova Solicitação</v-tab>
                 <v-tab route to="/andamentos">Andamentos</v-tab>
                 <v-spacer></v-spacer>
@@ -197,6 +198,9 @@ export default {
         },
         remainingSeconds() {
             return String(this.$store.getters.getSessaoRestante%60).padStart(2, '0');
+        },
+        isValidForQuantitativos() {
+            return this.$store.getters.getRole !== "regular"
         }
     },
     watch: {

@@ -30,6 +30,7 @@ export default new Vuex.Store({
     materiaisList: [],
     pedidos: [],
     allUsers: [],
+    quantitativos: null,
     currentPedido: null,
     snackbar: {
       state: false,
@@ -121,6 +122,12 @@ export default new Vuex.Store({
         state.empresasNeedAssistant[empresa.nome] = empresa.requer_assistente;
       })
     },
+    SET_CURRENT_QUANTITATIVOS(state, quantitativos) {
+      state.quantitativos = quantitativos;
+    },
+    UNSET_CURRENT_QUANTITATIVOS(state) {
+      state.quantitativos = null;
+    },  
     UNSET_CURRENT_PEDIDO(state) {
       state.currentPedido = null;
     },
@@ -202,6 +209,25 @@ export default new Vuex.Store({
       .then(response => {
         return response
       })
+    },
+    getQuantitativosForEmpresa({ commit, dispatch }, dataForQuantitativo) {
+      commit('UNSET_CURRENT_QUANTITATIVOS')
+      return apiClient.get(`/collect-data/quantitativos?empresa=${dataForQuantitativo.empresa}&mes=${dataForQuantitativo.mes}&ano=${dataForQuantitativo.ano}`)
+      .then(response => {
+        commit('SET_SNACKBAR', {message: "Quantitativos obtidos com sucesso", color: "success"})
+        commit('SET_CURRENT_QUANTITATIVOS', response.data)
+      })
+      .catch(error => {
+        console.log(error);
+        if (error?.response?.status === 401) {
+          commit('SET_SNACKBAR', {message: "Usuário não autenticado ou não possui permissão", color: "error"})
+          dispatch('logout')
+        }
+        else if (error?.response)
+          commit('SET_SNACKBAR', {message: error.response, color: "error"})
+        else
+          commit('SET_SNACKBAR', {message: "Erro de comunicação com o servidor", color: "error"})
+      });
     },
     reupdatePedidoPDFs({ getters, dispatch }) {
       let pedido = getters.getCurrentPedido;
@@ -402,6 +428,7 @@ export default new Vuex.Store({
     getAllRoles: state => state.allRoles,
     getAllUsers: (state, getters) => state.allUsers.length === 0 ? [] : 
     state.allUsers.filter(obj => state.permissionsPerRole[getters.getRole].includes(obj.role) && obj.username !== getters.getEmail),
+    getCurrentQuantitativos: state => state.quantitativos,
     getSnackbar: state => state.snackbar,
     getMateriais: state => state.materiaisList,
     getMateriaisList: state => state.materiaisList.length === 0 ? [] : [...state.materiaisList.map(item => item["descricao"])],
