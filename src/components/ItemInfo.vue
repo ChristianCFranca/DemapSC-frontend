@@ -134,7 +134,7 @@ export default {
             this.loading = true;
             this.$store.dispatch('updateCurrentPedidoDireto', {temp: this.temp, idx: this.idx})
             .then(() => {
-                this.it.valorUnitario = this.temp;
+                this.it.quantidade = this.temp;
                 this.$store.commit('SET_SNACKBAR', {message: "Quantidade do item alterada com sucesso", color: "success"})
             })
             .catch(error => {
