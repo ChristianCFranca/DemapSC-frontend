@@ -244,6 +244,11 @@ export default new Vuex.Store({
       let {_id, ...pedido} = getters.getCurrentPedido;
 
       pedido['items'][idx]['quantidade'] = quantidade_temp;
+      if (pedido['items'][idx]['valorUnitario'] != null) {
+          let valorUnitario = pedido['items'][idx]['valorUnitario'];
+          let newValorTotal = valorUnitario * quantidade_temp;
+          pedido['items'][idx]['valorTotal'] = newValorTotal;
+      }
 
       return apiClient.put(`/crud/pedidos/direct/${_id}`, pedido)
       .then(() => {
