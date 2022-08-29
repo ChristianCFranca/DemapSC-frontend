@@ -359,6 +359,7 @@ export default {
                 "unid.", "cento(s)", "conj.", "par(es)", "barra(s)", "caixa(s)", // Unidades
                 "km", "m", "cm", "mm", "pol.", "h", // Comprimento
                 "km²", "m²", "cm²", "mm²", "pol.²", // Área
+                "dia(s)", // Tempo
                 "litros", "ml", "km³", "m³", "cm³", "mm³", "pol.³", // Volume
                 "g", "kg", "ton.", // Massa
                 ],
