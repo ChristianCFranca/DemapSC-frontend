@@ -84,7 +84,7 @@
                     </v-list-item-icon>
                     <v-list-item-title>Usuários do Sistema</v-list-item-title>
                 </v-list-item>
-                <v-list-item link v-if="$store.getters.getRole === 'admin'" @click="goToFaturamentos()">
+                <v-list-item link v-if="$store.getters.getRole === 'admin' || $store.getters.getRole === 'fiscal'" @click="goToFaturamentos()">
                     <v-list-item-icon>
                     <v-icon>mdi-cash-multiple</v-icon>
                     </v-list-item-icon>
