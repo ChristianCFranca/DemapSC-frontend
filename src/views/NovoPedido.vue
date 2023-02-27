@@ -360,6 +360,7 @@ export default {
                 "km", "m", "cm", "mm", "pol.", "h", // Comprimento
                 "km²", "m²", "cm²", "mm²", "pol.²", // Área
                 "dia(s)", // Tempo
+                "h/h", // Homem-hora
                 "litros", "ml", "km³", "m³", "cm³", "mm³", "pol.³", // Volume
                 "g", "kg", "ton.", // Massa
                 ],
