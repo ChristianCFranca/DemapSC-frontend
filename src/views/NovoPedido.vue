@@ -456,7 +456,8 @@ export default {
                 return
             }
 
-            [this.pedido.dataPedido, this.pedido.horarioPedido] = new Date().toLocaleString('pt-BR').split(', '); // Obtem a data e o horario
+            this.pedido.dataPedido = new Date().toLocaleDateString('pt-BR');
+            this.pedido.horarioPedido = new Date().toLocaleTimeString('pt-BR');
 
             this.pedido.items.forEach(function(item, idx) { // Valor padrão permanecerá null se nenhum dos itens atender o requisito
                 if (item.valorUnitario) // Quer dizer que existe no banco de dados pois o usuario nao altera isso
