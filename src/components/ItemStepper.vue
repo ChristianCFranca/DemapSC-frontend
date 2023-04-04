@@ -65,7 +65,7 @@
                     Este pedido ainda não está mapeado diretamente com os pdfs
                 </div>
             </div>
-            <div class="text-center my-4" v-if="$store.getters.getRole === 'admin'">
+            <div class="text-center my-4" v-if="$store.getters.getRole === 'admin' || $store.getters.getRole === 'fiscal'">
                 <v-btn 
                 color="#3F51B5"
                 @click="DispatchPDFsAgain()"
