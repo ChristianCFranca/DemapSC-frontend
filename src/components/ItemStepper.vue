@@ -65,7 +65,7 @@
                     Este pedido ainda não está mapeado diretamente com os pdfs
                 </div>
             </div>
-            <div class="text-center my-4" v-if="$store.getters.getRole === 'admin' || $store.getters.getRole === 'fiscal'">
+            <div class="text-center my-4" v-if="userCanVisualizeDownload()">
                 <v-btn 
                 color="#3F51B5"
                 @click="DispatchPDFsAgain()"
@@ -222,7 +222,10 @@ export default {
             })
             .catch(error => {
                 console.log(error)
-                this.$store.commit('SET_SNACKBAR', {message: "Ocorreu um erro desconhecido.", color: "error"})
+                if (error.response.status === 404)
+                    this.$store.commit('SET_SNACKBAR', {message: "Os PDFs não existem. Recadastre eles para serem gerados novamente.", color: "warning"})
+                else
+                    this.$store.commit('SET_SNACKBAR', {message: "Ocorreu um erro.", color: "error"})
             })
             .finally(() => {
                 this.loading_pdfs = false;
