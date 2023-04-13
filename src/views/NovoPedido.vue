@@ -193,8 +193,8 @@
 
                                                 <v-col
                                                 cols="12"
-                                                sm="12"
-                                                md="8">
+                                                sm="6"
+                                                md="4">
 
                                                     <v-text-field
                                                         v-model="pedido.items[item-1].quantidade"
@@ -226,6 +226,17 @@
                                                         filled
                                                         outlined
                                                     ></v-select>
+
+                                                </v-col>
+
+                                                <v-col
+                                                cols="12"
+                                                sm="12"
+                                                md="4"
+                                                class="my-2">
+                                                    <p class="text-h4 font-weight-light">
+                                                        {{getValorUnitario(pedido.items[item-1].valorUnitario, pedido.items[item-1].quantidade)}}
+                                                    </p>
 
                                                 </v-col>
 
@@ -569,6 +580,11 @@ export default {
                     this.isMateriaisLoading = false;
                 })
             }
+        },
+        getValorUnitario(valor, quantidade) {
+            console.log(valor)
+            let valorfinal = (isNaN(valor) ? 0 : valor) * (isNaN(quantidade) ? 0 : quantidade);
+            return Number(valorfinal).toLocaleString('pt-br', {style: 'currency', currency: 'BRL'})
         }
         
     },
