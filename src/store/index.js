@@ -49,7 +49,7 @@ export default new Vuex.Store({
       2: ["admin", "assistente"],
       3: ["admin", "fiscal"],
       4: ["admin", "almoxarife"],
-      5: ["admin", "fiscal", "regular"]
+      5: ["admin", "fiscal", "assistente", "regular"]
     },
     cancelForRoles: {
       2: ["admin", "assistente", "fiscal"],
