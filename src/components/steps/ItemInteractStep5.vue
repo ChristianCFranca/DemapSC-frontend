@@ -170,7 +170,7 @@ export default {
     methods: {
         specificApproval() {
             const isDemap = this.it.direcionamentoDeCompra === "Demap" && !this.it.almoxarifadoPossui;
-            if (this.$store.getters.getRole !== "fiscal" && this.$store.getters.getRole !== "admin") {
+            if (this.$store.getters.getRole !== "fiscal" && this.$store.getters.getRole !== "admin" && this.$store.getters.getRole !== "assistente") {
                 if (isDemap) return false;
                 else return true;
             } else return true;
