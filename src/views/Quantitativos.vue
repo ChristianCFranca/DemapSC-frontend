@@ -4,10 +4,28 @@
         fluid
         class="mt-6">
             <v-row
-            no-gutters
             justify="center">
                 <v-col
                 cols="4">
+                    <v-select
+                    v-model="dataForRequest.tipo"
+                    label="Selecione o tipo de quantitativo que deseja verificar"
+                    required
+                    :items="tipos"
+                    item-text="text"
+                    item-value="value"
+                    :rules="nonEmptyRules"
+                    clearable
+                    outlined>
+                    </v-select>
+                </v-col>
+            </v-row>
+            <v-row
+            no-gutters
+            justify="center">
+                <v-col
+                cols="3"
+                v-if="dataForRequest.tipo==1">
                     <v-select
                     v-model="dataForRequest.empresa"
                     label="Selecione a empresa que deseja ver o quantitativo de itens"
@@ -52,7 +70,7 @@
                     <v-btn
                     color="blue darken-1"
                     :loading="loadingBuscar"
-                    :disabled="dataForRequest.empresa == null || dataForRequest.ano == null || dataForRequest.mes == null"
+                    :disabled="(dataForRequest.empresa == null && dataForRequest.tipo == 1) || dataForRequest.ano == null || dataForRequest.mes == null"
                     large
                     @click="RequestQuantitativos"
                     class="text-center white--text">
@@ -60,15 +78,14 @@
                     </v-btn>
                 </v-col>
             </v-row>
+            <v-divider class="my-10"></v-divider>
         </v-container>
-
-        <v-divider class="my-10"></v-divider>
     
         <v-container
         fluid
-        v-if="showData">
+        v-if="showDataEmpresa">
             <v-data-iterator
-            :items="ListaDeMateriais"
+            :items="ListaDeMateriaisEmpresa"
             :search="search"
             :sorty-by="sortBy.toLowerCase()">
 
@@ -141,6 +158,74 @@
                 </template>
             </v-data-iterator>
         </v-container>
+
+        <v-container
+        fluid
+        v-if="showDataCartaoCorp">
+            <v-card class="mx-5">
+                
+                <v-card-title>
+                <div>
+                    Quantitativos do Cartão Corporativo
+                </div>
+                <v-spacer></v-spacer>
+                <div>
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-list-item-subtitle>
+                                Valor total para o período
+                            </v-list-item-subtitle>
+                            <p class="font-weight-light text-h4">
+                                {{ Number(totalValueSummedUp).toLocaleString('pt-br', {style: 'currency', currency: 'BRL'}) }}
+                            </p>
+                        </v-list-item-content>
+                    </v-list-item>
+                </div>
+                </v-card-title>
+
+                <v-data-table
+                :headers="headers"
+                :items="ListaDeMateriaisCartaoCorp"
+                :items-per-page="15"
+                class="elevation-1"
+                multi-sort
+                show-group-by>
+
+
+                    <template v-slot:[`body.prepend`] v-if="!$vuetify.breakpoint.xs">
+                        <tr>
+                            <td>
+                                <v-text-field v-model="searches.c1" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                            </td>
+                            <td>
+                                <v-text-field v-model="searches.c2" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                            </td>
+                            <td>
+                                <v-text-field v-model="searches.c3" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                            </td>
+                            <td>
+                                <v-text-field v-model="searches.c4" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                            </td>
+                            <td>
+                                <v-text-field v-model="searches.c5" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                            </td>
+                            <td>
+                                <v-text-field v-model="searches.c6" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                            </td>
+                            <td>
+                                <v-text-field v-model="searches.c6" prepend-inner-icon="mdi-magnify" clearable></v-text-field>
+                            </td>
+                        </tr>
+                    </template>
+
+                    <template v-slot:[`item.valorGasto`]="{ item }">
+                        {{ Number(item.valorGasto).toLocaleString('pt-br', {style: 'currency', currency: 'BRL'}) }}
+                    </template>
+
+                </v-data-table>
+            </v-card>
+        </v-container>
+
     </div>
 </template>
 
@@ -154,26 +239,47 @@ export default {
     },
     data() {
         return {
+            mes: null,
+            ano: null,
             dataForRequest: {
-                ano: '2021',
-                mes: '05',
+                tipo: 2,
+                ano: null,
+                mes: null,
                 empresa: null,
             },
             search: '',
             sortBy: 'nome',
+            tipos: [
+                {text: 'Empresa', value: 1},
+                {text: 'Cartão Corporativo', value: 2}
+            ],
             filter: ['Fixo', 'Sob Demanda'],
             loadingBuscar: false,
-            nonEmptyRules: [v => !!v || "Campo obrigatório."]
+            nonEmptyRules: [v => !!v || "Campo obrigatório."],
+            searches: {
+                c1: '',
+                c2: '',
+                c3: '',
+                c4: '',
+                c5: '',
+                c6: '',
+                c7: ''
+            },
         }
     },
     methods: {
+        showQuant() {
+            console.log(this.$store.getters.getCurrentCartaoCorpQuantitativos)
+        },
         RequestQuantitativos() {
             this.loadingBuscar = true;
-            this.$store.dispatch('getQuantitativosForEmpresa', this.dataForRequest)
+            this.mes = this.dataForRequest.mes;
+            this.ano = this.dataForRequest.ano;
+            this.$store.dispatch('getQuantitativos', this.dataForRequest)
                 .catch(error => {
                     console.log(error);
                     if (error?.response?.status === 401) {
-                        this.errorMateriaisMessage = "Você não está autenticado ou não tem permissão para requisitar materiais.";
+                        this.errorMateriaisMessage = "Você não está autenticado ou não tem permissão para requisitar quantitativos.";
                         this.errorGetMateriais = true;
                         this.$store.dispatch('logout');
                     } else {
@@ -245,12 +351,75 @@ export default {
         }
     },
     computed: {
-        ListaDeMateriais() {
-            return this.$store.getters.getCurrentQuantitativos.filter(value => this.filter.includes(value.categoria))
+        ListaDeMateriaisEmpresa() {
+            return this.$store.getters.getCurrentEmpresaQuantitativos.filter(value => this.filter.includes(value.categoria))
         },
-        showData() {
-            return this.$store.getters.getCurrentQuantitativos ? true : false
+        ListaDeMateriaisCartaoCorp() {
+            return this.$store.getters.getCurrentCartaoCorpQuantitativos//.filter(value => this.filter.includes(value.categoria))
+        },
+        showDataEmpresa() {
+            return this.$store.getters.getCurrentEmpresaQuantitativos ? true : false
+        },
+        showDataCartaoCorp() {
+            return this.$store.getters.getCurrentCartaoCorpQuantitativos ? true : false
+        },
+        headers() {
+            return [
+                { text: "Nome do Item", value: "nome", 
+                    filter: value => {
+                        if (!this.searches.c1) return true
+                        return String(value).toLowerCase().includes(this.searches.c1.toLowerCase())
+                    } 
+                },
+                { text: "Quantidade", value: "quantidade", 
+                    filter: value => {
+                        if (!this.searches.c2) return true
+                        return String(value).toLowerCase().includes(this.searches.c2.toLowerCase())
+                    } 
+                },
+                { text: "Unidade", value: "unidade", 
+                    filter: value => {
+                        if (!this.searches.c3) return true
+                        return String(value).toLowerCase().includes(this.searches.c3.toLowerCase())
+                    } 
+                },
+                { text: "Valor Gasto", value: "valorGasto", 
+                    filter: value => {
+                        if (!this.searches.c4) return true
+                        return String(value).toLowerCase().includes(this.searches.c4.toLowerCase())
+                    } 
+                },
+                { text: "Ordem de Serviço", value: "os", 
+                    filter: value => {
+                        if (!this.searches.c5) return true
+                        return String(value).toLowerCase().includes(this.searches.c5.toLowerCase())
+                    } 
+                },
+                { text: "Número do Pedido", value: "pedido", 
+                    filter: value => {
+                        if (!this.searches.c6) return true
+                        return String(value).toLowerCase().includes(this.searches.c6.toLowerCase())
+                    } 
+                },
+                { text: "Data do Pedido", value: "dataPedido", 
+                    filter: value => {
+                        if (!this.searches.c7) return true
+                        return String(value).toLowerCase().includes(this.searches.c7.toLowerCase())
+                    } 
+                }
+            ]
+        },
+        totalValueSummedUp() {
+            return this.$store.getters.getCurrentCartaoCorpQuantitativos.reduce((a, b) => a + b.valorGasto, 0)
         }
-    }
+    },
+    watch: {
+        'dataForRequest.tipo' () {
+            this.dataForRequest.empresa = null;
+        }
+    },
+    //mounted() {
+    //    this.$store.commit('UNSET_CURRENT_QUANTITATIVOS');
+    //}
 }
 </script>
