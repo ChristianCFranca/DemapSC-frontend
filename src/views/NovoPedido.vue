@@ -367,7 +367,7 @@ export default {
     data() {
         return {
             unidadesDeMedida: [
-                "unid.", "cento(s)", "conj.", "par(es)", "barra(s)", "caixa(s)", // Unidades
+                "unid.", "cento(s)", "conj.", "par(es)", "barra(s)", "caixa(s)", "rolo(s)", // Unidades
                 "km", "m", "cm", "mm", "pol.", "h", // Comprimento
                 "km²", "m²", "cm²", "mm²", "pol.²", // Área
                 "dia(s)", // Tempo
