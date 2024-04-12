@@ -21,6 +21,7 @@
                 :label="it.almoxarifadoPossui ? `Possui em estoque`: `Não possui em estoque`" 
                 color="blue"
                 class="mt-15"
+                :disabled="it.existeNoAlmoxarife"
                 ></v-switch>
             </v-col>
             <v-col cols="12" class="d-flex justify-center">
