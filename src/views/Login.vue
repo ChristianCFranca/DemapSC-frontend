@@ -19,6 +19,7 @@
             </h2>
                 <v-form 
                 ref="form"
+                @submit="login()"
                 v-model="valid">
                     <v-card elevation="10" shaped> 
                         <v-card-title class="justify-center ml-4">
