@@ -61,7 +61,7 @@
                                     <v-list-item link @click="todos=false;liberadosAlmoxarife=false;pendentesSimiao=false;ativos=false;concluidos=false;cancelados=false;pendentes=true">
                                         <v-list-item-title>Pendentes</v-list-item-title>
                                     </v-list-item>
-                                    <v-list-item link @click="todos=false;pendentesSimiao=false;ativos=false;concluidos=false;cancelados=false;pendentes=true;liberadosAlmoxarife=true">
+                                    <v-list-item link @click="todos=false;pendentesSimiao=false;ativos=false;concluidos=false;cancelados=false;pendentes=false;liberadosAlmoxarife=true">
                                         <v-list-item-title>Liberados Almoxarifado</v-list-item-title>
                                     </v-list-item>
                                     <v-list-item link @click="todos=false;liberadosAlmoxarife=false;pendentesSimiao=false;pendentes=false;concluidos=false;cancelados=false;ativos=true">
