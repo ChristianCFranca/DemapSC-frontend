@@ -617,7 +617,7 @@ export default new Vuex.Store({
           )
       ),
     getPedidosLiberadosAlmox: (state) =>
-      state.pedidos.filter((obj) => obj["statusStep"] === 5 && obj["active"] && pedido.items.some(
+      state.pedidos.filter((obj) => obj["statusStep"] >= 5 && obj["active"] && pedido.items.some(
             (item) =>
               item.almoxarifadoPossui
           )),
