@@ -376,7 +376,7 @@ export default {
                 pedidos = this.$store.getters.getPedidosCancelados;
 
             if (this.search)
-                pedidos = pedidos.filter((pedido) => pedido.items.some(item => item.nome.toLowerCase().includes(this.search.toLowerCase())))
+                pedidos = pedidos.filter((pedido) => pedido.items.some(item => item.nome ? item.nome.toLowerCase().includes(this.search.toLowerCase()) : false))
 
             return pedidos
         }
